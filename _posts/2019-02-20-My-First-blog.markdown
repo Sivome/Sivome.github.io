@@ -12,5 +12,3 @@ I will use this space to write about many many things. Probably next few days/mo
 About me: Nicknames are Vissu / Vish and Fish (these days by my cordial friends)
 
 My gurus: many!
-
-This is awesome - Feb 20, 2019 / Debt: Close to $$$$$K / Married $$ / Visited many places / Perfect time in my life to start writing about what I learnt from my own self and especially from my science gurus!!
