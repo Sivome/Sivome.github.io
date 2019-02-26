@@ -1,3 +1,13 @@
+Here, I use a tool called COBRApy (https://github.com/opencobra/cobrapy) to simulate metabolic flux generations in an E. coli model. Most of the information provided here is already available at: https://cobrapy.readthedocs.io/en/stable/ 
+
+I used few modules from the above document to show how to 1. read the model, 2. generate optimal fluxes, 3. knock reactions, 4. change growth media, 5. print out required fluxes using the jupyter notebook. 
+
+```python
+# Author: Viswanadham Sridhara
+# Date: 23 February 2019
+# Title: Flux Balance Analyses with COBRApy
+
+```
 
 
 ```python
