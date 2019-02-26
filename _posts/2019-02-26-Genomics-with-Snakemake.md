@@ -1,4 +1,6 @@
+Snakemake is a bioinformatics tool to build pipelines, mostly NGS and related datasets. More info can be found here: https://snakemake.readthedocs.io/en/stable/
 
+Here, I used snakemake to  1. build Bowtie2 index, 2. mapped fastq (raw data i.e., reads) to fasta to generate NGS alignments, 3. and then process output with tools like samtools and bamtools
 
 ```python
 # Author: Viswanadham Sridhara
@@ -7,21 +9,8 @@
 
 ```
 
-
-```python
-As the name says i.e., Getting Started with Snakemake and Genomics, the snakemake rules described here are terse, but explicitly written to convey the information via *reading*
-
-```
-
-
-```python
-Here, I started with a fastq file from NCBI SRA and with the fasta file, 1. built Bowtie2 index, 2. mapped fastq file to fasta to generate read alignments, 3. processed alignments
-```
-
-
-```python
 To run the below pipeline, you need the NGS raw data (i.e., reads in fastq format)  and the fasta file of species of interest.
-```
+
 
 
 ```python
