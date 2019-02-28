@@ -4,15 +4,10 @@ title: About
 permalink: /about/
 ---
 
-This is the base Jekyll theme. You can find out more info about customizing your Jekyll theme, as well as basic Jekyll usage documentation at [jekyllrb.com](https://jekyllrb.com/)
+I created this space to adverstise about what kind of contract work I typically do. However, to make it more interesting, i add sample scripts in the form of a blog a.k.a scientificoProgrammoBlog where I will mix scripts (mostly Python modules and ocassionaly R packages) and a topic in bioinformatics such as Systems biology with methods such as flux balance analyses, genomics, proteomics etc.
 
-You can find the source code for Minima at GitHub:
-[jekyll][jekyll-organization] /
-[minima](https://github.com/jekyll/minima)
+I write here whenever I’ve time and hope I find this blog helpful both to students and serious researchers and programmers in big data, including science and engineering.
 
-You can find the source code for Jekyll at GitHub:
-[jekyll][jekyll-organization] /
-[jekyll](https://github.com/jekyll/jekyll)
+[Google Scholar](https://scholar.google.com/citations?user=UBvhRHgAAAAJ&hl=en)
+[LinkedIn](https://www.linkedin.com/in/viswanadham-sridhara-308263174)
 
-
-[jekyll-organization]: https://github.com/jekyll
