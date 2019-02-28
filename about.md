@@ -8,6 +8,6 @@ I created this space to adverstise about what kind of contract work I typically 
 
 I write here whenever I’ve time and hope I find this blog helpful both to students and serious researchers and programmers in big data, including science and engineering.
 
-[Google Scholar](https://scholar.google.com/citations?user=UBvhRHgAAAAJ&hl=en)
+[Google Scholar](https://scholar.google.com/citations?user=UBvhRHgAAAAJ&hl=en)  
 [LinkedIn](https://www.linkedin.com/in/viswanadham-sridhara-308263174)
 
