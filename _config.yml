@@ -13,21 +13,12 @@
 # you will see them accessed via {{ site.title }}, {{ site.email }}, and so on.
 # You can create any custom variable you would like, and they will be accessible
 # in the templates via {{ site.myvariable }}.
-<<<<<<< HEAD
 title: Sivome
 email: V(firstName).S(lastName)@outlookDOTcom
 description: >- # this means to ignore newlines until "baseurl:"
   All -OMICS is eventually Sivomics!!
 baseurl: "" # the subpath of your site, e.g. /blog
 url: "" # the base hostname & protocol for your site, e.g. http://example.com
-=======
-title: Sivome - Union of all *omes - Genome + Proteome + Metabolome + .....!
-email: V(F).S(L)@outlookDOTcom
-description: >- # this means to ignore newlines until "baseurl:"
-  All OMICS is eventually Sivomics!
-baseurl: "blog" # the subpath of your site, e.g. /blog
-url: "https://sivome.github.io" # the base hostname & protocol for your site, e.g. http://example.com
->>>>>>> 4c7d5e553c33a83d4e8c5317cfb06b1671321e5a
 twitter_username: VishSridhara
 github_username:  Sivome  Viswam78
 
