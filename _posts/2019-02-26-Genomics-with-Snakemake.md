@@ -5,6 +5,9 @@ date:   2019-02-26
 categories: Genomics
 ---
 
+Generating Next-generation sequencing (NGS) data economically is becoming a simpler problem than analyzing the data systematically. There is an increase in the number of tools available to process such data as well (i.e., tools for  converting raw data to proper format, tools for  aligning the reads to the genome, tools for  post-processing the aligned reads to call variants). This results in many challenges to pick the best performing tools, and to put all of these tools in a way that systematically run to generate the desired output, for example, variant calling. A recent paper describes in detail about the guidelines in clinical genomics https://www.ncbi.nlm.nih.gov/pubmed/29154853
+
+Here, I focus on one of the tools built to bring the above mentioned programs together as a pipeline.  
 
 Snakemake is a bioinformatics tool to build pipelines, mostly NGS and related datasets. More info can be found here: https://snakemake.readthedocs.io/en/stable/
 
