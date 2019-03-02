@@ -1,9 +1,3 @@
----
-title: "Proteomics with OMSSA"
-date: '2019-03-02'
-layout: post
-categories: Proteomics
----
 
 Proteomics is the large-scale study of proteins (from Wiki :-)). Any -omics is basically large-scale study of a particular molecular under study. More examples: Large-scale study of metabolome(s) is metabolomics, large-scale study of lipids is lipidomics and so on. All of these molecules (or bio-molecules) i.e., lipids, metabolites, proteins can be  quantified using mass-spectrometer. As the names says, the instrument measures the mass using properties of ionized molecules!
 
@@ -12,7 +6,7 @@ To analyze the output of mass-spectrometers, we need a program. OMSSA is one suc
 Review on mass-spectrometry based proteomics: An article by Ruedi Aebersold and Mathias Mann: https://www.ncbi.nlm.nih.gov/pubmed/12634793
 
 
-OMSSA can be downloaded from: https://pubchem.ncbi.nlm.nih.gov/omssa/  
+OMSSA can be downloaded from: https://pubchem.ncbi.nlm.nih.gov/omssa/
 Publication on OMSSA: https://www.ncbi.nlm.nih.gov/pubmed/15473683
 
 OMSSA download folder has a sample data file (*.dta) for testing. The data that can be analyzed has many formats, and there are many instrument vendors complicating this. However there are some standard data formats such as mzML, mzXML (for example), that can be analyzed by any software and there are tools out there to convert raw data to this format!
@@ -67,16 +61,13 @@ C:\OMSSA\omssa-2.1.9.win32>cat MSHHWGYGK.dta
  
 Let's plot this with R. Let's go in details about ggplot later.
 
-
-```r
+```{r}
 library(ggplot2) # Tool to plot in R
 peptide_peaks = read.csv("./MSHHWGYGK.dta", header = FALSE, sep =" ")
 peptide_mass = peptide_peaks[1,1]*peptide_peaks[1,2] # 1st column elements
 peptide_peaks = peptide_peaks[-1,]
 ggplot(data = peptide_peaks, aes(x=V1, y=V2)) + geom_bar(stat="identity") + labs(x="m/z", y = "Intensity")
 ```
-
-![plot of chunk unnamed-chunk-1](figure/peaks.png)
 
 Mass-spectrometer generates tons of such .dta files and the goal of the program is to identify all the proteins it sees in the raw data. Since proteins are huge (on average 400 amino acids), these are cut into small pieces called peptides, which are then sent into the mass-spec. Small pieces would allow for better ionization and hence better identification.
 
@@ -91,6 +82,7 @@ Also, CA2.fasta.p* are the files created by makeblastdb using the input CA2.fast
 Let's run the program (finally!)
 
 ```console
+
 omssacl -i 1,4 -mf 3 -mv 1 -f MSHHWGYGK.dta -d CA2.fasta -oc omssa_sample.csv
 ```
 

@@ -67,16 +67,13 @@ C:\OMSSA\omssa-2.1.9.win32>cat MSHHWGYGK.dta
  
 Let's plot this with R. Let's go in details about ggplot later.
 
-
-```r
+```{r}
 library(ggplot2) # Tool to plot in R
 peptide_peaks = read.csv("./MSHHWGYGK.dta", header = FALSE, sep =" ")
 peptide_mass = peptide_peaks[1,1]*peptide_peaks[1,2] # 1st column elements
 peptide_peaks = peptide_peaks[-1,]
 ggplot(data = peptide_peaks, aes(x=V1, y=V2)) + geom_bar(stat="identity") + labs(x="m/z", y = "Intensity")
 ```
-
-![plot of chunk unnamed-chunk-1](figure/peaks.png)
 
 Mass-spectrometer generates tons of such .dta files and the goal of the program is to identify all the proteins it sees in the raw data. Since proteins are huge (on average 400 amino acids), these are cut into small pieces called peptides, which are then sent into the mass-spec. Small pieces would allow for better ionization and hence better identification.
 
