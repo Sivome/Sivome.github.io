@@ -97,6 +97,9 @@ rule bedtools_BAMtoBED:
         "bedtools bamtobed -i {input} > {output}"
 ```
 
+Once you put the above commands in a single script (Snakefile), then all you have to do is run "snakemake Snakefile". The same sample script can be found here as well: https://github.com/viswam78/LASSOprobes/blob/master/Scripts/Snakefile
+
+If everything goes fine, this is how the output should look like:
 
 ```python
 Building DAG of jobs...
@@ -163,3 +166,5 @@ localrule all:
     jobid: 0
 
 ```
+
+You can see that the job finished successfully and the output files formed are sam format, bam format, sorted bam and finally a sample bed file that converts BAM format to BED format.
