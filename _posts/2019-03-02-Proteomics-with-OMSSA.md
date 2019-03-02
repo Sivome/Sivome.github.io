@@ -61,16 +61,13 @@ C:\OMSSA\omssa-2.1.9.win32>cat MSHHWGYGK.dta
  
 Let's plot this with R. Let's go in details about ggplot later.
 
-
-```r
+```{r}
 library(ggplot2) # Tool to plot in R
 peptide_peaks = read.csv("./MSHHWGYGK.dta", header = FALSE, sep =" ")
 peptide_mass = peptide_peaks[1,1]*peptide_peaks[1,2] # 1st column elements
 peptide_peaks = peptide_peaks[-1,]
 ggplot(data = peptide_peaks, aes(x=V1, y=V2)) + geom_bar(stat="identity") + labs(x="m/z", y = "Intensity")
 ```
-
-![plot of chunk unnamed-chunk-1](figure/unnamed-chunk-1-1.png)
 
 Mass-spectrometer generates tons of such .dta files and the goal of the program is to identify all the proteins it sees in the raw data. Since proteins are huge (on average 400 amino acids), these are cut into small pieces called peptides, which are then sent into the mass-spec. Small pieces would allow for better ionization and hence better identification.
 
@@ -95,8 +92,8 @@ Since this is a very simple input, the output if everything goes right looks som
 Truncated output from above run
 MSHHWGYGK | 2.61923815969567e-008 | 1101.493 | sp|P00918.2|CAH2_HUMAN RecName:
 
-This means that the peak list, matched to "MSHHWGYGK" (matches the file name as well, so highly likely it is correct!). Very low E-value of 2.6e-8 also confirms the answer is correct! The peptide has mass of 1101.5 (dalton), which seem to match well to the first column of the .dta file. From the fasta file, the program matches the peptide to this proten -- sp|P00918.2|CAH2_HUMAN RecName.
+This means that the peak list, matched to "MSHHWGYGK" (matches the file name as well, so highly likely it is correct!). Very low E-value of 2.6e-8 also confirms the answer is correct! The peptide has mass of 1101.5 (dalton), which seem to match well to the first column of the .dta file. 
 
-
+From the fasta file, the program matches the peptide to CAH2_HUMAN RecName.
 Probably soon, I will dive into some large-scale data and also start looking at other software.
 

@@ -92,8 +92,8 @@ Since this is a very simple input, the output if everything goes right looks som
 Truncated output from above run
 MSHHWGYGK | 2.61923815969567e-008 | 1101.493 | sp|P00918.2|CAH2_HUMAN RecName:
 
-This means that the peak list, matched to "MSHHWGYGK" (matches the file name as well, so highly likely it is correct!). Very low E-value of 2.6e-8 also confirms the answer is correct! The peptide has mass of 1101.5 (dalton), which seem to match well to the first column of the .dta file. From the fasta file, the program matches the peptide to this proten -- sp|P00918.2|CAH2_HUMAN RecName.
+This means that the peak list, matched to "MSHHWGYGK" (matches the file name as well, so highly likely it is correct!). Very low E-value of 2.6e-8 also confirms the answer is correct! The peptide has mass of 1101.5 (dalton), which seem to match well to the first column of the .dta file. 
 
-
+From the fasta file, the program matches the peptide to CAH2_HUMAN RecName.
 Probably soon, I will dive into some large-scale data and also start looking at other software.
 
