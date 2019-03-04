@@ -5,9 +5,17 @@ date:   2019-02-23
 categories: Systems Biology
 ---
 
+Understanding biology by looking at large-scale data sets is a general trend these days. This large-scale data can be from Next-Generation Sequencing (NGS) technologies or mass-spectrometry based technologies (mass-spec) or a different measuring technique. In case of NGS, generally the measured molecules are DNA/RNA. In case of mass-spec, the measured molecules are proteins, metabolites or lipids. 
 
+Gathering such data for different biomolecules e.g., RNA, protein, metabolite is increasing at an exponential pace, given a rise in both instrumentation technologies to generate the data and bioinformatics methods to analyze such data. 
 
-Here, I use a tool called COBRApy (https://github.com/opencobra/cobrapy) to simulate metabolic flux generations in an E. coli model. Most of the information provided here is already available at: https://cobrapy.readthedocs.io/en/stable/ 
+One of the interests to researchers is to find ways to integrate such datasets systematically. Metabolic network provides an interesting way to overlay this information at different levels a.k.a transcript abundances, protein abundances, and metabolite information (or metabolic flux information). 
+
+Before going into integrating these datasets (possibly in future posts), it is essential to understand metrics at a higher level about the metabolic network models built using the genome sequence. Here I focus on analyzing one such E. coli metabolic network model using a mathematical technique called Flux Balance Analysis (FBA). FBA is a mathematical approach to analyze the flow of metabolites in a metabolic network (more info in this excellent primer here: https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3108565/) 
+
+We use a method called COBRA that uses the genome-scale metabolic network model to analyze the flow of metabolites. Previously, in a different project, we used matlab version of COBRA. However, in this post, I use COBRApy, a python version of COBRA. More info on COBRA modules: https://opencobra.github.io/ This website also provides a great information on the need of COBRA.
+
+Most of the information provided here is already available at: https://cobrapy.readthedocs.io/en/stable/ 
 
 I used few modules from the above document to show how to 1. read the model, 2. generate optimal fluxes, 3. knock reactions, 4. change growth media, 5. print out required fluxes using the jupyter notebook. 
 
