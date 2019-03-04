@@ -14,13 +14,12 @@
 # You can create any custom variable you would like, and they will be accessible
 # in the templates via {{ site.myvariable }}.
 title: Sivome
-email: V(firstName).S(lastName)@outlookDOTcom
 description: >- # this means to ignore newlines until "baseurl:"
   All -OMICS is eventually Sivomics!!
 baseurl: "" # the subpath of your site, e.g. /blog
 url: "" # the base hostname & protocol for your site, e.g. http://example.com
 twitter_username: VishSridhara
-github_username:  Sivome  Viswam78
+github_username:  Viswam78
 
 # Build settings
 markdown: kramdown
