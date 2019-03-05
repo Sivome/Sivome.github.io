@@ -1,11 +1,10 @@
 ---
 layout: page
-title: About
+title: Hello!
 permalink: /about/
 ---
-## Hello!
-### Ola!
-#### Namaste!
+## Ola!
+### Namaste!
 
 Given my interests in -omics technologies, and large-scale data analyses, I started using lot of Python / R for my work. Sometimes, I need to go back and re-use some of the scripts I created. To keep the search process easier for myself, I created this space.
 
