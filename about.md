@@ -3,10 +3,25 @@ layout: page
 title: About
 permalink: /about/
 ---
+## Hello!
+### Ola!
+#### Namaste!
 
-I created this space to adverstise about what kind of contract work I typically do. However, to make it more interesting, i add sample scripts in the form of a blog a.k.a scientificoProgrammoBlog where I will mix scripts (mostly Python modules and ocassionaly R packages) and a topic in bioinformatics such as Systems biology with methods such as flux balance analyses, genomics, proteomics etc.
+Given my interests in -omics technologies, and large-scale data analyses, I started using lot of Python / R for my work. Sometimes, I need to go back and re-use some of the scripts I created. To keep the search process easier for myself, I created this space.
 
-I write here whenever I’ve time and hope I find this blog helpful both to students and serious researchers and programmers in big data, including science and engineering.
+Some of the topics I'm interested are:
+Proteomics
+Genomics
+Systems biology w.r.t metabolic network models
 
-[Google Scholar](https://scholar.google.com/citations?hl=en&user=UBvhRHgAAAAJ&view_op=list_works&sortby=pubdate)  
-[LinkedIn](https://www.linkedin.com/in/viswanadham-sridhara-308263174)
+Personally I see the data coming from the above technologies as some kind of numbers/patterns and to analyze such patterns, I find some of the below tools very helpful!
+
+Python modules such as numpy, scipy, scikit-learn, keras, for data-analysis (keras with theano/tf for deep learning as well!)
+and modules like matplot lib for visualization
+
+R packages like dplyr, plyr in the tidyverse domain for data-analysis
+and packages like ggplot2, cowplot for visualization
+
+If you're interested in some of the work I did in the past and the kind of work I'm currently doing, please refer to my [CV](https://sivome.github.io/cv/)
+
+By the way, I'm Vish! :-)
