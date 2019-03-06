@@ -7,9 +7,11 @@ categories: Statistics
 
 In one of my previous blogs, I talked about a well-established technique (Flux Balance Analysis) to simulate metabolic fluxes using a genome-scale metabolic network model. Flux Balance Analysis (FBA) has multiple advantages, including quickly and efficiently simulating organism's phenotype for different growth media. Other interesting applications include simulating phenotypes for in-silico knockouts  OR in-silico addition of a new reaction in a pathway. For additional documentation or applications, refer to the original [FBA paper](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3108565/).
 
-All aspects of this post were already published by Wilke lab (I was part of it as well!). More info on the original work can be found [here](https://www.ncbi.nlm.nih.gov/pubmed/25502413). In this post, I will focus on the inverse problem of predicting the growth conditions, given the in-silico fluxes (e.g., from FBA). Even this aspect is well covered in the paper, however I summarize some of the findings with new and current tools.
+All aspects of this post were already published by Wilke lab (I was part of it as well!). More info on the original work can be found [here](https://www.ncbi.nlm.nih.gov/pubmed/25502413). To summarize the original findings of the paper, I quote from the [abstract](https://www.ncbi.nlm.nih.gov/pubmed/25502413):
+_"Our analysis provides several important physiological and statistical insights. First, we show that by analyzing metabolic end products we can consistently predict growth conditions. Second, prediction is reliable even in the presence of small amounts of impurities. Third, flux through a relatively small number of reactions per growth source (∼10) is sufficient for accurate prediction. Fourth, combining the predictions from two separate models, one trained only on carbon sources and one only on nitrogen sources, performs better than models trained to perform joint prediction. Finally, that separate predictions perform better than a more sophisticated joint prediction scheme suggests that carbon and nitrogen utilization pathways, despite jointly affecting cellular growth, may be fairly decoupled in terms of their dependence on specific assortments of molecular precursors."_
 
-Here, I used Python (scikit-learn module), whereas in the earlier published work, I used R for statistical analyses (using GLMNET package).
+
+In this post, I will focus on the inverse problem of predicting the growth conditions, given the in-silico fluxes (e.g., from FBA). Even this aspect is well covered in the paper as seen from the abstract above, however here I used python (scikit-learn module) instead of R GLMNET package. This also helps confirm the findings with a different tool, and with newer tools.
 
 ```python
 from __future__ import print_function
@@ -502,3 +504,5 @@ plt.show()
 
 If you're also interested in the previous work and the R script, here it is:
 https://github.com/clauswilke/Ecoli_FBA_input_prediction/blob/master/Analysis/Scripts/GLMNET.R
+
+So, it does seem that even after few years, the findings from the original work still hold with Python Scikit-learn module!
