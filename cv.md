@@ -1,11 +1,12 @@
 ---
 layout: page
+title: Resume
 permalink: /cv/
 ---
 ### Viswanadham (Vish) Sridhara 
 
 
-##### [Google Scholar](https://scholar.google.com/citations?hl=en&user=UBvhRHgAAAAJ&view_op=list_works&sortby=pubdate) | [LinkedIn](https://www.linkedin.com/in/viswanadham-sridhara-308263174) | [Github](https://github.com/viswam78)
+[Google Scholar](https://scholar.google.com/citations?hl=en&user=UBvhRHgAAAAJ&view_op=list_works&sortby=pubdate) | [LinkedIn](https://www.linkedin.com/in/viswanadham-sridhara-308263174) | [Github](https://github.com/viswam78)
 
 ### RESEARCH INTERESTS
 
