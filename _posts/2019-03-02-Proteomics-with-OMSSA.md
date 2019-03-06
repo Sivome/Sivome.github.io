@@ -9,11 +9,11 @@ Proteomics is the large-scale study of proteins (from Wiki :-)). Any -omics is b
 
 To analyze the output of mass-spectrometers, we need a program. OMSSA is one such tool developed by Lewis Geer at NCBI, National Institutes of Health. This program analyzes the data using sophisticated algorithm to eventually identify the protein. There are other softwares/programs to analyze other molecules i.e., metabolites, lipids. Also, there are multiple other software programs to analyze proteins, such as Byonic, MODa, PEAKS, pFind, X!TANDEM, SearchGUI and the list goes on. Here, let's focus on OMSSA as I used this tool in the past.
 
-Review on mass-spectrometry based proteomics: An article by Ruedi Aebersold and Mathias Mann: https://www.ncbi.nlm.nih.gov/pubmed/12634793
+Review on mass-spectrometry based proteomics: [This](https://www.ncbi.nlm.nih.gov/pubmed/12634793) is an article by Ruedi Aebersold and Mathias Mann.   
 
 
-OMSSA can be downloaded from: https://pubchem.ncbi.nlm.nih.gov/omssa/  
-Publication on OMSSA: https://www.ncbi.nlm.nih.gov/pubmed/15473683
+OMSSA can be downloaded [here](https://pubchem.ncbi.nlm.nih.gov/omssa/)  
+[Link to publication on OMSSA](https://www.ncbi.nlm.nih.gov/pubmed/15473683)  
 
 OMSSA download folder has a sample data file (*.dta) for testing. The data that can be analyzed has many formats, and there are many instrument vendors complicating this. However there are some standard data formats such as mzML, mzXML (for example), that can be analyzed by any software and there are tools out there to convert raw data to this format!
 
@@ -64,7 +64,7 @@ C:\OMSSA\omssa-2.1.9.win32>cat MSHHWGYGK.dta
 971.45 10
 ```
 1st column are the masses and the 2nd column (except the first line) are the counts. For simplicity, all peaks have the same counts i.e, 10.
- 
+
 Let's plot this with R. Let's go in details about ggplot later.
 
 
@@ -76,7 +76,7 @@ peptide_peaks = peptide_peaks[-1,]
 ggplot(data = peptide_peaks, aes(x=V1, y=V2)) + geom_bar(stat="identity") + labs(x="m/z", y = "Intensity")
 ```
 
-![plot of chunk unnamed-chunk-1](figure/peaks.png)
+![png](figure\peaks.png)
 
 Mass-spectrometer generates tons of such .dta files and the goal of the program is to identify all the proteins it sees in the raw data. Since proteins are huge (on average 400 amino acids), these are cut into small pieces called peptides, which are then sent into the mass-spec. Small pieces would allow for better ionization and hence better identification.
 
@@ -84,8 +84,8 @@ Mass-spec cleaves the peptide further. Let's say the peptide is MSHHWGYGK. Mass-
 
 So, the goal of the software is to find these small pieces M, MS, then stitch them to MSHHWGYGK and use background information to see which protein does the peptide (MSHHWGYGK) match to. This background information is generally given to the program in the form of a fasta file, or a formatted fasta file in the case of OMSSA using makeblastdb.
 
-All this can be found in my git repo here: https://github.com/viswam78/searchOMSSA/tree/master/OMSSA_setup 
-Also, CA2.fasta.p* are the files created by makeblastdb using the input CA2.fasta
+All this can be found in my [git repo](https://github.com/viswam78/searchOMSSA/tree/master/OMSSA_setup)  
+Different variants of the fasta file, such as CA2.fasta.p* are the files created by makeblastdb. This goes as input to OMSSA as well.  
 
 
 Let's run the program (finally!)
@@ -94,14 +94,13 @@ Let's run the program (finally!)
 omssacl -i 1,4 -mf 3 -mv 1 -f MSHHWGYGK.dta -d CA2.fasta -oc omssa_sample.csv
 ```
 
-More info on the arguments used can be found from the above links or using omssa help file. More info here: http://proteomicsresource.washington.edu/tools/omssa.php. Some arguments give specific information about how the sample is prepared. Other arguments tell about the mass-spectrometer characteristics e.g., what fragmentation technique.
+More info on the arguments used can be found from the above links or using omssa help file. [More info here](http://proteomicsresource.washington.edu/tools/omssa.php). Some arguments give specific information about how the sample is prepared. Other arguments tell about the mass-spectrometer characteristics e.g., what fragmentation technique.
 
 Since this is a very simple input, the output if everything goes right looks something like this.
 Truncated output from above run
 MSHHWGYGK | 2.61923815969567e-008 | 1101.493 | sp|P00918.2|CAH2_HUMAN RecName:
 
-This means that the peak list, matched to "MSHHWGYGK" (matches the file name as well, so highly likely it is correct!). Very low E-value of 2.6e-8 also confirms the answer is correct! The peptide has mass of 1101.5 (dalton), which seem to match well to the first column of the .dta file. 
+This means that the peak list, matched to "MSHHWGYGK" (matches the file name as well, so highly likely it is correct!). Very low E-value of 2.6e-8 also confirms the answer is correct! The peptide has mass of 1101.5 (dalton), which seem to match well to the first column of the .dta file.
 
 From the fasta file, the program matches the peptide to CAH2_HUMAN RecName.
 Probably soon, I will dive into some large-scale data and also start looking at other software.
-

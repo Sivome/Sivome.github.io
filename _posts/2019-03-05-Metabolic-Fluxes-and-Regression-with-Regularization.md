@@ -7,11 +7,11 @@ categories: Statistics
 
 In one of my previous blogs, I talked about a well-established technique (Flux Balance Analysis) to simulate metabolic fluxes using a genome-scale metabolic network model. Flux Balance Analysis (FBA) has multiple advantages, including quickly and efficiently simulating organism's phenotype for different growth media. Other interesting applications include simulating phenotypes for in-silico knockouts  OR in-silico addition of a new reaction in a pathway. For additional documentation or applications, refer to the original [FBA paper](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3108565/).
 
-All aspects of this post were already published by Wilke lab (I was part of it as well!). More info on the original work can be found [here](https://www.ncbi.nlm.nih.gov/pubmed/25502413). To summarize the original findings of the paper, I quote from the [abstract](https://www.ncbi.nlm.nih.gov/pubmed/25502413):
+All aspects of this post were already published by [Wilke lab](https://wilkelab.org/) (I was also involved in that project at that time). More info on the original work can be found [here](https://www.ncbi.nlm.nih.gov/pubmed/25502413). To summarize the original findings of the paper, I quote from the [abstract](https://www.ncbi.nlm.nih.gov/pubmed/25502413):
 _"Our analysis provides several important physiological and statistical insights. First, we show that by analyzing metabolic end products we can consistently predict growth conditions. Second, prediction is reliable even in the presence of small amounts of impurities. Third, flux through a relatively small number of reactions per growth source (∼10) is sufficient for accurate prediction. Fourth, combining the predictions from two separate models, one trained only on carbon sources and one only on nitrogen sources, performs better than models trained to perform joint prediction. Finally, that separate predictions perform better than a more sophisticated joint prediction scheme suggests that carbon and nitrogen utilization pathways, despite jointly affecting cellular growth, may be fairly decoupled in terms of their dependence on specific assortments of molecular precursors."_
 
 
-In this post, I will focus on the inverse problem of predicting the growth conditions, given the in-silico fluxes (e.g., from FBA). Even this aspect is well covered in the paper as seen from the abstract above, however here I used python (scikit-learn module) instead of R GLMNET package. This also helps confirm the findings with a different tool, and with newer tools.
+In this post, I will focus on re-analyzing inverse problem of predicting the growth conditions, given the in-silico fluxes (e.g., from FBA). Even this aspect is well covered in the paper as seen from the abstract above, however here I used python (scikit-learn module) instead of R GLMNET package. This also helps confirm the findings with a different tool, and with newer tools.
 
 ```python
 from __future__ import print_function
@@ -28,7 +28,7 @@ from os.path import join
 seed = 7
 np.random.seed(7)
 ```
-The dataset used in this post can be found [here](https://github.com/viswam78/Ecoli_FBA_input_prediction/tree/master/Analysis/RawData). You will see many datasets used in the original publication and you can pick any of those. I picked FluxData49ReplicatesNoiseLevel1.csv and renamed to syntheticFluxData.csv. You can also see additional information in the bitbucket repo [here](https://bitbucket.org/viswam78/fba_keras/src/master/) that is used to create this blog. 
+The dataset used in this post can be found [here](https://github.com/viswam78/Ecoli_FBA_input_prediction/tree/master/Analysis/RawData). You will see many datasets used in the original publication and you can pick any of those. I picked FluxData49ReplicatesNoiseLevel1.csv and renamed to syntheticFluxData.csv. You can also see additional information in the bitbucket repo [here](https://bitbucket.org/viswam78/fba_keras/src/master/) that is used to create this blog.
 
 ```python
 # Flux dataset from predicting bacterial growth conditions study -- for current purposes, THIS IS MOSTLY CONSIDERED RANDOM SYNTHETIC DATA
@@ -37,7 +37,7 @@ dataset1 = pd.read_csv("../Data/syntheticFluxData.csv", delimiter=',', header=No
 
 This dataset is approx. 5K by 2K i.e., 5000 rows and 2000 columns (a good high-dimensional dataset for testing regression techniques). Additonally, it is very sparse. Only few reactions i.e., columns will result in in-silico fluxes because of the inherent behavior of a metabolic network for simple growth conditions and it is to be noted that the fluxes generated are using a mathematical approach e.g., FBA ( as earlier mentioned ).
 
-Here is how the truncated data looks like. The *last 3 columns* are the growth conditions. We added these to the FBA output to have a format of [Input]-[Output] in the same dataframe for data-analyses purposes. 
+Here is how the truncated data looks like. The *last 3 columns* are the growth conditions. We added these to the FBA output to have a format of [Input]-[Output] in the same dataframe for data-analyses purposes.
 
 ```python
 dataset1.head()
@@ -500,7 +500,7 @@ plt.show()
 ```
 
 
-![png](output_21_0.png)
+![png](figure\heatmap.png)
 
 If you're also interested in the previous work and the R script, here it is:
 https://github.com/clauswilke/Ecoli_FBA_input_prediction/blob/master/Analysis/Scripts/GLMNET.R
