@@ -5,11 +5,11 @@ date:   2019-03-05
 categories: Statistics
 ---
 
-In one of my previous blogs, I talked about a well-established technique (Flux Balance Analysis) to simulate metabolic fluxes from a genome-scale metabolic network model. Flux Balance Analysis (FBA) has multiple advantages to quickly and efficiently simulate how a model organism's phenotype looks like, for different in-silico growth media or in-silico knockouts or in-silico addition of a new reaction in a pathway. For additional documentation or applications, refer to the original [FBA paper](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3108565/).
+In one of my previous blogs, I talked about a well-established technique (Flux Balance Analysis) to simulate metabolic fluxes using a genome-scale metabolic network model. Flux Balance Analysis (FBA) has multiple advantages, including quickly and efficiently simulating organism's phenotype for different growth media. Other interesting applications include simulating phenotypes for in-silico knockouts  OR in-silico addition of a new reaction in a pathway. For additional documentation or applications, refer to the original [FBA paper](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3108565/).
 
-Here I focus on how to use the output from FBA. All aspects of this post was already published by Wilke lab (I was part of it as well!). More info on the paper can be found [here](https://www.ncbi.nlm.nih.gov/pubmed/25502413). From this published work, I will focus on the section where logistic regression with regularization technique is used to predict the growth conditions from the in-silico metabolic flux data. So, this is kind of a inverse problem i.e., instead of generating in-silico fluxes using FBA, **we use fluxes to *predict* growth conditions using regularization techniques.**
+All aspects of this post were already published by Wilke lab (I was part of it as well!). More info on the original work can be found [here](https://www.ncbi.nlm.nih.gov/pubmed/25502413). In this post, I will focus on the inverse problem of predicting the growth conditions, given the in-silico fluxes (e.g., from FBA). Even this aspect is well covered in the paper, however I summarize some of the findings with new and current tools.
 
-Another thing to note is the difference in the tools. Here, I used Python (scikit-learn module), where in the earlier published work, I used R for statistical analyses (GLMNET package).
+Here, I used Python (scikit-learn module), whereas in the earlier published work, I used R for statistical analyses (using GLMNET package).
 
 ```python
 from __future__ import print_function
