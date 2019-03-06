@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  "Logistic Regression with regularization"
+title:  "In-silico fluxes and statistical regularization"
 date:   2019-03-05
 categories: Statistics
 ---
@@ -483,9 +483,9 @@ confusion_matrix(fba_y_test, fba_y_test_log)
 
 
 
-For the data I picked, there is a heatmap in the original paper that shows the result of the similar analyses I did above. The 4th column seems to be acetate.
-https://github.com/clauswilke/Ecoli_FBA_input_prediction/blob/master/Manuscript/Figures/Fig3.pdf
-You can read the paper to see why acetate is predicted more often than other carbon sources!
+For the data I picked, there is a [heatmap in the original paper](https://github.com/clauswilke/Ecoli_FBA_input_prediction/blob/master/Manuscript/Figures/Fig3.pdf) that shows the result of the similar analyses I did above. The 4th column seems to be acetate.
+
+You can read the [paper](https://www.ncbi.nlm.nih.gov/pubmed/25502413) to see why acetate is predicted more often than other carbon sources!
 
 Similar heatmap can be drawn using something like this:
 
