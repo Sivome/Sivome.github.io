@@ -1,12 +1,11 @@
 ---
 layout: page
-title: CV
 permalink: /cv/
 ---
-### Viswanadham (Vish) Sridhara  
-### [Google Scholar](https://scholar.google.com/citations?hl=en&user=UBvhRHgAAAAJ&view_op=list_works&sortby=pubdate)  
-### [LinkedIn](https://www.linkedin.com/in/viswanadham-sridhara-308263174)   
-### [Github](https://github.com/viswam78)
+### Viswanadham (Vish) Sridhara 
+
+
+##### [Google Scholar](https://scholar.google.com/citations?hl=en&user=UBvhRHgAAAAJ&view_op=list_works&sortby=pubdate) | [LinkedIn](https://www.linkedin.com/in/viswanadham-sridhara-308263174) | [Github](https://github.com/viswam78)
 
 ### RESEARCH INTERESTS
 
@@ -25,7 +24,6 @@ Till date, my research work has resulted in ~20 peer-reviewed publications and n
 **Thesis:** Monte carlo analysis of millimeter-wave GaN Gunn diodes  
 
 
-<br>
 ### PROGRAMMING SKILLS
 
 Python, R, MATLAB   
@@ -58,7 +56,7 @@ In previous roles as Independent Consultant (part of 2016, 2017 and 2018) for MG
 • Integrated proteogenomics data to identify markers in laser capture microdissected breast tumor samples (Preliminary work published in AACR).  
 
 
-#### Bioinformatics Systems Developer March 2018 - November 2018 (9 months)  
+#### Bioinformatics Systems Developer March 2018 - November 2018    
 **Booz Allen Hamilton**  
 
 • Helped in automating preprocessing of gene expression data (microarray and RNA-seq) for placental datasets using raw data stored in NCBI’s GEO repository (PAT - Placental Atlas Tool).  
@@ -101,12 +99,12 @@ In previous roles as Independent Consultant (part of 2016, 2017 and 2018) for MG
     b. Preliminary work in ASMS 2011 (oral presentation in computational mass-spectrometry).  
 
 
-#### Old Dominion University - Aerospace Engineering 2006 
+#### Old Dominion University - Aerospace Engineering Summer '06 
 **Student Volunteer**  
 • Helped improve programming drives for a test bogie run on MAGLEV (train using magnetic levitation).
 
 
-#### Siemens Limited. Siemens Vdo Automotive, Newport News, VA  2004
+#### Siemens Limited. Siemens Vdo Automotive  Summer '04
 **Intern**  
 • Finite element analyses (2D) to improve fuel injection solenoid models using Ansoft software.  
 
@@ -208,4 +206,4 @@ In previous roles as Independent Consultant (part of 2016, 2017 and 2018) for MG
 11. Hu, Q., et al., “Dynamical modeling studies of model membranes and cellular response to nanosecond ultrashort pulses”, ODU RD 2005(Poster awarded 3rd place)
 
 ### Contact
-Viswanadham.SridharaAToutlook.com
+Viswanadham.Sridhara@outlook.com
