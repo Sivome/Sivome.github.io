@@ -1,4 +1,3 @@
-
 ---
 layout: post
 title:  "Logistic Regression with regularization"
@@ -6,17 +5,13 @@ date:   2019-03-05
 categories: Statistics
 ---
 
-In one of my previous blogs, I mentioned a technique "FBA", an in-silico method to generate metabolic fluxes. The method has multiple advantages to quickly and efficiently simulate how a model organism's phenotype looks like, given certain input parameters such as the in-silico media on which the organism is fed. Knocking out genes, changing the concentration of the metabolites in media, introducing new reations to the model are other advantages. Refer to the original FBA paper <cite> for more information.
+In one of my previous blogs, I talked about a well-established technique (Flux Balance Analysis) to simulate metabolic fluxes using a genome-scale metabolic network model. Flux Balance Analysis (FBA) has multiple advantages, including quickly and efficiently simulating organism's phenotype for different growth media. Other interesting applications include simulating phenotypes for in-silico knockouts  OR in-silico addition of a new reaction in a pathway. For additional documentation or applications, refer to the original [FBA paper](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3108565/).
+
+All aspects of this post were already published by Wilke lab (I was part of it as well!). More info on the original work can be found [here](https://www.ncbi.nlm.nih.gov/pubmed/25502413). To summarize the original findings of the paper, I quote from the [abstract](https://www.ncbi.nlm.nih.gov/pubmed/25502413):
+_"Our analysis provides several important physiological and statistical insights. First, we show that by analyzing metabolic end products we can consistently predict growth conditions. Second, prediction is reliable even in the presence of small amounts of impurities. Third, flux through a relatively small number of reactions per growth source (∼10) is sufficient for accurate prediction. Fourth, combining the predictions from two separate models, one trained only on carbon sources and one only on nitrogen sources, performs better than models trained to perform joint prediction. Finally, that separate predictions perform better than a more sophisticated joint prediction scheme suggests that carbon and nitrogen utilization pathways, despite jointly affecting cellular growth, may be fairly decoupled in terms of their dependence on specific assortments of molecular precursors."_
 
 
-However, here I focus on a previously published work from Wilke lab (I was part of it as well!). More info on the paper can be found here: https://www.ncbi.nlm.nih.gov/pubmed/25502413. Instead of going through the entire work already published, I will talk about a section where the goal is to identify the growth conditions, given the metabolic in-silico flux. So, this is kind of a inverse problem i.e., instead of generating fluxes using FBA, we use fluxes to *predict* growth conditions using logistic regression (with growth conditions as labels).
-
-In the original publication, we used R for statistical analyses (GLMNET package). Here, I use logistic regression module from scikit-learn.
-
-Here is the link for the R script:
-https://github.com/clauswilke/Ecoli_FBA_input_prediction/blob/master/Analysis/Scripts/GLMNET.R
-
-The goal now is to write a script that does *almost* similar thing, but using python.
+In this post, I will focus on the inverse problem of predicting the growth conditions, given the in-silico fluxes (e.g., from FBA). Even this aspect is well covered in the paper as seen from the abstract above, however here I used python (scikit-learn module) instead of R GLMNET package. This also helps confirm the findings with a different tool, and with newer tools.
 
 ```python
 from __future__ import print_function
@@ -28,19 +23,21 @@ from os.path import join
 
 ```
 
-
 ```python
 # fix random seed for reproducibility
 seed = 7
 np.random.seed(7)
 ```
-
+The dataset used in this post can be found [here](https://github.com/viswam78/Ecoli_FBA_input_prediction/tree/master/Analysis/RawData). You will see many datasets used in the original publication and you can pick any of those. I picked FluxData49ReplicatesNoiseLevel1.csv and renamed to syntheticFluxData.csv. You can also see additional information in the bitbucket repo [here](https://bitbucket.org/viswam78/fba_keras/src/master/) that is used to create this blog. 
 
 ```python
 # Flux dataset from predicting bacterial growth conditions study -- for current purposes, THIS IS MOSTLY CONSIDERED RANDOM SYNTHETIC DATA
 dataset1 = pd.read_csv("../Data/syntheticFluxData.csv", delimiter=',', header=None)
 ```
 
+This dataset is approx. 5K by 2K i.e., 5000 rows and 2000 columns (a good high-dimensional dataset for testing regression techniques). Additonally, it is very sparse. Only few reactions i.e., columns will result in in-silico fluxes because of the inherent behavior of a metabolic network for simple growth conditions and it is to be noted that the fluxes generated are using a mathematical approach e.g., FBA ( as earlier mentioned ).
+
+Here is how the truncated data looks like. The *last 3 columns* are the growth conditions. We added these to the FBA output to have a format of [Input]-[Output] in the same dataframe for data-analyses purposes. 
 
 ```python
 dataset1.head()
@@ -218,19 +215,11 @@ dataset1.head()
 
 
 
+First 2381 columns are the in-silico fluxes generated from the flux balance analyses (FBA) for the input growth conditions
 
-```python
-# First 2381 columns are the in-silico fluxes generated from the flux balance analyses (FBA) for the input growth conditions
-# Information on the growth conditions is in columns 2382 and 2383. Column 2384 is just the pair-wise combination of 2382 and 2383.
-# Original work has lot of details, and this is just a tutorial on how the processed FBA data looks and using deep learning models to analyze.
-# Focus is on deep learning models, rather than the source or content of the data.
-print("Background information of the data and what we are trying to accomplish here - after importing modules and loading data :-)")
+Information on the growth conditions is in columns 2382 and 2383. Column 2384 is just the pair-wise combination of 2382 and 2383.
 
-```
-
-    Background information of the data and what we are trying to accomplish here - after importing modules and loading data :-)
-
-
+Additonally, in the first 2381 columns, there are transport and exchange reactions that are not real, but are incorporated in the model that carry the metabolites in and out of the network. So, we removed them here (such reactions end with tpp and tex in the model used).
 
 ```python
 # Assuming iAF1260 model used in this repo has exchange/transport reactions that match to the synthetic data.
@@ -250,6 +239,7 @@ IDs_of_cols_to_remove = [iAF1260_reaction_IDs.index(i) for i in list_tpp_tex]
 IDs_of_cols_to_remove.extend(range(2382,2385)) # Note range covers 2382 to 2384
 
 ```
+Data clean-up is done.
 
 
 ```python
@@ -259,23 +249,12 @@ X = dataset1.iloc[:,dataset1.columns.difference(IDs_of_cols_to_remove)]
 fba_y = dataset1.iloc[:,2382]
 ```
 
-
-```python
-# Two ways to approach this multi-class problem using scikit-learn Logistic regrssion models are 1. ovr, 2. multinomial
-# The goal is to predict the growth condition given the metabolic fluxes, so I think may be "ovr" i.e., one vs rest model is better.
-# Let's try that for now :-) - If we have to go back and re-do with multinomial and compare the results, we can always do that.
-print("Background information of the data")
-```
-
-    Background information of the data
-
-
+This is how the Input  looks now (i.e., without the output and the transport/exchange reactions)
+For this post, instead of focussing on all the 3 columns of the output i.e., C-source, N-source, and pairwise C/N, I used only C-source as output. So, given the in-silico fluxes, we are predicting what carbon source is it coming from? You might think that the information in Nitrogen source is also key to predict what carbon source, but at least one of the things we noticed in our earlier study is that separate prediction works better than joint prediction (i.e., predicting carbon and nitrogen sources separately works better than predicting C-N pairwise). Please refer to the original [paper](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3108565/) for more details.
 
 ```python
 X.head()
 ```
-
-
 
 
 <div>
@@ -446,7 +425,9 @@ X.head()
 </div>
 
 
+Now, the usual method of dividing the data into training and testing. We use training dataset to build the model and predict using test data. Another method i.e., Cross-validation by different fold can also be used.
 
+test_size = 0.25 tells that the test data is 25%, and the rest is training data.
 
 ```python
 # Split data into training and test (note the encoded_y is a single column)
@@ -454,75 +435,13 @@ from sklearn.model_selection import train_test_split
 X_train, X_test, fba_y_train, fba_y_test = train_test_split(X, fba_y, test_size=0.25, random_state=0)
 ```
 
+The following couple of lines are key to building a logistic regression model with regularization. We used a solver called 'sag' that supports 'l2' penalty. Instead of the usual multinomial classification, I used 'ovr' i.e., one-vs-rest. You can try multinomial as multi_class as well. Another thing to note is a large max_iter value. I used the same value that was used previously in the paper. A low number (like 100 or 1000) might not result in convergence of the coefficients. Note that this problem has more than 1000 features!
 
 ```python
-from sklearn.linear_model import Lasso
-lasso_fba = Lasso(alpha=1)
-```
-
-
-```python
-lasso_fba.fit(X_train, fba_y_train)
-```
-
-
-
-
-    Lasso(alpha=1, copy_X=True, fit_intercept=True, max_iter=1000,
-       normalize=False, positive=False, precompute=False, random_state=None,
-       selection='cyclic', tol=0.0001, warm_start=False)
-
-
-
-
-```python
-# Let's see out of couple of thousand features, which are at least greater than 0.01
-lasso_fba.coef_[lasso_fba.coef_ > 0.01]
-```
-
-
-
-
-    array([0.13498902, 0.05082819, 0.01110022, 0.08149858])
-
-
-
-
-```python
-# Use test data to predict
-y_predict = lasso_fba.predict(X_test)
-```
-
-
-```python
-## Looks like we did liinear regresssion, not  logistic regression ( a simple test !)
-import matplotlib.pyplot as plt
-plt.scatter(y_predict, fba_y_test)
-plt.xlabel('y-predict')
-plt.ylabel('y-test')
-
-```
-
-
-
-
-    Text(0, 0.5, 'y-test')
-
-
-
-
-![png](output_14_1.png)
-
-
-
-```python
-# THIS IS THE KEY FOR THE ENTIRE SCRIPT - LOOK AT THE PENALTY WHICH IS POSSIBLE WITH SOLVER AND ONE-VERSUS-REST METHOD
-# ALSO NOTE THE NUMBER OF ITERATIONS THAT ARE VERY VERY HIGH -- I USED THE SAME ITERATIONS FROM THE ORIGINAL PAPER
-# LOWER ITERATIONS MIGHT NOT GET CONVERGED!
 from sklearn.linear_model import LogisticRegression
 log_lasso_fba = LogisticRegression(penalty='l2', solver='sag', multi_class='ovr', max_iter=9000000)
 ```
-
+Build the lasso model on the training data
 
 ```python
 log_lasso_fba.fit(X_train, fba_y_train)
@@ -537,18 +456,13 @@ log_lasso_fba.fit(X_train, fba_y_train)
               tol=0.0001, verbose=0, warm_start=False)
 
 
-
+Predict with test data
 
 ```python
 fba_y_test_log = log_lasso_fba.predict(X_test)
 ```
 
-
-
-
-#Original R script can be found here: https://github.com/clauswilke/Ecoli_FBA_input_prediction/blob/master/Analysis/Scripts/GLMNET.R (from Wilke lab)
-
-
+Create a confusion matrix to see how many of the predicted values match with the original response variable.
 
 ```python
 # confusion matrix
@@ -569,12 +483,11 @@ confusion_matrix(fba_y_test, fba_y_test_log)
 
 
 
-
-
-I have to go back and see what 4th column is. This growth condition gets predicted as other types as well.
+For the data I picked, there is a heatmap in the original paper that shows the result of the similar analyses I did above. The 4th column seems to be acetate.
 https://github.com/clauswilke/Ecoli_FBA_input_prediction/blob/master/Manuscript/Figures/Fig3.pdf
-Same as the case from the original study where other sources sometimes get predicted as acetate - for detailed, explanation read the original paper from Wilke lab.
+You can read the paper to see why acetate is predicted more often than other carbon sources!
 
+Similar heatmap can be drawn using something like this:
 
 ```python
 data_4_heatmap = confusion_matrix(fba_y_test, fba_y_test_log)
@@ -588,3 +501,8 @@ plt.show()
 
 
 ![png](output_21_0.png)
+
+If you're also interested in the previous work and the R script, here it is:
+https://github.com/clauswilke/Ecoli_FBA_input_prediction/blob/master/Analysis/Scripts/GLMNET.R
+
+So, it does seem that even after few years, the findings from the original work still hold with Python Scikit-learn module!

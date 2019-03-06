@@ -5,10 +5,8 @@ date:   2019-02-20
 categories: general
 ---
 
-Damn!
+Sivome! For me, Genome + Proteome + Metabolome + Lipidome + Fluxome + Phenome + *-ome = Sivome!!
 
-I will use this space to write about many many things. Probably next few days/months (2019 Feb now), I will focus on science, but definitely drift to talk about spirituality!
+Likewise *All -OMICS, including Economics is eventually Sivomics*!!!
 
-About me: Nicknames are Vissu / Vish and Fish (these days by my cordial friends)
-
-My gurus: many!
+I created this space to advertise about my [work](https://sivome.github.io/) and [myself](https://sivome.github.io/cv/)!
