@@ -4,9 +4,11 @@ title: Resume
 permalink: /cv/
 ---
 ### Viswanadham (Vish) Sridhara 
+Independent Contractor @ Sivome LLC  
+Viswanadham.Sridhara@gmail.com  
 [Google Scholar](https://scholar.google.com/citations?hl=en&user=UBvhRHgAAAAJ&view_op=list_works&sortby=pubdate) | [LinkedIn](https://www.linkedin.com/in/viswanadham-sridhara-308263174) | [Github](https://github.com/viswam78)  
 
-[Research Interests](#RESEARCH-INTERESTS) | [Education](#EDUCATION) | [Programming Skills](#PROGRAMMING-SKILLS) | [Bioinformatics Tools](#BIOINFORMATICS-TOOLS) | [Professional Experience](#PROFESSIONAL-EXPERIENCE) | [Talks](#TALKS) | [Publications](#PUBLICATIONS) | [Conference Proceedings](#CONFERENCE-PROCEEDINGS) | [Posters](#POSTERS)
+Go to: [Education](#EDUCATION) | [Programming Skills](#PROGRAMMING-SKILLS) | [Bioinformatics Tools](#BIOINFORMATICS-TOOLS) | [Professional Experience](#PROFESSIONAL-EXPERIENCE) | [Talks](#TALKS) | [Publications](#PUBLICATIONS) | [Conference Proceedings](#CONFERENCE-PROCEEDINGS) | [Posters](#POSTERS)
 
 
 ### RESEARCH INTERESTS
