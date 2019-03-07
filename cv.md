@@ -1,9 +1,9 @@
 ---
-layout: default
+layout: page
 title: Resume
 permalink: /cv/
 ---
-Go to: | [Education](#EDUCATION) | [Programming Skills](#PROGRAMMING-SKILLS) | [Bioinformatics Tools](#BIOINFORMATICS-TOOLS) | [Professional Experience](#PROFESSIONAL-EXPERIENCE) | [Talks](#TALKS) | [Publications](#PUBLICATIONS) | [Conference Proceedings](#CONFERENCE-PROCEEDINGS) | [Posters](#POSTERS)
+<!--Go to: | [Education](#EDUCATION) | [Programming Skills](#PROGRAMMING-SKILLS) | [Bioinformatics Tools](#BIOINFORMATICS-TOOLS) | [Professional Experience](#PROFESSIONAL-EXPERIENCE) | [Talks](#TALKS) | [Publications](#PUBLICATIONS) | [Conference Proceedings](#CONFERENCE-PROCEEDINGS) | [Posters](#POSTERS)-->
 
 ## Viswanadham (Vish) Sridhara
 Independent Contractor  
