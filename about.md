@@ -1,8 +1,9 @@
 ---
 layout: page
-title: Hello!
+title: About
 permalink: /about/
 ---
+# Hello!
 ## Ola!
 ### Namaste!
 

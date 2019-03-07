@@ -5,19 +5,21 @@ date:   2019-02-23
 categories: Systems Biology
 ---
 
-Understanding biology by looking at large-scale data sets is a general trend these days. This large-scale data can be from Next-Generation Sequencing (NGS) technologies or mass-spectrometry based technologies (mass-spec) or a different measuring technique. In case of NGS, generally the measured molecules are DNA/RNA. In case of mass-spec, the measured molecules are proteins, metabolites or lipids. 
+Understanding biology by analyzing high-dimensional -OMICS data sets is a general trend these days. This high-dimensional data could be a result from an experimental run on a Next-Generation Sequencing (NGS) platform or a mass-spectrometer platform or a  similar high-throughput technique. In case of NGS, generally the measured molecules are DNA/RNA. In case of mass-spec, the measured _ionized_ molecules could be proteins, metabolites or lipids. 
 
-Gathering such data for different biomolecules e.g., RNA, protein, metabolite is increasing at an exponential pace, given a rise in both instrumentation technologies to generate the data and bioinformatics methods to analyze such data. 
+This trend of gather-analyze-report data in biological space is increasing at an exponential space given the lowering cost of sequencing genomes using NGS technologies.  
 
-One of the interests to researchers is to find ways to integrate such datasets systematically. Metabolic network provides an interesting way to overlay this information at different levels a.k.a transcript abundances, protein abundances, and metabolite information (or metabolic flux information). 
+Systematically analyzing such datasets is critical to draw meaningful observations. Moreover, a technique to integrate the diverse omics datasets (e.g., transcriptomics and proteomics data for the same biological sample) is also a new trend that is increasing. The advantage with such integration is to infer insights using the information from transcript and protein profiles. 
 
-Before going into integrating these datasets (possibly in future posts), it is essential to understand metrics at a higher level about the metabolic network models built using the genome sequence. Here I focus on analyzing one such E. coli metabolic network model using a mathematical technique called Flux Balance Analysis (FBA). FBA is a mathematical approach to analyze the flow of metabolites in a metabolic network (more info in this excellent primer here: https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3108565/) 
+Metabolic network models provide an interesting way to overlay this diverse information i.e., data sets emerging from different technologies a.k.a NGS based transcripts, mass-spec baed protein abundances, and 13C mass-spec based metabolic fluxes. 
 
-We use a method called COBRA that uses the genome-scale metabolic network model to analyze the flow of metabolites. Previously, in a different project, we used matlab version of COBRA. However, in this post, I use COBRApy, a python version of COBRA. More info on COBRA modules: https://opencobra.github.io/ This website also provides a great information on the need of COBRA.
+Before going into integrating these datasets (possibly in future posts), it is essential to understand the metabolic network models from informatics point of view. These days, the metabolic network models are built computationall using the genome sequence and homology based methods and further refined using other resources, e.g., manual curation using previous publications. The models built are then stored in json, xml, SBML formats for further computational analyses. More information on such an effort in _E. coli_ and other organisms can be found [here](https://www.sri.com/work/projects/ecocyc). 
 
-Most of the information provided here is already available at: https://cobrapy.readthedocs.io/en/stable/ 
+Here I focus on analyzing one such _E. coli_ metabolic network iAF1260 model using a mathematical technique called Flux Balance Analysis (FBA). FBA is an approach to computationally analyze the flow of metabolites in a metabolic network ([paper on FBA](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3108565/)). Such methods of using genome-scale metabolic network model to analyze the flow of metabolites generally are called [COBRA based methods](https://opencobra.github.io/).
 
-I used few modules from the above document to show how to 1. read the model, 2. generate optimal fluxes, 3. knock reactions, 4. change growth media, 5. print out required fluxes using the jupyter notebook. 
+Previously, in a different project at [Wilke lab](https://wilkelab.org/), we used matlab version of COBRA. Here, I use COBRApy, a python version of COBRA. Most of the information on the COBRApy modules used can be found [here](https://cobrapy.readthedocs.io/en/stable/) 
+
+I used some of the modules mentioned above to fit my research needs and specifically here, I show how to 1. read the metabolic network model, 2. generate optimal fluxes, 3. knock-out reactions, 4. change growth media, 5. report data using the jupyter notebook. 
 
 
 ```python
