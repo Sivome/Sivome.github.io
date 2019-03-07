@@ -5,7 +5,7 @@ permalink: /cv/
 ---
 Go to: | [Education](#EDUCATION) | [Programming Skills](#PROGRAMMING-SKILLS) | [Bioinformatics Tools](#BIOINFORMATICS-TOOLS) | [Professional Experience](#PROFESSIONAL-EXPERIENCE) | [Talks](#TALKS) | [Publications](#PUBLICATIONS) | [Conference Proceedings](#CONFERENCE-PROCEEDINGS) | [Posters](#POSTERS)
 
-### Viswanadham (Vish) Sridhara 
+## Viswanadham (Vish) Sridhara 
 Independent Contractor  
 Sivome LLC    
 Viswanadham.Sridhara@gmail.com  
