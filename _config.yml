@@ -18,7 +18,7 @@ description: >- # this means to ignore newlines until "baseurl:"
   All -OMICS is eventually Sivomics!!
 baseurl: "" # the subpath of your site, e.g. /blog
 url: "" # the base hostname & protocol for your site, e.g. http://example.com
-twitter_username: VishSridhara
+# twitter_username: VishSridhara
 github_username:  Viswam78
 
 # Build settings
