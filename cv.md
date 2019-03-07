@@ -1,19 +1,18 @@
 ---
-layout: page
-title: Resume
+layout: cv
+title: CV
 permalink: /cv/
 ---
-<!--Go to: | [Education](#EDUCATION) | [Programming Skills](#PROGRAMMING-SKILLS) | [Bioinformatics Tools](#BIOINFORMATICS-TOOLS) | [Professional Experience](#PROFESSIONAL-EXPERIENCE) | [Talks](#TALKS) | [Publications](#PUBLICATIONS) | [Conference Proceedings](#CONFERENCE-PROCEEDINGS) | [Posters](#POSTERS)-->
+# Viswanadham (Vish) Sridhara
 
-## Viswanadham (Vish) Sridhara
-Independent Contractor  
-Sivome LLC    
+## CONTACT
+
 Viswanadham.Sridhara@gmail.com  
 [Google Scholar](https://scholar.google.com/citations?hl=en&user=UBvhRHgAAAAJ&view_op=list_works&sortby=pubdate) | [LinkedIn](https://www.linkedin.com/in/viswanadham-sridhara-308263174) | [Github](https://github.com/viswam78)  
 
 
 
-### RESEARCH INTERESTS
+## RESEARCH INTERESTS
 
 I am a computational scientist with heavy math, modeling and simulation experience in engineering and life sciences domain. Post-PHD, I have 12+ years’ experience in analyzing high-throughput –molecular data including, next-generation sequencing based genomics/transcriptomics as well as mass-spectrometry based proteomics/metabolomics data. Recently, my focus is on using deep learning methods to analyze the high-dimensional -omics data to infer associations in the data.
 
@@ -21,7 +20,7 @@ Till date, my research work has resulted in ~20 peer-reviewed publications and n
 
 
 
-### EDUCATION
+## EDUCATION
 
 2003 - 2007, PhD, Electrical and Computer Engineering, ODU, Norfolk, VA  
 **Dissertation:** Molecular dynamics simulations to probe effects of ultra-short high-intensity electric pulses on biological suspensions  
@@ -30,14 +29,14 @@ Till date, my research work has resulted in ~20 peer-reviewed publications and n
 **Thesis:** Monte carlo analysis of millimeter-wave GaN Gunn diodes  
 
 
-### PROGRAMMING SKILLS
+## PROGRAMMING SKILLS
 
 Python, R, MATLAB   
 Git, Snakemake, Docker  
 
 
 
-### BIOINFORMATICS TOOLS
+## BIOINFORMATICS TOOLS
 
 GATK, BWA, Bowtie, Samtools, BEDtools  
 Byonic, PEAKS, Proteome Discoverer, OMSSA, MODa   
@@ -45,11 +44,12 @@ BioCyc, MetaCyc, GROMACS, NAMD, VMD
 
 
 
-### PROFESSIONAL EXPERIENCE  
+## PROFESSIONAL EXPERIENCE  
 
-#### Independent Consultant (Sivome LLC)  Oct 2018 - Present
-**Universities, Hospitals and Startups**    
 
+### Independent Consultant (Sivome LLC)
+**Universities, Hospitals and Startups**  
+Oct 2018 - Present  
 In my current role, I am working for a proteomics software company.
 
 In previous roles as Independent Consultant (part of 2016, 2017 and 2018) for MGH, WRI and biofuel startup  
@@ -62,33 +62,37 @@ In previous roles as Independent Consultant (part of 2016, 2017 and 2018) for MG
 • Integrated proteogenomics data to identify markers in laser capture microdissected breast tumor samples (Preliminary work published in AACR).  
 
 
-#### Bioinformatics Systems Developer March 2018 - November 2018    
+### Bioinformatics Systems Developer      
 **Booz Allen Hamilton**  
+March 2018 - November 2018    
 
 • Helped in automating preprocessing of gene expression data (microarray and RNA-seq) for placental datasets using raw data stored in NCBI’s GEO repository (PAT - Placental Atlas Tool).  
 • Improved analytics of differential expression, gene ontology and pathway analyses of the above preprocessed placental datasets (>20 RNA-seq and >300 microarray datasets).
 
 
-#### UT Southwestern Medical Center  August 2015 - April 2016
-**Computational Biologist**  
-   
+### Computational Biologist
+**UT Southwestern Medical Center**  
+August 2015 - April 2016  
+
 • Protein and post-translational modification identification using Proteome Discoverer, OMSSA, Sequest, MASCOT.  
 • Quantitative proteomics (SILAC, TMT) data analysis using MaxQuant, Proteome Discoverer.  
 • Bioinformatics proteomics consultant work with UT Southwestern investigators.  
 
-#### The University of Texas at Austin  December 2012 - August 2015 
-**Research Engineering/Scientist Associate V**  
+### Research Engineering/Scientist Associate V
+**The University of Texas at Austin**  
+December 2012 - August 2015  
 
  • Built machine learning models using LASSO regression to predict bacterial growth conditions from in-silico metabolic fluxes generated from metabolic network based flux balance analyses (FBA) methods.  
  • Proteomics and metabolic flux data analyses of mass-spectrometry based datasets. a.  Proteomics data is analyzed using new unrestricted PTM search methods. b. Metabolic flux data is analyzed using FiatFlux software.  
  • Molecular dynamics (MD) simulations for Bio-electrics applications  
-    a. Compute intense MD simulations to understand multiple nanopore formation in lipid bilayers using advanced high performance computing environment.  
-    b. MD simulations to understand effects of sodium (Na) and calcium (Ca) effects in pore formation within the biological suspensions.  
+  &nbsp;&nbsp;a. Compute intense MD simulations to understand multiple nanopore formation in lipid bilayers using advanced high performance computing environment.  
+  &nbsp;&nbsp;b. MD simulations to understand effects of sodium (Na) and calcium (Ca) effects in pore formation within the biological suspensions.  
  • Helped multiple labs with proteomics bioinformatics consulting and short-term contracts.  
  • Taught computational mass-spectrometry in Big Data Summer School organized by CCBB (Center for Computational Biology and Bioinformatics every summer – 4 day course)  
 
-#### National Center for Biotechnology Information (NCBI) June 2007 - January 2012  
-**Visiting Research Fellow**  
+### Visiting Research Fellow
+**National Center for Biotechnology Information (NCBI)**  
+June 2007 - January 2012  
 
  • Part of NCBI OMSSA (Open Mass Spectrometry Search Algorithm) project:  
     a. Improved noise filtering routines/filters to accommodate high-resolution mass-spectrometry data.  
@@ -105,17 +109,19 @@ In previous roles as Independent Consultant (part of 2016, 2017 and 2018) for MG
     b. Preliminary work in ASMS 2011 (oral presentation in computational mass-spectrometry).  
 
 
-#### Old Dominion University - Aerospace Engineering Summer '06 
-**Student Volunteer**  
+### Student Volunteer  
+**Old Dominion University - Aerospace Engineering**  
+Summer '06
 • Helped improve programming drives for a test bogie run on MAGLEV (train using magnetic levitation).
 
 
-#### Siemens Limited. Siemens Vdo Automotive  Summer '04
-**Intern**  
+### Intern
+**Siemens Limited. Siemens Vdo Automotive**  
+Summer '04
 • Finite element analyses (2D) to improve fuel injection solenoid models using Ansoft software.  
 
 
-### TALKS
+## TALKS
 
 1. Large-scale analysis of PTMs @ UT-Austin, Thermo Fisher Scientific, MD Anderson Cancer Center
 
@@ -134,7 +140,7 @@ In previous roles as Independent Consultant (part of 2016, 2017 and 2018) for MG
 8. Time Domain Dielectric Spectroscopy Study of HL-60 cells induced by Ultra-Short pulses @ Frank Reidy Research Center for Bioelectrics
 
 
-### PUBLICATIONS
+## PUBLICATIONS
 
 1. Tosi, L., Sridhara, V., Yang, Y., et. al., “Engineered DNA Capture Probes for Massively Multiplexed Cloning of Kilobase-Sized Genome Regions”, Nature Biomedical Engineering, 2017;1. pii: 0092. doi: 10.1038/s41551-017-0092. Epub 2017 Jun 26.
 
@@ -177,7 +183,7 @@ In previous roles as Independent Consultant (part of 2016, 2017 and 2018) for MG
 
 
 
-### CONFERENCE PROCEEDINGS
+## CONFERENCE PROCEEDINGS
 
 1. Sridhara, V., Joshi, R.P., Hu, Q., Nguyen, A., and Schoenbach, K.H. “Simulations of cell response to high intensity, ultrashort electrical pulses” (invited paper) Bio-Electromagnetic Society Conference, Cancun, Mexico, June 11-15, 2006.
 
@@ -187,7 +193,7 @@ In previous roles as Independent Consultant (part of 2016, 2017 and 2018) for MG
 
 
 
-### POSTERS
+## POSTERS
 
 1. Sridhara, V et. al., “Integrated proteogenomic analysis of laser capture microdissected breast tumors”, AACR 2017.
 
