@@ -4,7 +4,7 @@ title: Resume
 permalink: /cv/
 ---
 ### Viswanadham (Vish) Sridhara 
-
+[Research Interests](#RESEARCH-INTERESTS)
 
 [Google Scholar](https://scholar.google.com/citations?hl=en&user=UBvhRHgAAAAJ&view_op=list_works&sortby=pubdate) | [LinkedIn](https://www.linkedin.com/in/viswanadham-sridhara-308263174) | [Github](https://github.com/viswam78)
 
