@@ -7,21 +7,21 @@ permalink: /about/
 ## Ola!
 ### Namaste!
 
-Given my interests in -omics technologies, and large-scale data analyses, I started using lot of Python / R for my work. Sometimes, I need to go back and re-use some of the scripts I created. To keep the search process easier for myself, I created this space.
+Greetings! My educational background is in engineering, then went into life sciences domain to do some fun stuff (using simulations, models, lot of cluster computing) and wanted to share some of the things I did with you all, hence this space! This also helps me advertise the work I do.
 
-Some of the topics I'm interested are:  
+I like data and I like biology. Over the last few years, there is an exponential rise in availability of high-dimensional biological datasets, thanks to open-source efforts. This allowed me to easily access a data set from a publicly available repository, come up with a research problem, write scripts to analyze/visualize towards reaching the goal of understanding the data a bit more!
+
+Topics, I'm interested:
 Proteomics  
 Genomics  
-Systems biology w.r.t metabolic network models  
+Systems biology
+Molecular dynamics simulations  
 
-Personally, I see the data coming from the above technologies as some kind of numbers/patterns and to analyze such patterns, I find some of the below tools very helpful!
 
-Python modules such as numpy, scipy, scikit-learn, keras, for data-analysis (keras with theano/tf for deep learning as well!)  
-and modules like matplot lib for visualization  
+For most of this, I use Python / R.
 
-R packages like dplyr, plyr in the tidyverse domain for data-analysis  
-and packages like ggplot2, cowplot for visualization  
+Some of the Python modules I use often are numpy, scipy, scikit-learn, keras, matplotlib  
 
-If you're interested in some of the work I did in the past and the kind of work I'm currently doing, please refer to my [CV](https://sivome.github.io/cv/)
+Likewise, some of the R packages I use are dplyr, plyr, ggplot2, cowplot  
 
-By the way, I'm Vish! :-)
+If you're interested to know more, refer to my [CV](https://sivome.github.io/cv/) or go through the [blog posts](https://sivome.github.io/).

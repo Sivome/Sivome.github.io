@@ -5,7 +5,7 @@ permalink: /cv/
 ---
 Go to: | [Education](#EDUCATION) | [Programming Skills](#PROGRAMMING-SKILLS) | [Bioinformatics Tools](#BIOINFORMATICS-TOOLS) | [Professional Experience](#PROFESSIONAL-EXPERIENCE) | [Talks](#TALKS) | [Publications](#PUBLICATIONS) | [Conference Proceedings](#CONFERENCE-PROCEEDINGS) | [Posters](#POSTERS)
 
-## Viswanadham (Vish) Sridhara 
+## Viswanadham (Vish) Sridhara
 Independent Contractor  
 Sivome LLC    
 Viswanadham.Sridhara@gmail.com  
@@ -210,4 +210,3 @@ In previous roles as Independent Consultant (part of 2016, 2017 and 2018) for MG
 10. Sridhara, V., et al., “Molecular Dynamics Simulations to Probe Electric-Pulse Induced Micelle Formation and Ion-Channel Regulation in Biological Cells”, ODU RD 2006 (Honorable mention)
 
 11. Hu, Q., et al., “Dynamical modeling studies of model membranes and cellular response to nanosecond ultrashort pulses”, ODU RD 2005(Poster awarded 3rd place)
-

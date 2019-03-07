@@ -1,9 +1,11 @@
-_site
-.sass-cache
-.jekyll-metadata
-.ipynb_checkpoints
-_drafts
 genomics
 proteomics
 statistics
 systems
+_site
+_drafts
+_layouts
+.sass-cache
+.jekyll-metadata
+.ipynb_checkpoints
+
