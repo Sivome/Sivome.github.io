@@ -1,8 +1,9 @@
 ---
-layout: cv
+layout: page
 title: CV
 permalink: /cv/
 ---
+# [PDF](Sridhara_CV.pdf)
 # Viswanadham (Vish) Sridhara
 
 ## CONTACT

@@ -23,4 +23,4 @@ Some of the Python modules I use often are numpy, scipy, scikit-learn, keras, ma
 
 Likewise, some of the R packages I use are dplyr, plyr, ggplot2, cowplot.  
 
-If you're interested to know more, refer to my [CV](https://sivome.github.io/cv/) or go through the [blog posts](https://sivome.github.io/).
+If you're interested to know more, refer to my [CV](/cv) or go through the [blog posts](/).
