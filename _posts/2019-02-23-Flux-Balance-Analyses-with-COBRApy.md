@@ -13,7 +13,7 @@ Systematically analyzing such datasets is critical to draw meaningful observatio
 
 Metabolic network models provide an interesting way to overlay this diverse information i.e., data sets emerging from different technologies a.k.a NGS based transcripts, mass-spec baed protein abundances, and 13C mass-spec based metabolic fluxes. 
 
-Before going into integrating these datasets (possibly in future posts), it is essential to understand the metabolic network models from informatics point of view. These days, the metabolic network models are built computationall using the genome sequence and homology based methods and further refined using other resources, e.g., manual curation using previous publications. The models built are then stored in json, xml, SBML formats for further computational analyses. More information on such an effort in _E. coli_ and other organisms can be found [here](https://www.sri.com/work/projects/ecocyc). 
+Before going into integrating these datasets (possibly in future posts), it is essential to understand the metabolic network models from informatics point of view. These days, the metabolic network models are built computationally using the genome sequence and homology based methods and further refined using other resources, e.g., manual curation using previous publications. The models built are then stored in json, xml, SBML formats for further computational analyses. More information on such an effort in _E. coli_ and other organisms can be found [here](https://www.sri.com/work/projects/ecocyc). 
 
 Here I focus on analyzing one such _E. coli_ metabolic network iAF1260 model using a mathematical technique called Flux Balance Analysis (FBA). FBA is an approach to computationally analyze the flow of metabolites in a metabolic network ([paper on FBA](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3108565/)). Such methods of using genome-scale metabolic network model to analyze the flow of metabolites generally are called [COBRA based methods](https://opencobra.github.io/).
 
@@ -767,7 +767,7 @@ iAF1260_ecoli_model.metabolites.atp_c.summary()
     8%     8     PFK       atp_c + f6p_c --> adp_c + fdp_c + h_c
     
 
-Feel free to contact me if you need more information or if you want to set-up such a study! I hope this helped.
+Feel free to contact me if you need more information or if you want to set-up such a study! I hope this is helpful.
 ```python
 
 ```
