@@ -38,11 +38,13 @@ The above is a truncated file of a larger mgf file. Each mgf file has few thousa
 
 Some of the features found in the mgf format are the peptide mass [PEPMASS], charge state [CHARGE], scan number, retention time and the peak lists. However different tools can result in different mgf formats, however you'll always see peak lists, peptide mass and the charge state of the peptide.
 
-OMSSA uses the PEPMASS * CHARGE (i.e., 519.7517 * 2 as MH+) as possible peptide mass, and then looks for the match in the database. The sample was digested with trypsin to generate the current raw file. Trypsin cleaves the protein at K/R amino acids. To mimic this situation in-silico, OMSSA digests the protein sequence at all K/R seen (both for targets and decoys), and looks for in=silico peptides that have the same mass as observed mass. If the in-silico peptide matches the observed mass from MGF file, it scores the peptide. In OMSSA, you can think of this score as E-value (similar to BLAST scoring). It repeats this process for all the peak lists in the mgf file.
+OMSSA uses the PEPMASS * CHARGE (i.e., 519.7517 * 2 as MH+) as possible peptide mass, and then looks for the match in the database. The sample was digested with trypsin to generate the current raw file. Trypsin cleaves the protein at K/R amino acids. To mimic this situation in-silico, OMSSA digests the protein sequence (in the fasta file) at all K/R seen (both for targets and decoys), and looks for in-silico peptides that have the same mass as observed mass. If the in-silico peptide matches the observed mass from MGF file, it scores the peptide. In OMSSA, you can think of this score as E-value (similar to BLAST scoring). It repeats this process for all the peak lists in the mgf file.
 
 Since this is Yeast data, we need Yeast fasta file. If possible, pick a strain that most likely represents the sample under study. There are multiple databases to get this fasta and in the previous blogs, I mentioned about the NCBI resources. This time, let's use a protein database [UniProt](https://www.uniprot.org/).
 
-There are different versions of the database depending on the kinds of analyses you're doing. Here, I used SwissProt version of [Baker's yeast](https://www.uniprot.org/taxonomy/559292). [SwissProt](https://web.expasy.org/docs/swiss-prot_guideline.html) has manually curated and very well reviewed protein sequences. Here is how the fasta file looks like:
+Within UniProt, there are different variants of protein sequence. Here, I used SwissProt version of [Baker's yeast](https://www.uniprot.org/taxonomy/559292). [SwissProt](https://web.expasy.org/docs/swiss-prot_guideline.html) has manually curated and very well reviewed protein sequences.
+
+Let's take a look at the truncated version of the SwissProt fasta file:
 
 ```console
 C:\Users\Viswa\blastDb>head -n 20 S288c.fasta
@@ -284,7 +286,7 @@ omssa_output[' IsMod'] = omssa_output[' Mods'].str.match('oxidation', na=False)
 ```
 If the 'IsMod' column is True, then the peptide is oxidized.
 
-Let's print out the modified peptide spectral matches here.
+Let's print out the modified peptide spectral matches here. If you look closely at the Peptide column, you will see a lowercase M i.e., *m*. This represents that particular Methionine is oxidized. If you scroll the below table to the right, you will see that the first Peptide _SKQEASQmAAmAEK_ is modified at 2 positions at M:8 and M:11 as given in the Mods column.
 
 ```python
 mods_only = omssa_output[omssa_output[' IsMod'].values]
@@ -621,14 +623,6 @@ ax.set_title('Reverse hits distribution')
 fig.tight_layout
 ```
 
-
-
-
-    <bound method Figure.tight_layout of <Figure size 432x288 with 1 Axes>>
-
-
-
-
 ![png](figure\reverse_hits_score.png)
 
 From the above distribution, it is clear that there are no reverse hits with E-value lower than 1e-2. So, we can safely consider all the hits below E-value of 1e-2 to be genuine.
@@ -654,14 +648,6 @@ ax.set_ylabel('Counts')
 ax.set_title('Target hits distribution')
 fig.tight_layout
 ```
-
-
-
-
-    <bound method Figure.tight_layout of <Figure size 432x288 with 1 Axes>>
-
-
-
 
 ![png](figure\filtered_hits_score.png)
 
@@ -841,14 +827,6 @@ ax.set_title("Difference of observed and expected peptide mass")
 fig.tight_layout
 ```
 
-
-
-
-    <bound method Figure.tight_layout of <Figure size 432x288 with 1 Axes>>
-
-
-
-
 ![png](figure\deltaPPM.png)
 
 Another characteristic is the length of the peptide. Here, the data is from a fragmentation technique called Collision Induced Dissociation (CID). There are other fragmentation techniques (like ETD) that generate longer peptides. Longer peptides generally mean higher charge states (i.e, 4+, 5+, 6+ are also common in such ETD spectra). Below, I show the distribution of peptide length and peptide charge.
@@ -864,14 +842,6 @@ ax.set_ylabel('Counts')
 fig.tight_layout
 ```
 
-
-
-
-    <bound method Figure.tight_layout of <Figure size 432x288 with 1 Axes>>
-
-
-
-
 ![png](figure\Length.png)
 
 
@@ -886,18 +856,9 @@ ax.set_ylabel('Counts')
 fig.tight_layout
 ```
 
-
-
-
-    <bound method Figure.tight_layout of <Figure size 432x288 with 1 Axes>>
-
-
-
-
 ![png](figure\Charge.png)
 
-
-
-```python
-
-```
+I hope this primer on reporting proteomics results is helpful
+1. to understand which sections of proteomics results are useful to visualize,
+2. to learn how to use jupyter notebook to make this visualization simpler and finally
+3. to know what to report when presenting the proteomics search results.
