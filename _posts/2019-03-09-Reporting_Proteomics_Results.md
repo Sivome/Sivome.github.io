@@ -272,7 +272,7 @@ ax.set_title('Score distribution')
 fig.tight_layout
 ```
 
-![png](figure\all_hits_score.png)
+![png](all_hits_score.png)
 
 The lower the E-value, the better. Since we applied log10 transformation, a value of -5 on the x-axis represents an E-value of 1e-5.
 
@@ -623,7 +623,7 @@ ax.set_title('Reverse hits distribution')
 fig.tight_layout
 ```
 
-![png](figure\reverse_hits_score.png)
+![png](reverse_hits_score.png)
 
 From the above distribution, it is clear that there are no reverse hits with E-value lower than 1e-2. So, we can safely consider all the hits below E-value of 1e-2 to be genuine.
 
@@ -649,7 +649,7 @@ ax.set_title('Target hits distribution')
 fig.tight_layout
 ```
 
-![png](figure\filtered_hits_score.png)
+![png](filtered_hits_score.png)
 
 Here are top few hits of the target list. If you see the same peptide with the same scan, it most likely means it is coming from a different protein that share the same peptide. This is another down-stream analyses problem that needs to be done correctly. I will write about this later.
 
@@ -827,7 +827,7 @@ ax.set_title("Difference of observed and expected peptide mass")
 fig.tight_layout
 ```
 
-![png](figure\deltaPPM.png)
+![png](deltaPPM.png)
 
 Another characteristic is the length of the peptide. Here, the data is from a fragmentation technique called Collision Induced Dissociation (CID). There are other fragmentation techniques (like ETD) that generate longer peptides. Longer peptides generally mean higher charge states (i.e, 4+, 5+, 6+ are also common in such ETD spectra). Below, I show the distribution of peptide length and peptide charge.
 
@@ -842,7 +842,7 @@ ax.set_ylabel('Counts')
 fig.tight_layout
 ```
 
-![png](figure\Length.png)
+![png](Length.png)
 
 
 
@@ -855,7 +855,7 @@ ax.set_xlabel('Charge')
 ax.set_ylabel('Counts')
 fig.tight_layout
 ```
-![png](figure\Charge.png)
+![png](Charge.png)
 
 I hope this primer on reporting proteomics results is helpful
 1. to understand which sections of proteomics results are useful to visualize,
