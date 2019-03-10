@@ -271,7 +271,7 @@ fig.tight_layout
 
 
 
-![png](output_5_1.png)
+![png](figure/all_hits_score.png)
 
 The lower the E-value the better. Since we applied log10 transformation, a value of -5 on the x-axis represents 1e-5. Left hits have a high probability of being correct than if you go right.
 
@@ -626,7 +626,7 @@ fig.tight_layout
 
 
 
-![png](output_12_1.png)
+![png](figure/reverse_hits_score.png)
 
 From the above distribution, it is clear that there are no reverse hits with E-value lower than 1e-2. So, we can safely consider all the hits below E-value of 1e-2 to be genuine.
 
@@ -660,7 +660,7 @@ fig.tight_layout
 
 
 
-![png](output_14_1.png)
+![png](figure/filtered_hits_score.png)
 
 Here are top few hits of the target list. If you see the same peptide with the same scan, it most likely means it is coming from a different protein that share the same peptide. This is another down-stream analyses problem that needs to be done correctly. I will write about this later.
 
@@ -846,7 +846,7 @@ fig.tight_layout
 
 
 
-![png](output_16_1.png)
+![png](figure/deltaPPM.png)
 
 Another characteristic is the length of the peptide. Here, the data is from a fragmentation technique called Collision Induced Dissociation (CID). There are other fragmentation techniques (like ETD) that generate longer peptides. Longer peptides generally mean higher charge states (i.e, 4+, 5+, 6+ are also common in such ETD spectra). Below, I show the distribution of peptide length and peptide charge.
 
@@ -869,7 +869,7 @@ fig.tight_layout
 
 
 
-![png](output_17_1.png)
+![png](figure/Length.png)
 
 
 
@@ -891,7 +891,7 @@ fig.tight_layout
 
 
 
-![png](output_18_1.png)
+![png](figure/Charge.png)
 
 
 
