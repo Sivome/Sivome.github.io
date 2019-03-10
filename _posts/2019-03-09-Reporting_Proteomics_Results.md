@@ -5,10 +5,10 @@ layout: post
 categories: Proteomics
 ---
 
-As a continuation to my previous blog on [Proteomics with OMSSA](https://sivome.github.io/proteomics/2019/03/02/Proteomics-with-OMSSA.html), here I extend the analyses to look at a open-access yeast data set. Few open-source efforts to get the mass-spectrometry based proteomics efforts are [PeptideAtlas](http://www.peptideatlas.org/), [MassIVE](https://massive.ucsd.edu/ProteoSAFe/static/massive.jsp), [PRIDE](https://www.ebi.ac.uk/pride/archive/), [Proteome Exchange Consortium](http://www.proteomexchange.org/). I used Proteome Exchange Consortium to get this dataset. The original format of the dataset was RAW. I converted this complex version to a much simpler MGF version for the current blog.
+As a continuation to my previous blog on [Proteomics with OMSSA](https://sivome.github.io/proteomics/2019/03/02/Proteomics-with-OMSSA.html), here I extend the analyses to look at an open-access yeast data set. Few open-source efforts to get the mass-spectrometry based proteomics data are [PeptideAtlas](http://www.peptideatlas.org/), [MassIVE](https://massive.ucsd.edu/ProteoSAFe/static/massive.jsp), [PRIDE](https://www.ebi.ac.uk/pride/archive/), [Proteome Exchange Consortium](http://www.proteomexchange.org/). For the current blog, I used a data set from Proteome Exchange Consortium. The original format of the dataset was RAW. I converted this complex version to a much simpler MGF version for the current blog. A nice article on different data formats can be found [here](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3518119/).
 
 
-Let's take a look at the actual data from the mass-spec. As I mentioned earlier, the current dataset used is MGF version i.e., mascot generic version. This is how a sample MGF file looks like:
+Let's take a look at the mgf file:
 
 ```console
 C:\Users\Viswa\folder_for_analyses>head -n 20 Yeast.mgf
@@ -33,12 +33,16 @@ RTINSECONDS=1.878
 294.149 14.525609
 300.068 33.84702
 ```
-As you can see, the peptide mass [PEPMASS], charge state [CHARGE], scan number, retention time and the peak lists are present in this format. OMSSA uses the PEPMASS*CHARGE as possible observed peptide mass, and then looks for the peptide that matches this mass. In this case, the enzyme used to digest the protein is trypsin. Since trypsin cleaves at K/R, the program digests the protein sequence (both for targets and decoys), and if the in-silico peptide from the digest matches the PEPMASS*CHARGE from MGF file, it scores the peptide. In OMSSA, you can think of this score as E-value (similar to BLAST scoring). It does this for all the scans in the mgf file and scores all the possible peptide matches. This can be understood easily from the analyses below.
 
+The above is a truncated file of a larger mgf file. Each mgf file has few thousands of such scans in most scenarios.
 
-We also need a fasta file to run the database serach. We call it a database search, if we know that there is an available protein sequence. Since this is Yeast data, we need Yeast fasta file and this is one of the species that has multiple fasta file. You should obviously pick the strain that is closer to what your sample represents.
+Some of the features found in the mgf format are the peptide mass [PEPMASS], charge state [CHARGE], scan number, retention time and the peak lists. However different tools can result in different mgf formats, however you'll always see peak lists, peptide mass and the charge state of the peptide.
 
-There are multiple places to get this fasta and in the previous blogs, I mentioned about the NCBI resources. This time, let's focus on a different repository called [UniProt](https://www.uniprot.org/). This is a resource, as the name says, provides information on proteins that is comprehensive, well annotated. There are different versions of the database depending on the kinds of analyses you're doing. Here, I used [Baker's yeast](https://www.uniprot.org/taxonomy/559292). There are few options of which variant of the database you can pick in UniProt. One such variant is SwissProt that has reviewed protein sequences. Here is how the fasta file looks like:
+OMSSA uses the PEPMASS * CHARGE (i.e., 519.7517 * 2 as MH+) as possible peptide mass, and then looks for the match in the database. The sample was digested with trypsin to generate the current raw file. Trypsin cleaves the protein at K/R amino acids. To mimic this situation in-silico, OMSSA digests the protein sequence at all K/R seen (both for targets and decoys), and looks for in=silico peptides that have the same mass as observed mass. If the in-silico peptide matches the observed mass from MGF file, it scores the peptide. In OMSSA, you can think of this score as E-value (similar to BLAST scoring). It repeats this process for all the peak lists in the mgf file.
+
+Since this is Yeast data, we need Yeast fasta file. If possible, pick a strain that most likely represents the sample under study. There are multiple databases to get this fasta and in the previous blogs, I mentioned about the NCBI resources. This time, let's use a protein database [UniProt](https://www.uniprot.org/).
+
+There are different versions of the database depending on the kinds of analyses you're doing. Here, I used SwissProt version of [Baker's yeast](https://www.uniprot.org/taxonomy/559292). [SwissProt](https://web.expasy.org/docs/swiss-prot_guideline.html) has manually curated and very well reviewed protein sequences. Here is how the fasta file looks like:
 
 ```console
 C:\Users\Viswa\blastDb>head -n 20 S288c.fasta
@@ -67,11 +71,14 @@ C:\Users\Viswa\blastDb>
 ```
 
 You can download the fasta file [here](https://www.uniprot.org/uniprot/?query=S288c+AND+reviewed%3Ayes&sort=score).
-if you read the [earlier blog](https://sivome.github.io/proteomics/2019/03/02/Proteomics-with-OMSSA.html), it is easy to figure out how to use the fasta file for proteomics search with OMSSA. There is something called target-decoy database that is recommended to use for proteomics search. As the name says, we need to append a decoy version of the fasta file to the original fasta file to create this target-decoy database. OMSSA then scores the peaks in the mgf file to the peptides obtained from the protein sequences from target+decoy version. OMSSA or other similar database search program then uses the metrics from decoy hits properly choosing the _true hits_. More information on the target-decoy database search [here](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC2922680/).
 
-[There is a open-source perl script](https://edwardslab.bmcb.georgetown.edu/mascot/help/decoy_help.html) available that does this job of appending decoy version of the fasta file to the target fasta file. The decoy version, in the current blog, will have ###REV### appended to the protein name. You can do a simple string match to this _###REV###_ to identify and filter out these hits, post-OMSSA search. Here, I will not use a stringent FDR approach, but use a simple filter based on decoy hits, i.e., cut-off of E-value (BLAST-like score used in OMSSA searches).
+if you read the [earlier blog](https://sivome.github.io/proteomics/2019/03/02/Proteomics-with-OMSSA.html), it is easy to figure out how to use the fasta file for proteomics search with OMSSA.
 
-I already talked about how to run an OMSSA search in my earlier blog, and there is a [github repo](https://github.com/viswam78/searchOMSSA) to set up the OMSSA searches. Here, I want to focus on how to best report the actual proteomics search results.
+There is an additional step that needs to be done before the OMSSA search. This step is needed to get better heuristics on the search engine results. Instead of using only the protein sequences found in the SwissProt database, we additionally append the _reverse_ version of the protein sequences to the original fasta file. This is then called target-decoy database. OMSSA then scores the peaks in the mgf file to the peptides obtained from the protein sequences from **target + decoy** version. OMSSA or other similar database search program then uses the metrics from decoy hits to properly filter out the possible false positives, eventually choosing *only* the _true hits_. More information on the target-decoy database search [here](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC2922680/).
+
+[There is an open-source perl script](https://edwardslab.bmcb.georgetown.edu/mascot/help/decoy_help.html) available that does this job of appending decoy version of the fasta file to the target fasta file. The decoy version, in the current blog, will have ###REV### appended to the protein name. You can do a simple string match of the omssa output search results to this _###REV###_ string to identify and filter out these reverse hits. Here, I will not use a stringent FDR approach as described in the above paper, but use a simple filter based on decoy hits.
+
+I already talked about how to run an OMSSA search in my earlier blog, and there is a [github repo](https://github.com/viswam78/searchOMSSA) to set up the OMSSA searches. So, let's look at analyzing OMSSA output and report the data using Jupyter Notebook. For the current blog, I converted the original python notebook (.pynb) to markdown and added the text! [The markdown, along with figures are then transferred to a github repo which then using jekyll pages is presented here as a blog](https://sivome.github.io/).
 
 
 
@@ -93,10 +100,10 @@ Here, we read the OMSSA output into a pandas data frame.
 ```python
 omssa_output = pd.read_csv("S288c_run.csv")
 ```
-
+If you look at the Peptide column below, the first 2 columns have the same peptide! However, if you notice the Accession, you see that these represent 2 different proteins. Given a peptide hit, it is not trivial which protein it belongs to and there is lot of research in that area, which I will cover at a later time.
 
 ```python
-omssa_output.head() # Talk about different accessions?
+omssa_output.head()
 ```
 
 
@@ -257,30 +264,26 @@ fig, ax = plt.subplots()
 plt.hist(np.log10(eps + omssa_output[' E-value']), bins = 100)
 loc = ticker.MultipleLocator(base=2) # thanks again to google!
 ax.xaxis.set_major_locator(loc)
-ax.set_xlabel('Score in E-value')
+ax.set_xlabel('Log10 E-value')
 ax.set_ylabel('Counts')
 ax.set_title('Score distribution')
 fig.tight_layout
 ```
 
-
-
-
-    <bound method Figure.tight_layout of <Figure size 432x288 with 1 Axes>>
-
-
-
-
 ![png](figure\all_hits_score.png)
 
-The lower the E-value the better. Since we applied log10 transformation, a value of -5 on the x-axis represents 1e-5. Left hits have a high probability of being correct than if you go right.
+The lower the E-value, the better. Since we applied log10 transformation, a value of -5 on the x-axis represents an E-value of 1e-5.
 
-In the dataset, we also included oxidation as a variable modification. What this means is that the program looks for +16Da on Met to make a call of the peptide being Met Oxidized or not. We can create a new column called "IsMod" that tells us if there is oxidiaton or not. If the IsMod is True, then there is oxidation on the peptide.
+In the OMSSA search, we also searched for oxidation of methionine. This is one of the most common modifications that is present in mass-spec based proteomics experiment. The program also considers other modifications and can be input using the appropriate argument.
+
+To filter out the peptides that are oxidized easily, you can create a new column called "IsMod" and add to dataframe.
 
 ```python
 # Add IsMod column to see where oxidation is
 omssa_output[' IsMod'] = omssa_output[' Mods'].str.match('oxidation', na=False)
 ```
+If the 'IsMod' column is True, then the peptide is oxidized.
+
 Let's print out the modified peptide spectral matches here.
 
 ```python
