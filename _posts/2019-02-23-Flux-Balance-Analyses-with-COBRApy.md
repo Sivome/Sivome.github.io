@@ -13,7 +13,7 @@ Systematically analyzing such datasets is critical to draw meaningful observatio
 
 Metabolic network models provide an interesting way to overlay this diverse information i.e., data sets emerging from different technologies a.k.a NGS based transcripts, mass-spec baed protein abundances, and 13C mass-spec based metabolic fluxes. 
 
-Before going into integrating these datasets (possibly in future posts), it is essential to understand the metabolic network models from informatics point of view. These days, the metabolic network models are built computationall using the genome sequence and homology based methods and further refined using other resources, e.g., manual curation using previous publications. The models built are then stored in json, xml, SBML formats for further computational analyses. More information on such an effort in _E. coli_ and other organisms can be found [here](https://www.sri.com/work/projects/ecocyc). 
+Before going into integrating these datasets (possibly in future posts), it is essential to understand the metabolic network models from informatics point of view. These days, the metabolic network models are built computationally using the genome sequence and homology based methods and further refined using other resources, e.g., manual curation using previous publications. The models built are then stored in json, xml, SBML formats for further computational analyses. More information on such an effort in _E. coli_ and other organisms can be found [here](https://www.sri.com/work/projects/ecocyc). 
 
 Here I focus on analyzing one such _E. coli_ metabolic network iAF1260 model using a mathematical technique called Flux Balance Analysis (FBA). FBA is an approach to computationally analyze the flow of metabolites in a metabolic network ([paper on FBA](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3108565/)). Such methods of using genome-scale metabolic network model to analyze the flow of metabolites generally are called [COBRA based methods](https://opencobra.github.io/).
 
@@ -22,6 +22,7 @@ Previously, in a different project at [Wilke lab](https://wilkelab.org/), we use
 I used some of the modules mentioned above to fit my research needs and specifically here, I show how to 1. read the metabolic network model, 2. generate optimal fluxes, 3. knock-out reactions, 4. change growth media, 5. report data using the jupyter notebook. 
 
 
+Let's import modules needed. cobra is a module needed to analyze different metabolic network models.
 ```python
 from __future__ import print_function
 import cobra
@@ -29,7 +30,7 @@ import os
 from os.path import join
 ```
 
-
+The model we'll analyze is iAF1260.
 ```python
 sbml_path = join("Data","iAF1260.xml.gz")
 print(sbml_path)
@@ -39,12 +40,12 @@ print(sbml_path)
     Data\iAF1260.xml.gz
     
 
-
+The format of the model is SBML. SBML stands for systems biology markup model. More info [here](https://en.wikipedia.org/wiki/SBML)
 ```python
 iAF1260_ecoli_model = cobra.io.read_sbml_model(sbml_path)
 ```
 
-
+The model.optimize() call is the crux of the analyses. Given the objective function, this optimize find a feasible solution i.e., solution here is a vector of in-silico metabolic fluxes.
 ```python
 # Here the objective function is biomass and optimize function calculates the fluxes to get the max biomass (this can be changed)
 iAF1260_ecoli_model.optimize()
@@ -138,7 +139,7 @@ iAF1260_ecoli_model.optimize()
 
 
 
-
+The function model.summary() prints out the exchange fluxes, along with the optimized solution. In this case, objective function we're trying to maximize is the model growth (i.e., Biomass) and looks like the value is 0.737.
 ```python
 iAF1260_ecoli_model.summary()
 ```
@@ -163,7 +164,7 @@ iAF1260_ecoli_model.summary()
     zn2_e       0.00233
     
 
-
+We can also knowck-out reactions and re-run the optimize function and calculate the new fluxes.
 ```python
 # remove nitrogen source and look at Biomass objective function
 # here the only nitrogen source seems to be nh4_e.
@@ -271,7 +272,7 @@ iAF1260_ecoli_model = cobra.io.read_sbml_model(sbml_path)
 
 ```
 
-
+We can also control the concentration of the media to mimic real-situations. The values adjusted could reflect generally used media such as minimal media etc.
 ```python
 # change glucose source fluxes to different values and see how it affects the objective function
 iAF1260_ecoli_model.medium
@@ -305,7 +306,7 @@ iAF1260_ecoli_model.medium
 
 
 
-
+This is one of the simpler ways to change the concentration. In this specific case, initially the glucose concentration in the media is 8. Here, we read all the media related fluxes to a vector, change the vector and initialize the media with this new vector. Below, we change the concentration from 8 to 20.
 ```python
 # currently EX_glc__D_e is at 8, change it to 20 (Instead of knocking out NH4tex, this is another way of changing the source)
 # copy the mediums, change the values and put the medium back in the model (there might be simpler way)
@@ -407,7 +408,7 @@ iAF1260_ecoli_model.optimize()
 
 
 
-
+Recalculated fluxes with the new *glucose concentration*.
 ```python
 iAF1260_ecoli_model.summary()
 ```
@@ -432,14 +433,14 @@ iAF1260_ecoli_model.summary()
     zn2_e       0.00385
     
 
-
+If we plan to suck out glucose from the _E. coli_ model?
 ```python
 # Repeat the above by changing it to -20 (see the negative sign)
 medium["EX_glc__D_e"] = -20
 iAF1260_ecoli_model.medium = medium
 ```
 
-
+Optimization seems to result in infeasible solution. More information on how FBA analyses is done, please refer to the [original paper by Orth J. D. et. al.](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3108565/)
 ```python
 iAF1260_ecoli_model.optimize()
 ```
@@ -454,7 +455,7 @@ iAF1260_ecoli_model.optimize()
 
 
 
-
+Let's take the glucose concentration back to 8.
 ```python
 # Back to original value of 8
 medium["EX_glc__D_e"] = 8
@@ -553,7 +554,7 @@ iAF1260_ecoli_model.optimize()
 </div>
 
 
-
+To get an idea of energy production:
 
 ```python
 # Get a sense of energy production and related features
@@ -586,7 +587,7 @@ iAF1260_ecoli_model.metabolites.atp_c.summary()
     1%    0.687  R1PK        atp_c + r1p_c --> adp_c + h_c + r15bp_c
     
 
-
+Initially we used the default optimization function i.e., biomass maximization. With FBA, you can also change this objective function to mimic your study. For example, you can find new set of fluxes when maximizing ATPM.
 ```python
 # Instead of maximizing biomass, we can change the objective function to maximize ATPM
 iAF1260_ecoli_model.objective = "ATPM"
@@ -614,7 +615,7 @@ iAF1260_ecoli_model.reactions.get_by_id("ATPM").lower_bound
 
 
 
-
+Most likely, the lower and upper bound of such reactions would be set to experimentally defined value (manual curation). In order to find the max/min, you should set the upper and lower bound values to reasonable values.
 ```python
 # Looks like the ATPM upper bound and lower bound is fixed at 8.39.
 # If we run the model now, the optimum calculated will be same.
@@ -741,7 +742,7 @@ iAF1260_ecoli_model.optimize()
 
 
 
-
+The ATPM seems to change significantly. This might not reflect true scenario and might be artifact. However the benefits of using models is to quickly simulate to see if there is anything unusual before designing such experiments.
 ```python
 # Looks like the ATPM value went from 9 all the way to 95 (based on constraints on other reactions)
 # Summary of atp reactions with this new objective function is
@@ -766,7 +767,7 @@ iAF1260_ecoli_model.metabolites.atp_c.summary()
     8%     8     PFK       atp_c + f6p_c --> adp_c + fdp_c + h_c
     
 
-
+Feel free to contact me if you need more information or if you want to set-up such a study! I hope this is helpful.
 ```python
 
 ```
