@@ -855,7 +855,6 @@ ax.set_xlabel('Charge')
 ax.set_ylabel('Counts')
 fig.tight_layout
 ```
-
 ![png](figure\Charge.png)
 
 I hope this primer on reporting proteomics results is helpful
