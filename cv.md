@@ -9,13 +9,15 @@ permalink: /cv/
 ## CONTACT
 
 Viswanadham.Sridhara@gmail.com  
-[Google Scholar](https://scholar.google.com/citations?hl=en&user=UBvhRHgAAAAJ&view_op=list_works&sortby=pubdate) | [LinkedIn](https://www.linkedin.com/in/viswanadham-sridhara-308263174) | [Github](https://github.com/viswam78)  
+[Google Scholar](https://scholar.google.com/citations?hl=en&user=UBvhRHgAAAAJ&view_op=list_works&sortby=pubdate) | [LinkedIn](https://www.linkedin.com/in/viswanadham-sridhara-308263174) | [Github](https://github.com/viswam78) | [BitBucket](https://bitbucket.org/viswam78/) | [Blog](https://sivome.github.io/)  
 
 
 
 ## RESEARCH INTERESTS
 
-I am a computational scientist with heavy math, modeling and simulation experience in engineering and life sciences domain. Post-PHD, I have 12+ years’ experience in analyzing high-throughput –molecular data including, next-generation sequencing based genomics/transcriptomics as well as mass-spectrometry based proteomics/metabolomics data. Recently, my focus is on using deep learning methods to analyze the high-dimensional -omics data to infer associations in the data.
+I am a computational scientist with heavy math, modeling and simulation experience in engineering and life sciences domain. Post-PHD, I have 12+ years’ experience in analyzing high-throughput –molecular data including, next-generation sequencing based genomics/transcriptomics as well as mass-spectrometry based proteomics/metabolomics data.
+
+Recently, my focus is on using deep learning methods to analyze the high-dimensional -omics data to infer associations in the data. I usually program in Python/R using Git/Snakemake/Docker and tools specific to domain of interest. 
 
 Till date, my research work has resulted in ~20 peer-reviewed publications and numerous conference proceedings and poster presentations (google scholar citations: ~580, h-index=11).
 

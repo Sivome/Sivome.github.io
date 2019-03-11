@@ -1,6 +1,6 @@
 ---
 title: "Reporting Proteomics Results with Jupyter Notebook"
-date: '2019-03-09'
+date: '2019-03-11'
 layout: post
 categories: Proteomics
 ---
@@ -102,7 +102,7 @@ Here, we read the OMSSA output into a pandas data frame.
 ```python
 omssa_output = pd.read_csv("S288c_run.csv")
 ```
-If you look at the Peptide column below, the first 2 columns have the same peptide! However, if you notice the Accession, you see that these represent 2 different proteins. Given a peptide hit, it is not trivial which protein it belongs to and there is lot of research in that area, which I will cover at a later time.
+If you look at the Peptide column below, the first 2 rows have the same peptide! However, if you notice the Accession, you see that these represent 2 different proteins. Given a peptide hit, it is not trivial which protein it belongs to. So, in the end of this blog, I did additional analyses by collating the peptides to match the protein sequence. The higher the number of peptides the protein represent, the more likely it is a true protein hit.
 
 ```python
 omssa_output.head()
@@ -857,7 +857,37 @@ fig.tight_layout
 ```
 ![png](Charge.png)
 
+
+
+One of the primary goals of this task is to identify the proteins present in the sample. The above list shows the grouping by scan number i.e., each row represents a scan, follwed by a peptide match and hence the protein sequence. To easily visualize which proteins are abundant and to see the peptide list of the protein matches, it is better if we group by proteins.
+
+This is done by groupby function (on protein), followed by peptide counts. We can group either by _Accession_ or _Defline_ of the OMSSA search results. Accession here is a short unique identifier, but we have to search the fasta file to figure out what protein this Identifer represents. Instead, I used _Defline_ column that seems to give the protein description.
+
+```python
+group_by_protein = Target_yeast_hits_only.groupby(' Defline')[' Peptide'].value_counts().sort_values(ascending=False)
+```
+
+Let's see how the grouping looks like.
+```python
+group_by_protein.head()
+
+```
+
+
+
+
+     Defline                                                                                                                                   Peptide     
+    sp|P00950|PMG1_YEAST Phosphoglycerate mutase 1 OS=Saccharomyces cerevisiae (strain ATCC 204508 / S288c) OX=559292 GN=GPM1 PE=1 SV=3       HGQSEWNEK        8
+                                                                                                                                              AGELLKEK         7
+    sp|P17076|RL8A_YEAST 60S ribosomal protein L8-A OS=Saccharomyces cerevisiae (strain ATCC 204508 / S288c) OX=559292 GN=RPL8A PE=1 SV=4     SKQDASPKPYAVK    5
+    sp|P29453|RL8B_YEAST 60S ribosomal protein L8-B OS=Saccharomyces cerevisiae (strain ATCC 204508 / S288c) OX=559292 GN=RPL8B PE=1 SV=3     SKQDASPKPYAVK    5
+    sp|P0C2H7|RL27B_YEAST 60S ribosomal protein L27-B OS=Saccharomyces cerevisiae (strain ATCC 204508 / S288c) OX=559292 GN=RPL27B PE=1 SV=1  KVVIVKPHDEGSK    4
+    Name:  Peptide, dtype: int64
+
+
+I only showed first few abundant protein hits. Basically each line in the table represents a protein, followed by the peptides that are mapped to this protein, along with the peptide counts. For example, for the PMG1_YEAST, The peptides mapped were HGQSEWNEK (8 matches), AGELLKEK (7 matches). So, the abundant proteins in the mgf file are PMG1, and other ribosomal proteins!
+
 I hope this primer on reporting proteomics results is helpful
 1. to understand which sections of proteomics results are useful to visualize,
 2. to learn how to use jupyter notebook to make this visualization simpler and finally
-3. to know what to report when presenting the proteomics search results.
+3. to identify the abundant proteins present in the sample.
