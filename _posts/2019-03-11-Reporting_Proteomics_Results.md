@@ -892,4 +892,4 @@ I hope this primer on reporting proteomics results is helpful
 2. to learn how to use jupyter notebook to make this visualization simpler and finally
 3. to identify the abundant proteins present in the sample.
 
-The Jupyter notebook used to analyze the OMSSA data, publish figures and generate tables is also provided [here](https://github.com/Sivome/Sivome.github.io/jupyter_notebooks/) for interested users.
+The Jupyter notebook used to analyze the OMSSA data, publish figures and generate tables is also provided [here](https://github.com/Sivome/Sivome.github.io/blob/master/jupyter_notebooks/Reporting_Proteomics_Results.ipynb) for interested users.
