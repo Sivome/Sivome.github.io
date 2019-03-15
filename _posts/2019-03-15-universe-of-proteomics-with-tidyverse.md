@@ -225,7 +225,7 @@ head(oxidations_only)
 ```
 If you look at the first peptide "SKQEASQmAAmAEK", you can see 2 lowercase M (i.e., -mAAm-) and if you scroll the table to the right and look at the "Mods" column, you can notice "oxidation of M:8 ,oxidation of M:11".
 
-Similar to the previous Jupyter Notebook, we can plot the distributions of Length and Charge.
+Similar to the [previous Jupyter Notebook](https://github.com/Sivome/Sivome.github.io/blob/master/jupyter_notebooks/Reporting_Proteomics_Results.ipynb), we can plot the distributions of Length and Charge.
 
 ```r
 LengthPepplot <- ggplot(filtered_OMSSA_output, aes(LengthPep)) +
@@ -267,7 +267,7 @@ Couple of conclusions can be made from the above subplots:
 
 The OMSSA results used in this blog are the peptide spectral matches for the scans that OMSSA has a hit. However the end goal of any proteomics experiment is to identify the protein present in the sample. For a detailed understanding of how the protein is inferred, given the peptide spectral matches, you can find many publications.
 
-In the earlier blog, with jupyter notebook, I did the following steps:
+[In the earlier blog, with jupyter notebook](https://github.com/Sivome/Sivome.github.io/blob/master/jupyter_notebooks/Reporting_Proteomics_Results.ipynb), I did the following steps:
 1. grouping the above results by protein (Accession or Defline)
 2. count unique peptides and sort
 3. report the top few abundant protein hits.
@@ -293,3 +293,5 @@ head(protein_list_sorted)
 ## 6 sp|P17076|RL8A_YEAST 60S ribosomal protein L8-A OS=Saccharomyces c~     5
 ```
 From above, it PMG1_YEAST seem to have a total of 17 peptide spectral matches. In the previous blog, I did report the same protein i.e., PMG1 as abundant, based on count on the unique peptides.
+
+[Here is the direct access to the R Markdown used for this blog](https://github.com/Sivome/Sivome.github.io/tree/master/_posts/Universe-of-proteomics-with-tidyverse.Rmd).
