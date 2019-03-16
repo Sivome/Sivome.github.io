@@ -7,7 +7,7 @@ categories: Proteomics
 
 Except for writing scripts in R compared to Python, most of the information is similar to [previous blog](https://sivome.github.io/proteomics/2019/03/11/Reporting_Proteomics_Results.html). 
 
-I used Tidyverse library, which is a combination of packages that are typically used with data-analysis and visualization in R. Some of the packages built in tidyverse are dplyr, purr, ggplot, tidyr etc.
+I used tidyverse library, which is a combination of R packages that are typically used with data-analysis and visualization. Some of the packages built in tidyverse are dplyr, purr, ggplot, tidyr etc.
 
 
 ```r
@@ -149,7 +149,9 @@ EvalplotRev
 The right subplot (titled 1, which means IsReverse=True) seems to have scores between greater than 1e-2.
 Please note that we used log10 in E-value scores and mentioned that lower E-value the better. (1e-20 is better than 1e-5, for example)
 
-As noted in the previous article, there are better methods to estimate the false discovery rates, and here my goal is to use simple techniques, and at the same time produce efficient results. Since we know the reverse hits fall between 0 and 1e-2, we can use the same logic that some of the forward matches to the databases (i.e., first subplot) might have hits that are not genuine in the bin of [0,1e-2]. We can safely remove this bin for further analyses. Since the end goal of the blog is to introduce OMSSA search results with R tidyverse, an underestimate of true hits (by strict criteria of removing the entire bin) is fine.
+As noted in the previous article, there are better methods to estimate the false discovery rates, and here my goal is to use simple techniques, and at the same time produce efficient results. Another FDR technique that is not mentioned in my earlier blog is [two-dimensional target decoy strategy for decoy searches](https://www.ncbi.nlm.nih.gov/pubmed/22010998). This technique "protein-aware FDR", also called peptide 2D FDR gives bonus for PSMs from proteins almost sure to be true, as quoted in this [Thermo application note](https://assets.thermofisher.com/TFS-Assets/CMD/Application-Notes/AN-658-LC-MSn-PTM-Proteome-Discoverer-AN64831-EN.pdf).
+
+Since we know the reverse hits fall between 0 and 1e-2, we can use the same logic that some of the forward matches to the databases (i.e., first subplot) might have hits that are not genuine in the bin of [0,1e-2]. We can safely remove this bin for further analyses. Since the end goal of the blog is to introduce OMSSA search results with R tidyverse, an underestimate of true hits (by strict criteria of removing the entire bin) is fine.
 
 
 ```r
