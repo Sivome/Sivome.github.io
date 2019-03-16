@@ -19,7 +19,7 @@ Molecular dynamics simulations
 
 For most of this, I use Python / R.  
 
-Some of the Python modules I use often are numpy, pandas scipy, scikit-learn, keras, matplotlib.  
+Some of the Python modules I use often are numpy, pandas, scipy, scikit-learn, keras, matplotlib.  
 
 Likewise, some of the R packages I use are dplyr, tidyr, purr, ggplot2, cowplot.  
 
