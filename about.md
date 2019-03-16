@@ -26,5 +26,5 @@ Likewise, some of the R packages I use are dplyr, tidyr, purr, ggplot2, cowplot.
 If you're interested to know more, refer to my [CV](/cv) or go through the [blog posts](/).  
 
 
-** All opinions expressed in this blog are of my own and do not represent my employer **
+**_All opinions expressed in this blog are of my own and do not represent the 3rd party contractors_**
 
