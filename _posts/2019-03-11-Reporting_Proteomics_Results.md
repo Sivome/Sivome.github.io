@@ -625,7 +625,7 @@ fig.tight_layout
 
 ![png](reverse_hits_score.png)
 
-From the above distribution, it is clear that there are no reverse hits with E-value lower than 1e-2. So, we can safely consider all the hits below E-value of 1e-2 to be genuine.
+From the above distribution, it is clear that there are no reverse hits with E-value lower than 1e-2. So, we can safely consider all the hits below E-value of 1e-2 to be genuine. NOTE that the number of possible true hits in the [0, 1e-2] bin are ignored, as this my focus is on introducing OMSSA search results through jupyter notebook. In general, if you see "X" reverse matches, you expect "X" matches to the forward database as incorrect as well. Say the above list generated 15 ###REV### matches, then a total of 30 matches in the entire list might be false positives. Better methods are using a false discovery rate of 1% instead of a bin cut-off on the scores. Probably, in one of the blogs, I will go through the FDR curves for interpreting peptide-spectral matches or interpreting the protein lists.  
 
 ```python
 subset_yeast_hits_only = omssa_output[~omssa_output[' IsReverse'].values] # See the tilde sign

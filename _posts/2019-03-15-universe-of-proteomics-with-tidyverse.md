@@ -5,7 +5,9 @@ layout: post
 categories: Proteomics
 ---
 
-Except for writing scripts in R compared to Python, most of the information is similar to [previous blog](https://sivome.github.io/proteomics/2019/03/11/Reporting_Proteomics_Results.html). Tidyverse is the R package that has combination of packages that are typically used with data-analysis and visualization. Some of the packages built in tidyverse are dplyr, purr, ggplot, tidyr etc.
+Except for writing scripts in R compared to Python, most of the information is similar to [previous blog](https://sivome.github.io/proteomics/2019/03/11/Reporting_Proteomics_Results.html). 
+
+I used tidyverse library, which is a combination of R packages that are typically used with data-analysis and visualization. Some of the packages built in tidyverse are dplyr, purr, ggplot, tidyr etc.
 
 
 ```r
@@ -55,7 +57,9 @@ head(OMSSA_output)
 ## 5           3  1892.789 1.991815e-05          0
 ## 6           2  1952.844 1.608454e-04          0
 ```
-E-value tells us how significant the hit is i.e., the lower the better. This is similar to BLAST output, if you're familiar with it.
+E,value defines the confidence of the OMSSA hit (i.e., each row that represents the peptide spectral match). The lower the E-value, the better. This is similar to the idea of E-value in BLAST output, if you're familiar with it.
+
+Below, we change the E-values to log10 scale. So, -20 in the below plot represents 1e-20.
 
 ```r
 names(OMSSA_output) = gsub("\\.", "", names(OMSSA_output))
@@ -68,7 +72,13 @@ Evalplot
 
 ![plot of chunk unnamed-chunk-3](unnamed-chunk-3-1.png)  
 
-Add 3 new columns (similar to previous blog on reporting proteomics results with jupyter notebook)
+From the distribution, it is clear that the peptide spectral matches have varying scores of confidence. For more information on OMSSA scoring, [refer to the original paper](https://www.ncbi.nlm.nih.gov/pubmed/15473683).
+
+One of the goals I have for this blog, is to repeate the earlier analyses with Jupyter Notebook, but using R Markdown. It helps a bit if you read the earlier blog on [Reporting proteomics results with Jupyter Notebook](https://sivome.github.io/proteomics/2019/03/11/Reporting_Proteomics_Results.html). 
+
+I added few columns to the original dataframe to look at other characteristics of the OMSSA hits. Refer to mutate/select functions below to see how the columns can be added, and to select subset of the rows in the dataframe based on a logical condition.
+
+The new 3 columns added are:
 1. LengthPep = gets the length of peptide using the peptide string
 2. IsReverse = looks for a string match "###REV###" in Defline and gives a value "1" if true, "0" otherwise
 3. IsMod = looks for a oxidized MET i.e., lower case M (m) in Peptide and gives a value "1" if true, "0" otherwise
@@ -139,7 +149,9 @@ EvalplotRev
 The right subplot (titled 1, which means IsReverse=True) seems to have scores between greater than 1e-2.
 Please note that we used log10 in E-value scores and mentioned that lower E-value the better. (1e-20 is better than 1e-5, for example)
 
-As noted in the previous article, there are better methods to estimate the false discovery rates, and here my goal is to use simple techniques, and at the same time produce efficient results. Since we know the reverse hits fall between 0 and 1e-2, we can use the same logic that some of the forward matches to the databases (i.e., first subplot) might have hits that are not genuine in the bin of [0,1e-2]. We can safely remove this bin for further analyses. Since the end goal of the blog is to introduce OMSSA search results with R tidyverse, an underestimate of true hits (by strict criteria of removing the entire bin) is fine.
+As noted in the previous article, there are better methods to estimate the false discovery rates, and here my goal is to use simple techniques, and at the same time produce efficient results. Another FDR technique that is not mentioned in my earlier blog is [two-dimensional target decoy strategy for decoy searches](https://www.ncbi.nlm.nih.gov/pubmed/22010998). This technique "protein-aware FDR", also called peptide 2D FDR gives bonus for PSMs from proteins almost sure to be true, as quoted in this [Thermo application note](https://assets.thermofisher.com/TFS-Assets/CMD/Application-Notes/AN-658-LC-MSn-PTM-Proteome-Discoverer-AN64831-EN.pdf).
+
+Since we know the reverse hits fall between 0 and 1e-2, we can use the same logic that some of the forward matches to the databases (i.e., first subplot) might have hits that are not genuine in the bin of [0,1e-2]. We can safely remove this bin for further analyses. Since the end goal of the blog is to introduce OMSSA search results with R tidyverse, an underestimate of true hits (by strict criteria of removing the entire bin) is fine.
 
 
 ```r
@@ -237,6 +249,7 @@ LengthPepplot
 
 ![plot of chunk unnamed-chunk-9](unnamed-chunk-9-1.png)  
 
+Most of the peptides seem to have length between 9-20 amino acids. Generally, the longer the peptides, the mass-spec detects the peptide with higher charge state. Below is the charge distribution of the true OMSSA matches.
 
 ```r
 Chargeplot <- ggplot(filtered_OMSSA_output, aes(Charge)) +
@@ -248,7 +261,7 @@ Chargeplot
 
 ![plot of chunk unnamed-chunk-10](unnamed-chunk-10-1.png)  
 
-Additionally we can use facet_wrap to look at length distributions for 2+ / 3+ charges separately
+Additionally we can use facet_wrap to look at length distributions for 2+ / 3+ charges separately. If you look carefully, facet_wrap has the argument Charge, while ggplot has aes of LengthPep, which means that the ggplot function plots the distribution of LengthPep, for each Charge.
 
 ```r
 LengthPepChargeplot <- ggplot(filtered_OMSSA_output, aes(LengthPep)) +
@@ -261,18 +274,18 @@ LengthPepChargeplot
 
 ![plot of chunk unnamed-chunk-11](unnamed-chunk-11-1.png)  
 
-Couple of conclusions can be made from the above subplots:
-1. 2+ have more peptide spectral matches, compared to 3+, which is true for most of the datasets.
-2. If not significant using one dataset, it can be seen that 3+ might have few longer peptides than 2+.
+Couple of conclusions can be made from the above Length/Charge subplots:
+1. 2+ charge state peptides have more matches, compared to 3+. This is true, in general for most of the CID/HCD datasets.
+2. It seems that 3+ charge state results in longer peptides, when compared to 2+ charge state peptides.
 
-The OMSSA results used in this blog are the peptide spectral matches for the scans that OMSSA has a hit. However the end goal of any proteomics experiment is to identify the protein present in the sample. For a detailed understanding of how the protein is inferred, given the peptide spectral matches, you can find many publications.
+For any proteomics experiment, the end goal is to identify or quantify the proteins and the post-translational modifications. In this blog, I cannot go through all the details, however I can quickly identify which protein has the most number of hits. If you read my earlier blog, you will see that the dataset used is a truncated version of one of the open-source datasets. 
 
 [In the earlier blog, with jupyter notebook](https://github.com/Sivome/Sivome.github.io/blob/master/jupyter_notebooks/Reporting_Proteomics_Results.ipynb), I did the following steps:
 1. grouping the above results by protein (Accession or Defline)
 2. count unique peptides and sort
 3. report the top few abundant protein hits.
 
-Here, I take a more conservative approach of "total peptide spectral matches"" per Defline in OMSSA search
+Here, I take a more simpler approach of "total peptide spectral matches"" per Defline in OMSSA search
 
 
 ```r
