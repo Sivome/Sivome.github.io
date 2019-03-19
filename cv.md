@@ -1,5 +1,10 @@
-# [domainPDF](CV-PDF.pdf)
-# [PDF](DS_Sridhara.pdf)
+---
+layout: page
+title: CV
+permalink: /cv/
+---
+# [domainPDF](CV-PDF.pdf)  
+# [PDF](DS_Sridhara.pdf)  
 # Viswanadham (Vish) Sridhara
 
 ## CONTACT
@@ -9,13 +14,9 @@ Viswanadham.Sridhara@gmail.com
 
 
 
-## RESEARCH INTERESTS
+## PROFILE
 
-I am a computational scientist with heavy math, modeling and simulation experience in engineering and life sciences domain. Post-PHD, I have 12+ years’ experience in analyzing high-throughput –molecular data including, next-generation sequencing based genomics/transcriptomics as well as mass-spectrometry based proteomics/metabolomics data.
-
-Recently, my focus is on using deep learning methods to analyze the high-dimensional -omics data to infer associations in the data. I usually program in Python/R using Git/Snakemake/Docker and tools specific to domain of interest. 
-
-Till date, my research work has resulted in ~20 peer-reviewed publications and numerous conference proceedings and poster presentations (google scholar citations: ~580, h-index=11).
+I am a computational scientist with modeling and simulation experience in engineering and life sciences domain. Post-PHD, I have 12+ years’ experience mining and analyzing high-dimensional structured and unstructured datasets using sophisticated machine learning models. Till date, my research work has resulted in ~20 peer-reviewed publications and numerous conference proceedings (google scholar citations: ~580, h-index=11).
 
 
 
@@ -28,37 +29,34 @@ Till date, my research work has resulted in ~20 peer-reviewed publications and n
 **Thesis:** Monte carlo analysis of millimeter-wave GaN Gunn diodes  
 
 
-## PROGRAMMING SKILLS
+## TECHNICAL SKILLS
 
-Python, R, MATLAB   
-Git, Snakemake, Docker  
+Machine learning: Regression, Regularization, Hierarchical Clustering, Discriminant analyses  
+Programming Languages: Python (numpy, pandas, scikit-learn, matplotlib, keras), R (tidyverse), MATLAB, Perl, C, C++, Fortran   
+Other skills: Git, Snakemake, Docker, UNIX, MacOS, LaTeX  
+Engineering focussed : Monte-carlo models [MS Thesis focus], Molecular dynamics simulations for atomic modeling [PHD Disseration focus]
 
-
-
-## BIOINFORMATICS TOOLS
-
-GATK, BWA, Bowtie, Samtools, BEDtools  
-Byonic, PEAKS, Proteome Discoverer, OMSSA, MODa   
-BioCyc, MetaCyc, GROMACS, NAMD, VMD  
-
+## SAMPLE PROJECTS  
+[Technical sample blog with Python Jupyter notebook](https://sivome.github.io/proteomics/2019/03/11/Reporting_Proteomics_Results.html)  
+[Technical sample blog with R markdown](https://sivome.github.io/proteomics/2019/03/15/universe-of-proteomics-with-tidyverse.html)  
+[Paper - Linear Discriminant Analyses](https://www.ncbi.nlm.nih.gov/pubmed/22321509)  
+[Paper - LASSO regularization](https://www.ncbi.nlm.nih.gov/pubmed/25502413)  
+[Paper - Visualization using R tidyverse](https://www.ncbi.nlm.nih.gov/pubmed/29152409)  
 
 
 ## PROFESSIONAL EXPERIENCE  
 
 
-### Independent Consultant (Sivome LLC)
+### Consultant
 **Universities, Hospitals and Startups**  
-Oct 2018 - Present  
+Oct 2018 - Present  (Sivome LLC)
 In my current role, I am working for a proteomics software company.
 
-In previous roles as Independent Consultant (part of 2016, 2017 and 2018) for MGH, WRI and biofuel startup  
+In previous roles as Independent Consultant (part of 2016, 2017) for MGH, WRI and biofuel startup  
 • Improved primer design for a proof-of-principle assay to capture long genomic regions.  
 • Built NGS pipeline and developed new computational methods for downstream analyses.  
-• Helped different groups with their data science and bioinformatic needs.  
-• Whole genome sequence (WGS) analyses, including variant analyses, copy number variation and strain specific analyses for biofuel production.  
 • Set-up in-house Jbrowse genome browser and Sequenceserver (blast+ web server).  
 • Helped analyze diverse mass-spectrometry datasets (global proteomics, phosphoproteomics) of breast cancer tissue samples.  
-• Integrated proteogenomics data to identify markers in laser capture microdissected breast tumor samples (Preliminary work published in AACR).  
 
 
 ### Bioinformatics Systems Developer      
@@ -70,19 +68,20 @@ March 2018 - November 2018
 
 
 ### Computational Biologist
-**UT Southwestern Medical Center**  
+**UT Southwestern Medical Center -- PROTEOMICS CORE FACILITY**  
 August 2015 - April 2016  
 
-• Protein and post-translational modification identification using Proteome Discoverer, OMSSA, Sequest, MASCOT.  
-• Quantitative proteomics (SILAC, TMT) data analysis using MaxQuant, Proteome Discoverer.  
+• Protein identification and quantitation using bioinformatics tools.  
 • Bioinformatics proteomics consultant work with UT Southwestern investigators.  
 
 ### Research Engineering/Scientist Associate V
-**The University of Texas at Austin**  
+**The University of Texas at Austin -- CENTER FOR COMPUTATIONAL BIOLOGY AND BIOINFORMATICS**  
 December 2012 - August 2015  
 
- • Built machine learning models using LASSO regression to predict bacterial growth conditions from in-silico metabolic fluxes generated from metabolic network based flux balance analyses (FBA) methods.  
- • Proteomics and metabolic flux data analyses of mass-spectrometry based datasets. a.  Proteomics data is analyzed using new unrestricted PTM search methods. b. Metabolic flux data is analyzed using FiatFlux software.  
+ • Built machine learning models using LASSO regression to predict bacterial growth conditions from _in-silico_ metabolic fluxes generated from metabolic network based flux balance analyses (FBA) methods.  
+ • Proteomics and metabolic flux data analyses of mass-spectrometry based datasets.
+   &nbsp;&nbsp;a. Proteomics data is analyzed using new unrestricted PTM search methods.
+   &nbsp;&nbsp;b. Metabolic flux data is analyzed using FiatFlux software.  
  • Molecular dynamics (MD) simulations for Bio-electrics applications  
   &nbsp;&nbsp;a. Compute intense MD simulations to understand multiple nanopore formation in lipid bilayers using advanced high performance computing environment.  
   &nbsp;&nbsp;b. MD simulations to understand effects of sodium (Na) and calcium (Ca) effects in pore formation within the biological suspensions.  
@@ -93,19 +92,9 @@ December 2012 - August 2015
 **National Center for Biotechnology Information (NCBI)**  
 June 2007 - January 2012  
 
- • Part of NCBI OMSSA (Open Mass Spectrometry Search Algorithm) project:  
-    a. Improved noise filtering routines/filters to accommodate high-resolution mass-spectrometry data.  
-    b. Optimized algorithm for ETD data analysis (ion-types, precursor peak filtering).  
-    c. User support by addition of requested enzymes, modifications, and other iontypes required for quantitative proteomics (iTRAQ, TMT 6-plex etc.).  
-    d. Improved sensitivity by adjusting for mass offsets, precursor charge assignment for low-res data. Presented related mass-spectrometry work in ASMS ’08, ’09, ’10 and ’11.  
-
- • Integration of sequence data & high-throughput phosphoproteomics data:  
-    a. Developed a new method (proof-of-principle) for PTM annotation on genomes (NCBI RefSeq) by using high-throughput proteomics data (PhosphoSite, PhosphoELM) and domain definitions of protein families within NCBI Conserved Domain Database (CDD).  
-    b. Apart from the large-scale annotation of conserved PTM sites on genomes, this method could facilitate identification of novel evolutionarily conserved posttranslational modifications.  
-
+ • Part of NCBI OMSSA (Open Mass Spectrometry Search Algorithm) project.  
+ • Integration of sequence data & high-throughput phosphoproteomics data.  
  • Developed a prototype for new class of peptide identification search algorithm OMSSA-SIM.  
-    a. Motivation is to remove most of the limitations faced by present generation sequence library search algorithms, for example, exact precursor mass match, unknown PTM’s, mutations, different enzymatic cleavage etc.  
-    b. Preliminary work in ASMS 2011 (oral presentation in computational mass-spectrometry).  
 
 
 ### Student Volunteer  
@@ -120,7 +109,7 @@ Summer '04
 • Finite element analyses (2D) to improve fuel injection solenoid models using Ansoft software.  
 
 
-## TALKS
+## SELECTED TALKS
 
 1. Large-scale analysis of PTMs @ UT-Austin, Thermo Fisher Scientific, MD Anderson Cancer Center
 
@@ -128,16 +117,7 @@ Summer '04
 
 3. Predicting bacterial growth conditions from bacterial physiology @ Center for Systems and Synthetic Biology, UT-Austin
 
-4. Open Mass Spectrometry Search Algorithm @ George Washington University
-
-5. A comparative proteomics technique for large scale automatic annotation of posttranslational modifications on multiple genomes with reduced error rate @ NIH ProtIG Fellows seminar
-
-6. Evolutionary conservation of phosphorylation sites – A mass spectrometric perspective @ NHLBI
-
-7. Time Domain Dielectric Spectroscopy Study of Jurkat Cells and Mitochondria @ Frank Reidy Research Center for Bioelectrics
-
-8. Time Domain Dielectric Spectroscopy Study of HL-60 cells induced by Ultra-Short pulses @ Frank Reidy Research Center for Bioelectrics
-
+4. Open Mass Spectrometry Search Algorithm @ George Washington University  
 
 ## PUBLICATIONS
 
@@ -181,37 +161,14 @@ Summer '04
 19. Joshi, R. P., Sridhara, V., Shah, P., Del Rosario, R.D. “Monte Carlo analysis of GaN-based Gunn oscillators for microwave power generation.” Journal of Applied Physics, Vol. 93, no. 8, Apr 15, 2003, pp. 4836-4842.
 
 
-
 ## CONFERENCE PROCEEDINGS
 
 1. Sridhara, V., Joshi, R.P., Hu, Q., Nguyen, A., and Schoenbach, K.H. “Simulations of cell response to high intensity, ultrashort electrical pulses” (invited paper) Bio-Electromagnetic Society Conference, Cancun, Mexico, June 11-15, 2006.
 
-2. Pliquett, U., Sridhara, V., Joshi, R.P., Swanson, R.J., and Schoenbach, K.H. “Monitoring intrastructural changes in Jurkat cells after nanosecond pulsed electric field application.” Electromed 2005 Conference, Portland, OR, May 15-18 , 2005.
+2. Pliquett, U., et. al., “Monitoring intrastructural changes in Jurkat cells after nanosecond pulsed electric field application.” Electromed 2005 Conference, Portland, OR, May 15-18 , 2005.
 
-3. Garner, A.L., Chen, G., Chen, N., Sridhara, V., Kolb, J. F., Swanson, R.J., Beebe, S.J., Joshi, R.P., and Schoenbach, K.H. “Changes in the Dielectric Properties of Jurkat and HL-60 cells after Electrical Pulses.” Electromed 2005 Conference, Portland, OR, May 15-18, 2005.
-
-
+3. Garner, A.L., et. al., “Changes in the Dielectric Properties of Jurkat and HL-60 cells after Electrical Pulses.” Electromed 2005 Conference, Portland, OR, May 15-18, 2005.
 
 ## POSTERS
 
-1. Sridhara, V et. al., “Integrated proteogenomic analysis of laser capture microdissected breast tumors”, AACR 2017.
-
-2. Tchafa, A et. al., “High resolution diagnostic platform for breast cancer therapy management”, Proceedings of the AACR 2016.
-
-3. Sridhara V et. al., “Large-scale analysis of post-translational modifications in E. coli grown under glucose limiting conditions” EMBL Conference, Heidelberg, Germany, Nov 8-11, 2014.
-
-4. Houser JR, et. al., “Controlled Measurements of Multiple Cellular Components in E. coli As a Resource for Integrative Computational Modeling of Cellular Subsystems”, Synthetic Biology: Engineering, Evolution and Design (SEED).
-
-5. Sridhara V et. al., “Analysis of metabolic fluxes in E. coli over time”, AG3C annual meeting, May 2014.
-
-6. Sridhara V et. al.,“Predicting bacterial growth conditions from bacterial physiology”, 1st Annual symposium in Big Data in Biology, The University of Texas at Austin, May 2013.  
-
-7. Sridhara V et. al., “A Comparative Proteomics Technique for the Automatic Annotation of PostTranslational Modifications on Multiple Genomes at Reduced Error Rate.”  ASMS 2010
-
-8. Sridhara V et. al., “Decreasing Database Search Times in ETD MS/MS Sequence Searching by Assignment of Parent Precursor Charge to MS/MS Spectra.”  ASMS 2009
-
-9. Sridhara V et. al., Lewis Y. Geer and Stephen H. Bryant “Increasing True Positive Rates in MS/MS Sequence Searching Algorithms by Incorporating Corrections to Precursor Mass Calculations.” ASMS 2008
-
-10. Sridhara, V., et al., “Molecular Dynamics Simulations to Probe Electric-Pulse Induced Micelle Formation and Ion-Channel Regulation in Biological Cells”, ODU RD 2006 (Honorable mention)
-
-11. Hu, Q., et al., “Dynamical modeling studies of model membranes and cellular response to nanosecond ultrashort pulses”, ODU RD 2005(Poster awarded 3rd place)
+AACR 2017, Proceedings of the AACR 2016, EMBL Conference 2014, Synthetic Biology: Engineering, Evolution and Design (SEED), ASMS 2010, ASMS 2009, ASMS 2008
