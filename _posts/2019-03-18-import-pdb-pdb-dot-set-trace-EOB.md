@@ -1,4 +1,4 @@
----
+-]--
 title: "import pdb; pdb.set_trace() <EOB>"
 date: '2019-03-18'
 layout: post
@@ -20,4 +20,4 @@ import pdb; pdb.set_trace()
 ```
 
 
-More info here: https://docs.python.org/2/library/pdb.html  
+More info here: [https://docs.python.org/2/library/pdb.html](https://docs.python.org/2/library/pdb.html)
