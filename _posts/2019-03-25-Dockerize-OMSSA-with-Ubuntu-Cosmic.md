@@ -5,6 +5,9 @@ layout: post
 categories: Proteomics
 ---
 
+```console
+docker pull sridharabio/dockerize123omssa
+```
 
 If you’re working in mass-spectrometry based proteomics informatics, you already know the effort it takes to systematically analyze the mass-spec data to generate processed data. For example,
 choosing tools to convert raw data to another format,
@@ -56,6 +59,17 @@ COPY omssa_run.sh /sample_data
 ```
 
 I do not want to go through the details of the dockerfile, but all I did was [1] to get the OMSSA and ncbi-blast+ downloads, [2] to copy sample data set, along with the fasta file to the container and [3] to run makeblastdb followed by an OMSSA search.
+
+You can directly pull this image using:
+```console
+docker pull sridharabio/dockerize123omssa
+```
+
+This is how the successful build looks like:
+
+![png](docker_output_snippet.png)
+
+For installing docker, refer to: https://hub.docker.com/
 
 Additional resources:
 [Galaxy Proteomics](https://github.com/galaxyproteomics/docker-galaxyp)
