@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.5.0 -->
+<title>DOCKERize OMSSA with UBUNTU Cosmic | Sivome</title>
+<meta name="generator" content="Jekyll v3.7.4" />
+<meta property="og:title" content="DOCKERize OMSSA with UBUNTU Cosmic" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="docker pull sridharabio/dockerize123omssa" />
+<meta property="og:description" content="docker pull sridharabio/dockerize123omssa" />
+<link rel="canonical" href="http://localhost:4000/proteomics/2019/03/25/Dockerize-OMSSA-with-Ubuntu-Cosmic.html" />
+<meta property="og:url" content="http://localhost:4000/proteomics/2019/03/25/Dockerize-OMSSA-with-Ubuntu-Cosmic.html" />
+<meta property="og:site_name" content="Sivome" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2019-03-25T00:00:00-04:00" />
+<script type="application/ld+json">
+{"headline":"DOCKERize OMSSA with UBUNTU Cosmic","dateModified":"2019-03-25T00:00:00-04:00","datePublished":"2019-03-25T00:00:00-04:00","url":"http://localhost:4000/proteomics/2019/03/25/Dockerize-OMSSA-with-Ubuntu-Cosmic.html","mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/proteomics/2019/03/25/Dockerize-OMSSA-with-Ubuntu-Cosmic.html"},"description":"docker pull sridharabio/dockerize123omssa","@type":"BlogPosting","@context":"http://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://localhost:4000/feed.xml" title="Sivome" /></head>
+<body><header class="site-header" role="banner">
+
+  <div class="wrapper"><a class="site-title" rel="author" href="/">Sivome</a><nav class="site-nav">
+        <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+        <div class="trigger"><a class="page-link" href="/about/">About</a><a class="page-link" href="/cv/">CV</a></div>
+      </nav></div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">DOCKERize OMSSA with UBUNTU Cosmic</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2019-03-25T00:00:00-04:00" itemprop="datePublished">Mar 25, 2019
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    <div class="language-console highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="go">docker pull sridharabio/dockerize123omssa
+</span></code></pre></div></div>
+
+<p>If you’re working in mass-spectrometry based proteomics informatics, you already know the effort it takes to systematically analyze the mass-spec data to generate processed data. For example,
+choosing tools to convert raw data to another format,
+choosing a database search fasta file for the sample of interest,
+choosing sample-specific parameters (e.g., search for phosphorylation on serine/threonine/tyrosine in phospho-sample),
+choosing proteomics software depending on the end goals (Identification, Quantitation).</p>
+
+<p>Writing workflows and pipelines in proteomics informatics is still emerging. Proteome Discoverer is one such software where you can embed different software and edit different sections of the pipeline/workflow, depending on the needs. Here, I will NOT focus on any such workflows, but plan to use docker containers to show how docker can be used for proteomics bioinformatics to embed different tools for reproducible research.</p>
+
+<p>For the current blog post, I use linux version of OMSSA that can be found <a href="ftp://ftp.ncbi.nih.gov/pub/lewisg/omssa/CURRENT/">here</a>. I use ubuntu:cosmic within the docker. For makeblastdb, I used ncbi-blast+ that can be found <a href="ftp://ftp.ncbi.nlm.nih.gov/blast/executables/blast+/LATEST/">here</a>.</p>
+
+<p>The end goal of this blog is a docker container that you can use for your proteomics database search with OMSSA. Once you have your (1) your input mgf file and (2) your fasta file of interest, then you can easily tweak the below Dockerfile.</p>
+
+<p>NOTE: Edit the omssa_run.sh file if you want to adjust the search parameters (for example, add phosphorylation as variable modification if you are searching a phosphoproteomics dataset).</p>
+
+<p>Here is the <a href="https://github.com/viswam78/dockerizeOMSSA">github link</a> that has the same information and the <a href="https://cloud.docker.com/u/sridharabio/repository/docker/sridharabio/dockerize123omssa">dockerhub link</a> to pull the image directly.</p>
+
+<p>Here is how the dockerfile looks like:</p>
+
+<div class="language-console highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="go">FROM ubuntu:cosmic
+
+RUN apt-get update
+RUN apt-get install -y wget
+
+RUN wget ftp://ftp.ncbi.nih.gov/pub/lewisg/omssa/CURRENT/omssa-linux.tar.gz
+RUN tar -xvf omssa-linux.tar.gz
+RUN rm -rf omssa-linux.tar.gz
+
+RUN wget ftp://ftp.ncbi.nlm.nih.gov/blast/executables/blast+/2.8.1/ncbi-blast-2.8.1+-x64-linux.tar.gz
+RUN tar -xvf ncbi-blast-2.8.1+-x64-linux.tar.gz
+RUN rm -rf ncbi-blast-2.8.1+-x64-linux.tar.gz
+
+</span><span class="gp">ENV PATH="$</span><span class="o">{</span>PATH<span class="o">}</span>:~/../omssa-2.1.9.linux<span class="s2">"
+</span><span class="gp">ENV PATH="$</span><span class="s2">{PATH}:~/../ncbi-blast-2.8.1+/bin"</span>
+<span class="go">
+RUN export PATH
+
+</span><span class="gp">#</span> copy <span class="nb">local </span>sample files <span class="o">(</span>mgf, fasta, along with mods.xml and usermods.xml<span class="o">)</span>
+<span class="go">RUN mkdir sample_data
+RUN cp ../omssa-2.1.9.linux/mods.xml /sample_data
+RUN cp ../omssa-2.1.9.linux/usermods.xml /sample_data
+COPY S288c_RefSeq.fasta /sample_data
+COPY yeast_subset.mgf /sample_data
+COPY makeblastdbRUN.sh /sample_data
+COPY omssa_run.sh /sample_data
+</span></code></pre></div></div>
+
+<p>I do not want to go through the details of the dockerfile, but all I did was [1] to get the OMSSA and ncbi-blast+ downloads, [2] to copy sample data set, along with the fasta file to the container and [3] to run makeblastdb followed by an OMSSA search.</p>
+
+<p>You can directly pull this image using:</p>
+<div class="language-console highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="go">docker pull sridharabio/dockerize123omssa
+</span></code></pre></div></div>
+
+<p>Build the docker using:</p>
+<div class="language-console highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="go">docker build .
+</span></code></pre></div></div>
+
+<p>This is how the successful build looks like:</p>
+
+<p><img src="docker_output_snippet.png" alt="png" /></p>
+
+<p>Once you build, you can login to the Ubuntu container with</p>
+<div class="language-console highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="go">docker run -it [ADD build info here]
+</span></code></pre></div></div>
+
+<p>The above container will put all sample data files in sample_data folder. So, you can change directory within the Ubuntu box using</p>
+<div class="language-console highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="go">cd sample_data
+</span></code></pre></div></div>
+
+<p>To prepare the fasta file for OMSSA searches, you can</p>
+<div class="language-console highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="go">bash makeblastdbRUN.sh
+</span></code></pre></div></div>
+<p>The above will result in *.p* files for the fasta file.</p>
+
+<p>For OMSSA search, you can</p>
+<div class="language-console highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="go">bash omssa_run.sh
+</span></code></pre></div></div>
+<p>This will result in output csv file with peptide spectral matches. You can go through my previous blogs to know more about how to analyze the OMSSA search results i.e., peptide spectral matches. That’s it for now!</p>
+
+<p>For installing docker, refer to: https://hub.docker.com/</p>
+
+<p>Additional resources:
+<a href="https://github.com/galaxyproteomics/docker-galaxyp">Galaxy Proteomics</a></p>
+
+  </div><a class="u-url" href="/proteomics/2019/03/25/Dockerize-OMSSA-with-Ubuntu-Cosmic.html" hidden></a>
+</article>
+
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">Sivome</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">Sivome</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"><li><a href="https://github.com/Viswam78"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#github"></use></svg> <span class="username">Viswam78</span></a></li></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>All -OMICS is eventually Sivomics!!</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

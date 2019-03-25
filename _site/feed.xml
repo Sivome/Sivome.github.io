@@ -1,4 +1,88 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.7.4">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2019-03-24T23:20:05-04:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">Sivome</title><subtitle>All -OMICS is eventually Sivomics!!</subtitle><entry><title type="html">import pdb; pdb.set_trace()</title><link href="http://localhost:4000/proteomics/2019/03/18/import-pdb-pdb-dot-set-trace-EOB.html" rel="alternate" type="text/html" title="import pdb; pdb.set_trace() &lt;EOB&gt;" /><published>2019-03-18T00:00:00-04:00</published><updated>2019-03-18T00:00:00-04:00</updated><id>http://localhost:4000/proteomics/2019/03/18/import-pdb-pdb-dot-set-trace-EOB</id><content type="html" xml:base="http://localhost:4000/proteomics/2019/03/18/import-pdb-pdb-dot-set-trace-EOB.html">&lt;p&gt;Take my word for this. This will help you for years to come if you are in data science.
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.7.4">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2019-03-25T00:20:28-04:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">Sivome</title><subtitle>All -OMICS is eventually Sivomics!!</subtitle><entry><title type="html">DOCKERize OMSSA with UBUNTU Cosmic</title><link href="http://localhost:4000/proteomics/2019/03/25/Dockerize-OMSSA-with-Ubuntu-Cosmic.html" rel="alternate" type="text/html" title="DOCKERize OMSSA with UBUNTU Cosmic" /><published>2019-03-25T00:00:00-04:00</published><updated>2019-03-25T00:00:00-04:00</updated><id>http://localhost:4000/proteomics/2019/03/25/Dockerize-OMSSA-with-Ubuntu-Cosmic</id><content type="html" xml:base="http://localhost:4000/proteomics/2019/03/25/Dockerize-OMSSA-with-Ubuntu-Cosmic.html">&lt;div class=&quot;language-console highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;go&quot;&gt;docker pull sridharabio/dockerize123omssa
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;If you’re working in mass-spectrometry based proteomics informatics, you already know the effort it takes to systematically analyze the mass-spec data to generate processed data. For example,
+choosing tools to convert raw data to another format,
+choosing a database search fasta file for the sample of interest,
+choosing sample-specific parameters (e.g., search for phosphorylation on serine/threonine/tyrosine in phospho-sample),
+choosing proteomics software depending on the end goals (Identification, Quantitation).&lt;/p&gt;
+
+&lt;p&gt;Writing workflows and pipelines in proteomics informatics is still emerging. Proteome Discoverer is one such software where you can embed different software and edit different sections of the pipeline/workflow, depending on the needs. Here, I will NOT focus on any such workflows, but plan to use docker containers to show how docker can be used for proteomics bioinformatics to embed different tools for reproducible research.&lt;/p&gt;
+
+&lt;p&gt;For the current blog post, I use linux version of OMSSA that can be found &lt;a href=&quot;ftp://ftp.ncbi.nih.gov/pub/lewisg/omssa/CURRENT/&quot;&gt;here&lt;/a&gt;. I use ubuntu:cosmic within the docker. For makeblastdb, I used ncbi-blast+ that can be found &lt;a href=&quot;ftp://ftp.ncbi.nlm.nih.gov/blast/executables/blast+/LATEST/&quot;&gt;here&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;The end goal of this blog is a docker container that you can use for your proteomics database search with OMSSA. Once you have your (1) your input mgf file and (2) your fasta file of interest, then you can easily tweak the below Dockerfile.&lt;/p&gt;
+
+&lt;p&gt;NOTE: Edit the omssa_run.sh file if you want to adjust the search parameters (for example, add phosphorylation as variable modification if you are searching a phosphoproteomics dataset).&lt;/p&gt;
+
+&lt;p&gt;Here is the &lt;a href=&quot;https://github.com/viswam78/dockerizeOMSSA&quot;&gt;github link&lt;/a&gt; that has the same information and the &lt;a href=&quot;https://cloud.docker.com/u/sridharabio/repository/docker/sridharabio/dockerize123omssa&quot;&gt;dockerhub link&lt;/a&gt; to pull the image directly.&lt;/p&gt;
+
+&lt;p&gt;Here is how the dockerfile looks like:&lt;/p&gt;
+
+&lt;div class=&quot;language-console highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;go&quot;&gt;FROM ubuntu:cosmic
+
+RUN apt-get update
+RUN apt-get install -y wget
+
+RUN wget ftp://ftp.ncbi.nih.gov/pub/lewisg/omssa/CURRENT/omssa-linux.tar.gz
+RUN tar -xvf omssa-linux.tar.gz
+RUN rm -rf omssa-linux.tar.gz
+
+RUN wget ftp://ftp.ncbi.nlm.nih.gov/blast/executables/blast+/2.8.1/ncbi-blast-2.8.1+-x64-linux.tar.gz
+RUN tar -xvf ncbi-blast-2.8.1+-x64-linux.tar.gz
+RUN rm -rf ncbi-blast-2.8.1+-x64-linux.tar.gz
+
+&lt;/span&gt;&lt;span class=&quot;gp&quot;&gt;ENV PATH=&quot;$&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;PATH&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;:~/../omssa-2.1.9.linux&lt;span class=&quot;s2&quot;&gt;&quot;
+&lt;/span&gt;&lt;span class=&quot;gp&quot;&gt;ENV PATH=&quot;$&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;{PATH}:~/../ncbi-blast-2.8.1+/bin&quot;&lt;/span&gt;
+&lt;span class=&quot;go&quot;&gt;
+RUN export PATH
+
+&lt;/span&gt;&lt;span class=&quot;gp&quot;&gt;#&lt;/span&gt; copy &lt;span class=&quot;nb&quot;&gt;local &lt;/span&gt;sample files &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;mgf, fasta, along with mods.xml and usermods.xml&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;go&quot;&gt;RUN mkdir sample_data
+RUN cp ../omssa-2.1.9.linux/mods.xml /sample_data
+RUN cp ../omssa-2.1.9.linux/usermods.xml /sample_data
+COPY S288c_RefSeq.fasta /sample_data
+COPY yeast_subset.mgf /sample_data
+COPY makeblastdbRUN.sh /sample_data
+COPY omssa_run.sh /sample_data
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;I do not want to go through the details of the dockerfile, but all I did was [1] to get the OMSSA and ncbi-blast+ downloads, [2] to copy sample data set, along with the fasta file to the container and [3] to run makeblastdb followed by an OMSSA search.&lt;/p&gt;
+
+&lt;p&gt;You can directly pull this image using:&lt;/p&gt;
+&lt;div class=&quot;language-console highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;go&quot;&gt;docker pull sridharabio/dockerize123omssa
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Build the docker using:&lt;/p&gt;
+&lt;div class=&quot;language-console highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;go&quot;&gt;docker build .
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;This is how the successful build looks like:&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;docker_output_snippet.png&quot; alt=&quot;png&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Once you build, you can login to the Ubuntu container with&lt;/p&gt;
+&lt;div class=&quot;language-console highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;go&quot;&gt;docker run -it [ADD build info here]
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;The above container will put all sample data files in sample_data folder. So, you can change directory within the Ubuntu box using&lt;/p&gt;
+&lt;div class=&quot;language-console highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;go&quot;&gt;cd sample_data
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;To prepare the fasta file for OMSSA searches, you can&lt;/p&gt;
+&lt;div class=&quot;language-console highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;go&quot;&gt;bash makeblastdbRUN.sh
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;p&gt;The above will result in *.p* files for the fasta file.&lt;/p&gt;
+
+&lt;p&gt;For OMSSA search, you can&lt;/p&gt;
+&lt;div class=&quot;language-console highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;go&quot;&gt;bash omssa_run.sh
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;p&gt;This will result in output csv file with peptide spectral matches. You can go through my previous blogs to know more about how to analyze the OMSSA search results i.e., peptide spectral matches. That’s it for now!&lt;/p&gt;
+
+&lt;p&gt;For installing docker, refer to: https://hub.docker.com/&lt;/p&gt;
+
+&lt;p&gt;Additional resources:
+&lt;a href=&quot;https://github.com/galaxyproteomics/docker-galaxyp&quot;&gt;Galaxy Proteomics&lt;/a&gt;&lt;/p&gt;</content><author><name></name></author><summary type="html">docker pull sridharabio/dockerize123omssa</summary></entry><entry><title type="html">import pdb; pdb.set_trace()</title><link href="http://localhost:4000/proteomics/2019/03/18/import-pdb-pdb-dot-set-trace-EOB.html" rel="alternate" type="text/html" title="import pdb; pdb.set_trace() &lt;EOB&gt;" /><published>2019-03-18T00:00:00-04:00</published><updated>2019-03-18T00:00:00-04:00</updated><id>http://localhost:4000/proteomics/2019/03/18/import-pdb-pdb-dot-set-trace-EOB</id><content type="html" xml:base="http://localhost:4000/proteomics/2019/03/18/import-pdb-pdb-dot-set-trace-EOB.html">&lt;p&gt;Take my word for this. This will help you for years to come if you are in data science.
 By the way,&lt;/p&gt;
 &lt;div class=&quot;language-python highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;kn&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;pdb&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;pdb&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;set_trace&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
