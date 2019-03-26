@@ -88,7 +88,7 @@ docker build -t name_of_your_choice_for_build .
 docker run -it name_of_your_choice_for_build
 ```
 
-The above container will put all sample data files in sample_data folder. So, you can change directory within the Ubuntu box using
+The above Dockerfile has instructions to copy all sample data files to sample_data folder. Once you "docker run", then you will be logged into Ubuntu box. Change directory to sample_data within Ubuntu box using:
 ```console
 cd sample_data
 ```
