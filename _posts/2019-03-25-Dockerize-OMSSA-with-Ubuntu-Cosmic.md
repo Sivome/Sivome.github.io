@@ -24,7 +24,7 @@ The end goal of this blog is a docker container that you can use for your proteo
 
 NOTE: Edit the omssa_run.sh file if you want to adjust the search parameters (for example, add phosphorylation as variable modification if you are searching a phosphoproteomics dataset).
 
-Here is the [github link](https://github.com/viswam78/dockerizeOMSSA) that has the same information and the [dockerhub link](https://cloud.docker.com/u/sridharabio/repository/docker/sridharabio/dockerize123omssa) to pull the image directly.
+Here is the [github link](https://github.com/viswam78/dockerizeOMSSA) that has the same information and the [dockerhub link](https://hub.docker.com/r/sridharabio/dockerize123omssa) to pull the image directly.
 
 Here is how the dockerfile looks like:
 
