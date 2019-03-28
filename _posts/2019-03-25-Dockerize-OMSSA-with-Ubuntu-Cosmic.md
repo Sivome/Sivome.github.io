@@ -24,7 +24,7 @@ The end goal of this blog is a docker container that you can use for your proteo
 
 NOTE: Edit the omssa_run.sh file if you want to adjust the search parameters (for example, add phosphorylation as variable modification if you are searching a phosphoproteomics dataset).
 
-Here is the [github link](https://github.com/viswam78/dockerizeOMSSA) that has the same information and the [dockerhub link](https://cloud.docker.com/u/sridharabio/repository/docker/sridharabio/dockerize123omssa) to pull the image directly.
+Here is the [github link](https://github.com/viswam78/dockerizeOMSSA) that has the same information and the [dockerhub link](https://hub.docker.com/r/sridharabio/dockerize123omssa) to pull the image directly.
 
 Here is how the dockerfile looks like:
 
@@ -76,10 +76,19 @@ This is how the successful build looks like:
 
 Once you build, you can login to the Ubuntu container with
 ```console
-docker run -it [ADD build info here]
+# docker run -it [ADD build info here]
+# From above image, you can see the ID 638fb70a8e17
+docker run -it 638fb70a8e17
 ```
 
-The above container will put all sample data files in sample_data folder. So, you can change directory within the Ubuntu box using
+A neat way of doing this is:
+```console
+# Note the period at the end that builds the Dockerfile
+docker build -t name_of_your_choice_for_build .
+docker run -it name_of_your_choice_for_build
+```
+
+The above Dockerfile has instructions to copy all sample data files to sample_data folder. Once you "docker run", then you will be logged into Ubuntu box. Change directory to sample_data within Ubuntu box using:
 ```console
 cd sample_data
 ```
@@ -88,13 +97,13 @@ To prepare the fasta file for OMSSA searches, you can
 ```console
 bash makeblastdbRUN.sh
 ```
-The above will result in \*.p\* files for the fasta file.  
+The above will result in \*.fasta.p\* files for the fasta file.  
 
 For OMSSA search, you can
 ```console
 bash omssa_run.sh
 ```
-This will result in output csv file with peptide spectral matches. You can go through my previous blogs to know more about how to analyze the OMSSA search results i.e., peptide spectral matches. That's it for now!
+This will result in output csv file (output_run.csv) with peptide spectral matches. You can go through my previous blogs to know more about how to analyze the OMSSA search results i.e., peptide spectral matches. That's it for now!
 
 
 For installing docker, refer to: https://hub.docker.com/
