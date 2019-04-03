@@ -65,8 +65,14 @@ You can directly pull this image using:
 docker pull sridharabio/dockerize123omssa
 ```
 
-Build the docker using:
 ```console
+docker run -it sridharabio/dockerize123omssa
+```
+However if you plan to build the Dockerfile instead (from the github [repo](https://github.com/viswam78/dockerizeOMSSA))
+Build the dockerfile using once you:
+```console
+git clone https://github.com/viswam78/dockerizeOMSSA.git
+cd dockerizeOMSSA
 docker build .
 ```
 
