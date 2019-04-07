@@ -9,4 +9,4 @@ Sivome! For me, Genome + Proteome + Metabolome + Lipidome + Fluxome + Phenome + 
 
 Likewise *All -OMICS, including Economics is eventually Sivomics*!!!
 
-I created this space to advertise about my [work](https://sivome.github.io/) and [myself](https://sivome.github.io/cv/)!
+I created this space to advertise about my [work](https://sivome.github.io/about/) and [research interests](https://sivome.github.io/cv/)!
