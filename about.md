@@ -4,9 +4,9 @@ title: About
 permalink: /about/
 ---
 
-Over the last few years, there is an exponential rise in availability of high-dimensional biological datasets, thanks to open-source efforts. Two technologies that generate such high-dimensional data sets are:
-[1]. Next-generation sequencing [NGS] based genomics/transcriptomics technologies, 
-[2]. Mass-spectrometry based proteomics/phosphoproteomics technologies. 
+Over the last few years, there is an exponential rise in availability of high-dimensional biological datasets, thanks to open-source efforts. Two technologies that generate such high-dimensional data sets are:  
+[1]. Next-generation sequencing [NGS] based genomics/transcriptomics technologies,  
+[2]. Mass-spectrometry based proteomics/phosphoproteomics technologies.  
 
 Sivome's interests lie at developing cloud-based, bioinformatics pipeline technologies for NGS as well as mass-spectrometry based technologies.
 
