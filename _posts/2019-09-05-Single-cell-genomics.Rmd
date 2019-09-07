@@ -1,10 +1,12 @@
 ---
-title: "Single cell genomics -- Work in progress"
+title: "Single cell genomics - Seurat marker analyses"
 date: '2019-09-05'
 layout: post
 output:
   html_document:
     df_print: paged
+  pdf_document: default
+  word_document: default
 categories: Genomics
 ---
 
@@ -17,21 +19,23 @@ Most of the code below is directly taken from the Seurat Vignette.
 
 Seurat package can be used to classify different cell types and do additional analyses, such as finding markers that are specific to the cell types.
 
-```{r}
+```{r message=FALSE}
 # required packages
 rm(list = ls())
 library(tidyverse)
 library(Seurat)
-library(SingleR)
+library(markdown)
+library(tinytex)
 ```
 
-```{r}
+```{r include=FALSE}
 
-# Download the MCA processed data i.e., RDS file directly from the above link
+# Download the MCA processed data i.e., RDS file directly from the link found in Seurat MCA guided clustering
 mca.matrix <- readRDS(file = "C:/Sivome/SingleCellGenomics/MCA/MCA/MCA_merged_mat.rds")
 mca.metadata <- read.csv(file = "C:/Sivome/SingleCellGenomics/MCA/MCA/MCA_All-batch-removed-assignments.csv", row.names = 1)
 ```
 
+Download the MCA processed data i.e., RDS file directly from the link found in Seurat MCA guided clustering and here I stored them in mca.matrix and mca.metadata.
 ```{r}
 # Quick look at the meta data
 head(mca.metadata)
@@ -47,8 +51,8 @@ mca.10K <- NormalizeData(mca.10K, normalization.method = "LogNormalize", scale.f
 # Variable features in the data
 mca.10K <- FindVariableFeatures(mca.10K)
 
-# Cells having greater than 10% mitochondrial expression should be removed
-# Likewise, with 10X, cells having more than 2.5 K genes should be removed (as more genes generally mean more than 1 cell ended up in a droplet)
+# Mitochondrial expression is not used in the variable feature list for classification
+# Mitochondrial genes generally start with 'mt-', but sometimes they could be in different case as well
 mca.10K[["percent.mt"]] <- PercentageFeatureSet(mca.10K, pattern = "^mt-")
 mca.10K <- ScaleData(mca.10K, vars.to.regress = "percent.mt")
 
@@ -59,7 +63,10 @@ mca.10K <- RunPCA(mca.10K, npcs = 100, ndims.print = 1:5, nfeatures.print = 5)
 mca.10K <- FindNeighbors(mca.10K, reduction = "pca", dims = 1:75, nn.eps = 0.5)
 mca.10K <- FindClusters(mca.10K, resolution = 3, n.start = 10)
 
+#t-SNE, a populare classification method
 mca.10K <- RunTSNE(mca.10K, dims = 1:75)
+
+#UMAP is relatively new and with some datasets, it is shown to perform better than t-SNE
 mca.10K <- RunUMAP(mca.10K, dims = 1:75, min.dist = 0.75)
 ```
 
@@ -100,14 +107,30 @@ Significant markers for bladder (i.e., ident.1) will be the genes that have a hi
 Similarly, markers for bonemarrow (i.e., ident.2) are the genes that have a higher negative avg_logFC
 
 ```{r}
-# Distribution of the avg_logFC
-hist(Markers_Bladder_BoneMarrow$avg_logFC)
+# Distribution of the avg_logFC (ideally volcano plot should be drawn with P-values as well)
+hist(Markers_Bladder_BoneMarrow$avg_logFC, 25)
 ```
 
 ```{r}
+# For now, I used only the avg_LogFC values since there are significantly up- and down- regulated genes.
+# However, it is better to add p-value threshold as well!
 significant_markers <- Markers_Bladder_BoneMarrow[abs(Markers_Bladder_BoneMarrow$avg_logFC) >4, ]
 significant_markers
 ```
-Mgp, Dcn, Sparc and others with positive avg_logFC seem to be the markers for Bladder, while Ltf, Chil3, Retnlg and other genes with negative avg_logFC seem to be the markers for BoneMarrow.
+To differentiate bladder and bone-marrow cells, Mgp, Dcn, Sparc and others with positive avg_logFC seem to be the markers for Bladder, while Ltf, Chil3, Retnlg and other genes with negative avg_logFC seem to be the markers for BoneMarrow.
+
+The metadata will also let you compare using the group.by variable
+
+```{r Markers using different grouping variable}
+# Comparison between Batches
+Markers_BoneMarrow_1_and_4_batches <- FindMarkers(mca.10K, group.by = "Batch", ident.1 = "BoneMarrow_1", ident.2 = "BoneMarrow_4")
+head(Markers_BoneMarrow_1_and_4_batches)
+significant_markers_batches <- Markers_BoneMarrow_1_and_4_batches[abs(Markers_BoneMarrow_1_and_4_batches$avg_logFC) >2, ]
+significant_markers_batches
+```
+
+When you compare between 2 batches, it seems that the Igha is up-regulated in 2nd sample i.e., BoneMarrow_4 batch. Likewise you can make other comparisons to identify the differentially expressed genes (i.e., markers) between different clusters!
+
+In my next blog, I will use SingleR, an R package to subtype different cells / clusters.
 
 
