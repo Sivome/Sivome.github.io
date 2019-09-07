@@ -150,7 +150,9 @@ TSNEPlot(mca.10K) + DarkTheme() + NoLegend()
 ```r
 UMAPPlot(mca.10K) + DarkTheme() + NoLegend()
 ```
-![plot of chunk Dimplots](figure/UMAP.png)
+![plot of chunk Dimplots](figure/UMAP.png)  
+
+
 To visualize different tissues in the UMAP plot
 
 ```r
