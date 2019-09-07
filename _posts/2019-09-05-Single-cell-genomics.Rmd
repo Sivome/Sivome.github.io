@@ -1,0 +1,113 @@
+---
+title: "Single cell genomics -- Work in progress"
+date: '2019-09-05'
+layout: post
+output:
+  html_document:
+    df_print: paged
+categories: Genomics
+---
+
+Most of the RNA-seq experiments focus on bulk RNA-seq methods. However, after closely looking at single cell datasets, the information obtained from single-cell experiments can throw light on variety of underlying biological processes. Here, I downloaded publicly available microwell-seq dataset (Mouse Cell Atlas) that has 400K cells profiled. Out of these 400K cells, 242K cells seem to have meta data information. I picked top 10K cells for Seurat analyses in this blog.
+
+More R vignettes on Seurat can be found here: https://satijalab.org/seurat/vignettes.html
+Mouse cell atlas (MCA): http://bis.zju.edu.cn/MCA/
+Seurat R vignette on analyzing MCA can be found here: https://satijalab.org/seurat/v3.0/mca.html
+Most of the code below is directly taken from the Seurat Vignette.
+
+Seurat package can be used to classify different cell types and do additional analyses, such as finding markers that are specific to the cell types.
+
+```{r}
+# required packages
+rm(list = ls())
+library(tidyverse)
+library(Seurat)
+library(SingleR)
+```
+
+```{r}
+
+# Download the MCA processed data i.e., RDS file directly from the above link
+mca.matrix <- readRDS(file = "C:/Sivome/SingleCellGenomics/MCA/MCA/MCA_merged_mat.rds")
+mca.metadata <- read.csv(file = "C:/Sivome/SingleCellGenomics/MCA/MCA/MCA_All-batch-removed-assignments.csv", row.names = 1)
+```
+
+```{r}
+# Quick look at the meta data
+head(mca.metadata)
+```
+```{r}
+# Seurat analyses (Most of the content in this block is directly copied from the Seurat Vignette)
+dim(mca.matrix)
+# Extract first 10K cells
+mca.matrix.10K <- mca.matrix[,1:10000]
+mca.10K <- CreateSeuratObject(counts = mca.matrix.10K, meta.data = mca.metadata, project = "MouseCellAtlas")
+# Normalize data
+mca.10K <- NormalizeData(mca.10K, normalization.method = "LogNormalize", scale.factor = 10000)
+# Variable features in the data
+mca.10K <- FindVariableFeatures(mca.10K)
+
+# Cells having greater than 10% mitochondrial expression should be removed
+# Likewise, with 10X, cells having more than 2.5 K genes should be removed (as more genes generally mean more than 1 cell ended up in a droplet)
+mca.10K[["percent.mt"]] <- PercentageFeatureSet(mca.10K, pattern = "^mt-")
+mca.10K <- ScaleData(mca.10K, vars.to.regress = "percent.mt")
+
+# dimensionality reduction using PCA, followed by t-SNE and UMAP analyses
+# This routine also involves finding neighbours and finding clusters
+mca.10K <- RunPCA(mca.10K, npcs = 100, ndims.print = 1:5, nfeatures.print = 5)
+
+mca.10K <- FindNeighbors(mca.10K, reduction = "pca", dims = 1:75, nn.eps = 0.5)
+mca.10K <- FindClusters(mca.10K, resolution = 3, n.start = 10)
+
+mca.10K <- RunTSNE(mca.10K, dims = 1:75)
+mca.10K <- RunUMAP(mca.10K, dims = 1:75, min.dist = 0.75)
+```
+
+```{r}
+# PCA, TSNE, UMAP plots
+# Dark theme lets you see/count cells easily, and NoLegend ignores the labels of the clusters
+PCAPlot(mca.10K) + DarkTheme() + NoLegend()
+TSNEPlot(mca.10K) + DarkTheme() + NoLegend()
+UMAPPlot(mca.10K) + DarkTheme() + NoLegend()
+ 
+```
+To visualize different tissues in the UMAP plot
+```{r Dimplots}
+DimPlot(mca.10K, group.by = 'orig.ident') + DarkTheme()
+```
+
+From the Dimplot, it is visually clear how different tissues get separated with UMAP classification
+
+A general question research would be interested is the differences in the "Bladder" and "BoneMarrow". The 10K cells I selected seems to included these 2 tissue types. There are other tissues in the original MCA dataset.
+
+```{r Markers}
+# To identify the markers between the bladder and the bone marrow
+Markers_Bladder_BoneMarrow <- FindMarkers(mca.10K, group.by = "orig.ident", ident.1 = "Bladder", ident.2 = "BoneMarrow")
+head(Markers_Bladder_BoneMarrow)
+```
+
+This information is directly taken from the help file of the Seurat FindMarkers function:
+
+avg_logFC: log fold-chage of the average expression between the two groups. Positive values indicate that the gene is more highly expressed in the first group
+
+pct.1: The percentage of cells where the gene is detected in the first group
+
+pct.2: The percentage of cells where the gene is detected in the second group
+
+p_val_adj: Adjusted p-value, based on bonferroni correction using all genes in the dataset
+
+Significant markers for bladder (i.e., ident.1) will be the genes that have a higher positive avg_logFC.
+Similarly, markers for bonemarrow (i.e., ident.2) are the genes that have a higher negative avg_logFC
+
+```{r}
+# Distribution of the avg_logFC
+hist(Markers_Bladder_BoneMarrow$avg_logFC)
+```
+
+```{r}
+significant_markers <- Markers_Bladder_BoneMarrow[abs(Markers_Bladder_BoneMarrow$avg_logFC) >4, ]
+significant_markers
+```
+Mgp, Dcn, Sparc and others with positive avg_logFC seem to be the markers for Bladder, while Ltf, Chil3, Retnlg and other genes with negative avg_logFC seem to be the markers for BoneMarrow.
+
+
