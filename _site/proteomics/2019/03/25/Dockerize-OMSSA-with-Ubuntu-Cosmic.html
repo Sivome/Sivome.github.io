@@ -100,8 +100,12 @@ COPY omssa_run.sh /sample_data
 <div class="language-console highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="go">docker pull sridharabio/dockerize123omssa
 </span></code></pre></div></div>
 
-<p>Build the docker using:</p>
-<div class="language-console highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="go">docker build .
+<div class="language-console highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="go">docker run -it sridharabio/dockerize123omssa
+</span></code></pre></div></div>
+<p>However if you plan to build the Dockerfile instead (from the github <a href="https://github.com/viswam78/dockerizeOMSSA">repo</a>):</p>
+<div class="language-console highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="go">git clone https://github.com/viswam78/dockerizeOMSSA.git
+cd dockerizeOMSSA
+docker build .
 </span></code></pre></div></div>
 
 <p>This is how the successful build looks like:</p>

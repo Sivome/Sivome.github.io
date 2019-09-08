@@ -12,10 +12,10 @@ categories: Genomics
 
 Most of the RNA-seq experiments focus on bulk RNA-seq methods. However, after closely looking at single cell datasets, the information obtained from single-cell experiments can throw light on variety of underlying biological processes. Here, I downloaded publicly available microwell-seq dataset (Mouse Cell Atlas) that has 400K cells profiled. Out of these 400K cells, 242K cells seem to have meta data information. I picked top 10K cells for Seurat analyses in this blog.
 
-More R vignettes on Seurat can be found here: https://satijalab.org/seurat/vignettes.html  
-Mouse cell atlas (MCA): http://bis.zju.edu.cn/MCA/  
-Seurat R vignette on analyzing MCA can be found here: https://satijalab.org/seurat/v3.0/mca.html  
-Most of the code below is directly taken from the Seurat Vignette.
+More R vignettes on Seurat can be found here: <https://satijalab.org/seurat/vignettes.html>  
+Mouse cell atlas (MCA): <http://bis.zju.edu.cn/MCA/>  
+Seurat R vignette on analyzing MCA can be found here: <https://satijalab.org/seurat/v3.0/mca.html>  
+Most of the code below is directly taken from the Seurat Vignette.  
 
 Seurat package can be used to classify different cell types and do additional analyses, such as finding markers that are specific to the cell types.
 
@@ -137,8 +137,8 @@ mca.10K <- FindClusters(mca.10K, resolution = 3, n.start = 10)
 
 We also additionally perform 2 well known techniques of classification i.e., t-SNE and UMAP.  
 
-Additional information on t-SNE can be found here (wiki page): https://en.wikipedia.org/wiki/T-distributed_stochastic_neighbor_embedding  
-Additional information on UMAP can be found here (Nature Biotechnology paper): https://www.nature.com/articles/nbt.4314  
+Additional information on t-SNE can be found here (wiki page): <https://en.wikipedia.org/wiki/T-distributed_stochastic_neighbor_embedding>  
+Additional information on UMAP can be found here (Nature Biotechnology paper): <https://www.nature.com/articles/nbt.4314>  
 
 ```r
 #t-SNE, a populare classification method
