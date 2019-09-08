@@ -32,8 +32,16 @@ library(markdown)
 library(tinytex)
 ```
 
-Download the MCA processed data i.e., RDS file directly from the link found in Seurat MCA guided clustering and here I stored them in mca.matrix and mca.metadata.
+Download the MCA processed data i.e., RDS file directly from the [link found in Seurat MCA guided clustering](https://www.dropbox.com/s/8d8t4od38oojs6i/MCA.zip?dl=1).      
 
+```{r include=FALSE}
+
+# Download the MCA processed data i.e., RDS file directly from the link found in Seurat MCA guided clustering
+mca.matrix <- readRDS(file = "../MCA/MCA_merged_mat.rds")
+mca.metadata <- read.csv(file = "../MCA/MCA_All-batch-removed-assignments.csv", row.names = 1)
+```
+
+I stored the  metadata of the cells in mca.metadata and the actual counts table (i.e., counts for each of the transcript and the cell) in mca.matrix.  
 ```r
 # Quick look at the meta data
 head(mca.metadata)
