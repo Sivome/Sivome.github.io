@@ -2,11 +2,6 @@
 title: "Single cell genomics - Seurat marker analyses"
 date: '2019-09-05'
 layout: post
-output:
-  html_document:
-    df_print: paged
-  pdf_document: default
-  word_document: default
 categories: Genomics
 ---
 
