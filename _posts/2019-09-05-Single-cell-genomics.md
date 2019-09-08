@@ -213,7 +213,7 @@ hist(Markers_Bladder_BoneMarrow$avg_logFC, 25)
 
 ![png](Hist.png)  
 
-From the above distribution, there seems to be markers that are 4X different. Ideally, anything above avg_logFC > 0.25 or avg_logFC < 0.25 can be used. For the blog purposes, I picked a very high avg_logFC to show the genes that are critical in classifying.  
+From the above distribution, there seems to be markers that are 4X different. Ideally, anything above avg_logFC > 0.25 or avg_logFC < -0.25 can be used. For the blog purposes, I picked a high threshold avg_logFC to show the genes that are critical in classifying bladder and bone-marrow samples.  
 
 ```r
 # For now, I used only the avg_LogFC values since there are significantly up- and down- regulated genes.
@@ -260,7 +260,7 @@ head(Markers_BoneMarrow_1_and_4_batches)
 ## Gm10123  9.352412e-274  1.858993 0.384 0.011 3.727404e-269
 ```
 
-Some genes seem to have high expression (i.e., avg_LogFC > 2 or avg_LogFC < 2), in one batch compared to other.  
+Some genes seem to have high expression (i.e., avg_LogFC > 2 or avg_LogFC < -2), in one batch compared to other.  
 ```r
 significant_markers_batches <- Markers_BoneMarrow_1_and_4_batches[abs(Markers_BoneMarrow_1_and_4_batches$avg_logFC) >2, ]
 significant_markers_batches
