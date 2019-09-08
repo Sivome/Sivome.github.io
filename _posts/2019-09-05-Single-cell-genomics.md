@@ -104,7 +104,7 @@ mca.10K <- ScaleData(mca.10K, vars.to.regress = "percent.mt")
 ```
 ## Centering and scaling data matrix
 ```
-
+One of the critical goals of single cell data analyses is to classify different cells. This can be achieved using the unsupervised clustering techniques such as PCA (t-SNE, UMAP additionally).  
 ```r
 # dimensionality reduction using PCA, followed by t-SNE and UMAP analyses
 # This routine also involves finding neighbours and finding clusters
@@ -150,7 +150,7 @@ mca.10K <- RunTSNE(mca.10K, dims = 1:75)
 mca.10K <- RunUMAP(mca.10K, dims = 1:75, min.dist = 0.75)
 ```
 
-We can plot the seurat objects with the dimensionaly reduction using the Seurat functions PCAPlot, TSNEPlot and UMAPPlot respectively.  
+ We can then plot the seurat objects with the dimensionality reduction using the Seurat functions PCAPlot, TSNEPlot and UMAPPlot respectively.  
 
 ```r
 # PCA, TSNE, UMAP plots
