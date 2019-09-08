@@ -32,11 +32,10 @@ library(markdown)
 library(tinytex)
 ```
 
-Download the MCA processed data i.e., RDS file directly from the [link found in Seurat MCA guided clustering](https://www.dropbox.com/s/8d8t4od38oojs6i/MCA.zip?dl=1).      
+Download the MCA processed data i.e., RDS file directly from the [link found in Seurat MCA guided clustering](https://www.dropbox.com/s/8d8t4od38oojs6i/MCA.zip?dl=1). Extract the files and store them in MCA folder. We only use the metadata and counts files in the below analyses.  
 
-```{r include=FALSE}
-
-# Download the MCA processed data i.e., RDS file directly from the link found in Seurat MCA guided clustering
+```r
+# Using the metadata and the counts table
 mca.matrix <- readRDS(file = "../MCA/MCA_merged_mat.rds")
 mca.metadata <- read.csv(file = "../MCA/MCA_All-batch-removed-assignments.csv", row.names = 1)
 ```

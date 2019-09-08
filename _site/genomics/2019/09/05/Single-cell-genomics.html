@@ -67,8 +67,14 @@ Most of the code below is directly taken from the Seurat Vignette.</p>
 <div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">library</span><span class="p">(</span><span class="n">tinytex</span><span class="p">)</span><span class="w">
 </span></code></pre></div></div>
 
-<p>Download the MCA processed data i.e., RDS file directly from the link found in Seurat MCA guided clustering and here I stored them in mca.matrix and mca.metadata.</p>
+<p>Download the MCA processed data i.e., RDS file directly from the <a href="https://www.dropbox.com/s/8d8t4od38oojs6i/MCA.zip?dl=1">link found in Seurat MCA guided clustering</a>. Extract the files and store them in MCA folder. We only use the metadata and counts files in the below analyses.</p>
 
+<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># Using the metadata and the counts table</span><span class="w">
+</span><span class="n">mca.matrix</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">readRDS</span><span class="p">(</span><span class="n">file</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"../MCA/MCA_merged_mat.rds"</span><span class="p">)</span><span class="w">
+</span><span class="n">mca.metadata</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">read.csv</span><span class="p">(</span><span class="n">file</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"../MCA/MCA_All-batch-removed-assignments.csv"</span><span class="p">,</span><span class="w"> </span><span class="n">row.names</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span><span class="p">)</span><span class="w">
+</span></code></pre></div></div>
+
+<p>I stored the  metadata of the cells in mca.metadata and the actual counts table (i.e., counts for each of the transcript and the cell) in mca.matrix.</p>
 <div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># Quick look at the meta data</span><span class="w">
 </span><span class="n">head</span><span class="p">(</span><span class="n">mca.metadata</span><span class="p">)</span><span class="w">
 </span></code></pre></div></div>
@@ -225,7 +231,7 @@ Additional information on UMAP can be found here (Nature Biotechnology paper): <
 
 <p><img src="Hist.png" alt="png" /></p>
 
-<p>From the above distribution, there seems to be markers that are 4X different. Ideally, anything above avg_logFC &gt; 0.25 or avg_logFC &lt; 0.25 can be used. For the blog purposes, I picked a very high avg_logFC to show the genes that are critical in classifying.</p>
+<p>From the above distribution, there seems to be markers that are 4X different. Ideally, anything above avg_logFC &gt; 0.25 or avg_logFC &lt; -0.25 can be used. For the blog purposes, I picked a high threshold avg_logFC to show the genes that are critical in classifying bladder and bone-marrow samples.</p>
 
 <div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># For now, I used only the avg_LogFC values since there are significantly up- and down- regulated genes.</span><span class="w">
 </span><span class="c1"># However, it is better to add p-value threshold as well!</span><span class="w">
@@ -267,7 +273,7 @@ Additional information on UMAP can be found here (Nature Biotechnology paper): <
 ## Gm10123  9.352412e-274  1.858993 0.384 0.011 3.727404e-269
 </code></pre></div></div>
 
-<p>Some genes seem to have high expression (i.e., avg_LogFC &gt; 2 or avg_LogFC &lt; 2), in one batch compared to other.</p>
+<p>Some genes seem to have high expression (i.e., avg_LogFC &gt; 2 or avg_LogFC &lt; -2), in one batch compared to other.</p>
 <div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">significant_markers_batches</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">Markers_BoneMarrow_1_and_4_batches</span><span class="p">[</span><span class="nf">abs</span><span class="p">(</span><span class="n">Markers_BoneMarrow_1_and_4_batches</span><span class="o">$</span><span class="n">avg_logFC</span><span class="p">)</span><span class="w"> </span><span class="o">&gt;</span><span class="m">2</span><span class="p">,</span><span class="w"> </span><span class="p">]</span><span class="w">
 </span><span class="n">significant_markers_batches</span><span class="w">
 </span></code></pre></div></div>
