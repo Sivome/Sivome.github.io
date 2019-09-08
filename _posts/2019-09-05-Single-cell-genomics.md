@@ -12,9 +12,9 @@ categories: Genomics
 
 Most of the RNA-seq experiments focus on bulk RNA-seq methods. However, after closely looking at single cell datasets, the information obtained from single-cell experiments can throw light on variety of underlying biological processes. Here, I downloaded publicly available microwell-seq dataset (Mouse Cell Atlas) that has 400K cells profiled. Out of these 400K cells, 242K cells seem to have meta data information. I picked top 10K cells for Seurat analyses in this blog.
 
-More R vignettes on Seurat can be found here: https://satijalab.org/seurat/vignettes.html
-Mouse cell atlas (MCA): http://bis.zju.edu.cn/MCA/
-Seurat R vignette on analyzing MCA can be found here: https://satijalab.org/seurat/v3.0/mca.html
+More R vignettes on Seurat can be found here: https://satijalab.org/seurat/vignettes.html  
+Mouse cell atlas (MCA): http://bis.zju.edu.cn/MCA/  
+Seurat R vignette on analyzing MCA can be found here: https://satijalab.org/seurat/v3.0/mca.html  
 Most of the code below is directly taken from the Seurat Vignette.
 
 Seurat package can be used to classify different cell types and do additional analyses, such as finding markers that are specific to the cell types.
@@ -60,6 +60,7 @@ head(mca.metadata)
 ## Bladder_1.AAAACGAGCGAGCGAGTA AAAACGAGCGAGCGAGTA
 ## Bladder_1.AAAACGAGGGTCAGATGG AAAACGAGGGTCAGATGG
 ```
+The metadata can be used to group variables for downstream Seurat analyses. As an example, towards the end of this blog, I showed how to use Batch column (in the metadata above) to compare different batches of the same tissue.  
 
 ```r
 # Seurat analyses (Most of the content in this block is directly copied from the Seurat Vignette)
@@ -69,12 +70,18 @@ dim(mca.matrix)
 ```
 ## [1]  39855 405191
 ```
+In total, there are 405K single cells, for 39855 transcripts. It is to be noted that few percent of these transcripts are found in individual cells.  
 
+CreateSeuratObject is a function in the Seurat package that builds a seurat object using the counts file. Here, we used only the top 10K cells to overcome some of the memory issues. If you are working on a high performance compute, you can use all the cells for which metadata information is available i.e., 242K+ cells.    
 ```r
 # Extract first 10K cells
 mca.matrix.10K <- mca.matrix[,1:10000]
 mca.10K <- CreateSeuratObject(counts = mca.matrix.10K, meta.data = mca.metadata, project = "MouseCellAtlas")
 ```
+A proper normalization of the data, followed by running principal component analyses to classify different cell types is done in the below R chunk. We use the highly variable features of the dataset to classify different cells.  
+
+In most of the single-cell data analyses bioinformatics methods, we ignore the cells that have more mitochondrial expression compared to the total expression. As a rule of thumb, any cell that has more than 10% of the total expression should be avoided. However, in this blog, we will not use the mitochondrial expression as a possible feature to classify.  
+
 
 ```r
 # Normalize data
@@ -128,6 +135,11 @@ mca.10K <- FindNeighbors(mca.10K, reduction = "pca", dims = 1:75, nn.eps = 0.5)
 mca.10K <- FindClusters(mca.10K, resolution = 3, n.start = 10)
 ```
 
+We also additionally perform 2 well known techniques of classification i.e., t-SNE and UMAP.  
+
+Additional information on t-SNE can be found here (wiki page): https://en.wikipedia.org/wiki/T-distributed_stochastic_neighbor_embedding  
+Additional information on UMAP can be found here (Nature Biotechnology paper): https://www.nature.com/articles/nbt.4314  
+
 ```r
 #t-SNE, a populare classification method
 mca.10K <- RunTSNE(mca.10K, dims = 1:75)
@@ -136,34 +148,35 @@ mca.10K <- RunTSNE(mca.10K, dims = 1:75)
 mca.10K <- RunUMAP(mca.10K, dims = 1:75, min.dist = 0.75)
 ```
 
+We can plot the seurat objects with the dimensionaly reduction using the Seurat functions PCAPlot, TSNEPlot and UMAPPlot respectively.  
 
 ```r
 # PCA, TSNE, UMAP plots
 # Dark theme lets you see/count cells easily, and NoLegend ignores the labels of the clusters
 PCAPlot(mca.10K) + DarkTheme() + NoLegend()
 ```
-![plot of chunk Dimplots](figure/PCA.png)
+![png](PCA.png)
 ```r
 TSNEPlot(mca.10K) + DarkTheme() + NoLegend()
 ```
-![plot of chunk Dimplots](figure/TSNE.png)
+![png](TSNE.png)
 ```r
 UMAPPlot(mca.10K) + DarkTheme() + NoLegend()
 ```
-![plot of chunk Dimplots](figure/UMAP.png)  
+![png](UMAP.png)  
 
 
-To visualize different tissues in the UMAP plot
+To visualize different tissues in the UMAP plot, we can group by 'orig.ident' that has information on what the tissue type is.  We use DarkTheme() function to see the background clearly. The default reduction technique when UMAP is run is UMAP. If you want to look at other DimPlot, you can use the 'reduction' argument of the DimPlot.  
 
 ```r
 DimPlot(mca.10K, group.by = 'orig.ident') + DarkTheme()
 ```
 
-![plot of chunk Dimplots](figure/Dimplot.png)
+![png](Dimplot.png)
 
-From the Dimplot, it is visually clear how different tissues get separated with UMAP classification
+From the Dimplot, it is visually clear how different tissues get separated with UMAP classification.  Most of the times, a researcher is interested in the clusters that are different between 2 samples i.e., in the above case, Bladder and Bone-marrow. For such classification, FindMarkers is a very important function available in the Seurat package.  This can find markers between different grouping variables found in the metadata.  
 
-A general question research would be interested is the differences in the "Bladder" and "BoneMarrow". The 10K cells I selected seems to included these 2 tissue types. There are other tissues in the original MCA dataset.
+Below, I used FindMarkers to find the differences in the "Bladder" and "BoneMarrow" at the gene level. If you end up running more or less than 10K cells, you will see different tissues appear in the dataset. The 10K cells I selected seems to include Bladder and Bone-marrow and hence I am looking at the markers to separate these 2 tissues.  
 
 
 ```r
@@ -192,17 +205,20 @@ pct.2: The percentage of cells where the gene is detected in the second group
 
 p_val_adj: Adjusted p-value, based on bonferroni correction using all genes in the dataset
 
-Significant markers for bladder (i.e., ident.1) will be the genes that have a higher positive avg_logFC.
-Similarly, markers for bonemarrow (i.e., ident.2) are the genes that have a higher negative avg_logFC
+Significant markers for bladder (i.e., ident.1) will be the genes that have a higher positive avg_logFC.  
 
+Similarly, markers for bonemarrow (i.e., ident.2) are the genes that have a higher negative avg_logFC.  
+
+I find the markers table to be very useful to understand a bit more about the genes, their expression in different clusters, the average log fold-change to find the up- and down- regulated genes among different tissues, and finally the adjust p-values to pick the significant markers.  
 
 ```r
 # Distribution of the avg_logFC (ideally volcano plot should be drawn with P-values as well)
 hist(Markers_Bladder_BoneMarrow$avg_logFC, 25)
 ```
 
-![plot of chunk unnamed-chunk-6](figure/Hist.png)
+![png](Hist.png)  
 
+From the above distribution, there seems to be markers that are 4X different. Ideally, anything above avg_logFC > 0.25 or avg_logFC < 0.25 can be used. For the blog purposes, I picked a very high avg_logFC to show the genes that are critical in classifying.  
 
 ```r
 # For now, I used only the avg_LogFC values since there are significantly up- and down- regulated genes.
@@ -226,9 +242,11 @@ significant_markers
 ## S100a9     0 -6.528570 0.001 0.998         0
 ## S100a8     0 -6.918372 0.001 1.000         0
 ```
-To differentiate bladder and bone-marrow cells, Mgp, Dcn, Sparc and others with positive avg_logFC seem to be the markers for Bladder, while Ltf, Chil3, Retnlg and other genes with negative avg_logFC seem to be the markers for BoneMarrow.
+To differentiate bladder and bone-marrow cells, Mgp, Dcn, Sparc and others with positive avg_logFC seem to be the markers for Bladder, while Ltf, Chil3, Retnlg and other genes with negative avg_logFC seem to be the markers for BoneMarrow.  
 
-The metadata will also let you compare using the group.by variable
+Another thing to note is the pct.1 and pct.2. For Mgp, you can see that this gene is not expressed in any of the cells in the second cluster. The second cluster we picked in the FindMarkers above (i.e., ident.2) is Bone-marrow. So pct.1 = 0.928 means that 92.8 percent of the cells express this gene in bladder tissue, but this gene is NOT seen in any of the bone-marrow cells.  
+
+We can also do additional comparions using the metadata information. If someone is interested to compare 2 bladder or 2 bone marrow samples instead (coming from different batches, different labs or say different treatments), you can add another metadata column (using mutate function in R) and make those comparisons. Here, I used the already existing metadata "Batch" column to look at the differences in 2 batches of the bone-marrow samples (i.e., comparing BoneMarrow_1 to BoneMarrow_4). The below information might not mean anything, but as an example, I used this.  
 
 
 ```r
@@ -247,6 +265,7 @@ head(Markers_BoneMarrow_1_and_4_batches)
 ## Gm10123  9.352412e-274  1.858993 0.384 0.011 3.727404e-269
 ```
 
+Some genes seem to have high expression (i.e., avg_LogFC > 2 or avg_LogFC < 2), in one batch compared to other.  
 ```r
 significant_markers_batches <- Markers_BoneMarrow_1_and_4_batches[abs(Markers_BoneMarrow_1_and_4_batches$avg_logFC) >2, ]
 significant_markers_batches
@@ -260,6 +279,6 @@ significant_markers_batches
 ## Igha      8.891865e-46 -2.339435 0.004 0.305  3.543853e-41
 ```
 
-When you compare between 2 batches, it seems that the Igha is up-regulated in 2nd sample i.e., BoneMarrow_4 batch. Likewise you can make other comparisons to identify the differentially expressed genes (i.e., markers) between different clusters!
+When you compare 2 batches, it seems that the Igha is up-regulated in 2nd sample i.e., BoneMarrow_4 batch. Likewise you can make other comparisons to identify the differentially expressed genes (i.e., markers) between different clusters!  This is a brief analyses on how to use Seurat R packages to find the markers between 2 samples/clusters/cells of interest.  
 
 In my next blog, I will use SingleR, an R package to subtype different cells / clusters.
