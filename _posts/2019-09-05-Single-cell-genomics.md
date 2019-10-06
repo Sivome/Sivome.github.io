@@ -91,7 +91,7 @@ mca.10K <- NormalizeData(mca.10K, normalization.method = "LogNormalize", scale.f
 # Variable features in the data
 mca.10K <- FindVariableFeatures(mca.10K)
 
-# Mitochondrial expression is not used in the variable feature list for classification
+# Mitochondrial expression is not used in the variable feature list for dimensional reduction / clustering
 # Mitochondrial genes generally start with 'mt-', but sometimes they could be in different case as well
 mca.10K[["percent.mt"]] <- PercentageFeatureSet(mca.10K, pattern = "^mt-")
 mca.10K <- ScaleData(mca.10K, vars.to.regress = "percent.mt")
@@ -104,7 +104,7 @@ mca.10K <- ScaleData(mca.10K, vars.to.regress = "percent.mt")
 ```
 ## Centering and scaling data matrix
 ```
-One of the critical goals of single cell data analyses is to classify different cells. This can be achieved using the unsupervised clustering techniques such as PCA (t-SNE, UMAP additionally).  
+One of the critical goals of single cell data analyses is to cluster different cells into cell subtype populations. This can be achieved using the dimensional reduction techniques such as PCA followed by clustering(t-SNE, UMAP additionally).  
 ```r
 # dimensionality reduction using PCA, followed by t-SNE and UMAP analyses
 # This routine also involves finding neighbours and finding clusters
@@ -137,13 +137,12 @@ mca.10K <- FindNeighbors(mca.10K, reduction = "pca", dims = 1:75, nn.eps = 0.5)
 mca.10K <- FindClusters(mca.10K, resolution = 3, n.start = 10)
 ```
 
-We also additionally perform 2 well known techniques of classification i.e., t-SNE and UMAP.  
-
+t-SNE and UMAP are new clustering techniques that we apply on the reduced data.  
 Additional information on t-SNE can be found here (wiki page): <https://en.wikipedia.org/wiki/T-distributed_stochastic_neighbor_embedding>  
 Additional information on UMAP can be found here (Nature Biotechnology paper): <https://www.nature.com/articles/nbt.4314>  
 
 ```r
-#t-SNE, a populare classification method
+#t-SNE
 mca.10K <- RunTSNE(mca.10K, dims = 1:75)
 
 #UMAP is relatively new and with some datasets, it is shown to perform better than t-SNE
@@ -176,7 +175,7 @@ DimPlot(mca.10K, group.by = 'orig.ident') + DarkTheme()
 
 ![png](Dimplot.png)
 
-From the Dimplot, it is visually clear how different tissues get separated with UMAP classification.  Most of the times, a researcher is interested in the clusters that are different between 2 samples i.e., in the above case, Bladder and Bone-marrow. For such classification, FindMarkers is a very important function available in the Seurat package.  This can find markers between different grouping variables found in the metadata.  
+From the Dimplot, it is visually clear how different tissues get separated with UMAP.  Most of the times, a researcher is interested in the clusters that are different between 2 samples i.e., in the above case, Bladder and Bone-marrow. For such classification, FindMarkers is a very important function available in the Seurat package.  This can find markers between different grouping variables found in the metadata.  
 
 Below, I used FindMarkers to find the differences in the "Bladder" and "BoneMarrow" at the gene level. If you end up running more or less than 10K cells, you will see different tissues appear in the dataset. The 10K cells I selected seems to include Bladder and Bone-marrow and hence I am looking at the markers to separate these 2 tissues.  
 
