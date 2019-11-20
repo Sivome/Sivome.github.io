@@ -1,8 +1,9 @@
 ---
-title: "Denoising Single Cell Data With Autoencoders (neural networks)"
-output: html_document
+title: "Denoising Single Cell Data With Autoencoders (Neural Networks)"
+date: '2019-11-17'
+layout: post
+categories: Genomics
 ---
-
 
 In my previous blog, I used single cell Mouse Cell Atlas [MCA] data to identify clusters and find differentially expressed markers between the clusters. Single cell datasets, in general are sparse, as the number of genes identified is less, compared to bulk RNA-seq experiment. Another reason for sparsity is the number of cells involved, and in most cases, these cells belong to different cell-types leading to expression of different genes in each cell. There are Python modules / R packages that can denoise the single cell counts data and perform imputation (i.e., identify real zeros to possible artifacts caused by single cell sequencing technologies). Some of the programs that does the denoising + imputation on single cell data are DCA, SAVER, MAGIC, scIMPUTE.
 
@@ -588,7 +589,7 @@ The dimension of the input data is 2000 variable genes by 10000 cells. This impl
 
 The end goal of this blog is to show the _basic details_ of different aspects of denoising single cell data using neural networks such as autoencoders. For accurate classifications and analyses, it is highly recommended to use the above programs such as SAVER-X, DCA etc. Below, I showed few things including [1] generating the input data for the above tools (like SAVERX, DCA), [2] understanding the notation of the neural networks (i.e., training data set size, input dimension of the input layer neurons), [3] neural network model i.e., layers of the autoencoder i.e., input layer + [ encoder layers ] + [ compression layer ] + [ decoder layer ] + [ output layer ], [4] the parameters used to run the neural network to calculate the loss and other metrics, [5] evaluating the model on the input data to generate the denoised + impute version of the original single cell data. Finally, both the original and the basic denoised version of the dataset is fed back into the Seurat for clustering analyses. Another short-coming of the below model is to use a new test set. Since the model was trained on using a validation set, I generated the final output using all the samples.  
 
-The only difference between the previous implementations and the current one is the number of hidden layers used in encoder and decoder. Unlike one layer of encoder and decoder, I implemented 2 layers with 256 and 64 neurons each. The encoded layers have 256 and 64neurons, while the decoded layers has 256 and 64 neurons with a final output layer having 2000 neurons representing the number of samples. There is a compression layer in between encoder and decoder layers. Except for the activation for the final output layer, all the activations used are ReLU. The output layer has an activation of *sigmoid* function. Regularization might be helpful if the entire data set is used (i.e., counts of all genes and NOT just varying genes).  
+One of the major differences between the previous implementations and the current one is the number of hidden layers used in encoder and decoder. Unlike one layer of encoder and decoder, I implemented 2 layers with 256 and 64 neurons each. The encoded layers have 256 and 64neurons, while the decoded layers has 256 and 64 neurons with a final output layer having 2000 neurons representing the number of samples. There is a compression layer in between encoder and decoder layers. Except for the activation for the final output layer, all the activations used are ReLU. The output layer has an activation of *sigmoid* function. Regularization might be helpful if the entire data set is used (i.e., counts of all genes and NOT just varying genes).  
 
 In poisson loss function, the loss would equal to the mean([y_pred - y_true * log(y_pred + epsilon)]), where epsilon is a small number to avoid calculating log(0). Also, for Seurat analyses, it would help to use a threshold and set everything below threshold to zero. However, this threshold should be carefully chosen depending on the dataset (for example, looking at the histogram of the predicted output).  
 
@@ -669,7 +670,7 @@ autoencoder.summary()
     _________________________________________________________________
 
 
-The number of epochs used is ONLY 20. Ideally this should be large enough to yield a very low validation loss. To save on the compute time, I used few epochs. Another parameter of interest is the validation_split. A validation split of 0.3 below indicates that 30% of the training data is used as a validation set. Here, since the number of samples is 2000, the model will be trained using 70% of the samples (1400) and the remaining 30% is used for validation purposes (i.e., 600 samples).  
+The number of epochs used is ONLY 20. Ideally this should be large enough to yield a very low validation loss. To save on the compute time, I used few epochs. The other parameter of interest is the validation_split. A validation split of 0.3 below indicates that 30% of the training data is used as a validation set. Here, since the number of samples is 2000, the model will be trained using 70% of the samples (1400) and the remaining 30% is used for validation purposes (i.e., 600 samples).  
 
 ```python
 # Log normalizing the raw counts and scaling to 10K cells is typically used with all the single cell programs.
@@ -731,16 +732,10 @@ mca_counts_norm_lc_output = autoencoder.predict(mca_counts_norm_lc)
 ```python
 mca_counts_norm_lc_output[0:4, 0:4]
 ```
-
-
-
-
     array([[0.01773182, 0.02895972, 0.01728064, 0.01625928],
            [0.00141433, 0.00209311, 0.00145644, 0.0011279 ],
            [0.02724421, 0.04175797, 0.02742231, 0.02623108],
            [0.0013988 , 0.00204527, 0.00144061, 0.00110739]], dtype=float32)
-
-
 
 
 ```python
@@ -1845,32 +1840,7 @@ mca_counts_norm_lc_output_pd.to_csv('mca_counts_norm_lc_output_pd_colnames.csv')
 files.download('mca_counts_norm_lc_output_pd_colnames.csv')
 ```
 
-Back to Rstudio for seurat analyses. Here, I download the files, and run the PCA analyses, find neighbours, find clusters analyses and finally run the TSNE and UMAP for visualization purposes.  
-
-```r
-mca.10K.original <- read.csv("C:\\Sivome\\SingleCellGenomics\\MCA\\MCA\\mca_counts_norm_lc.csv")
-rownames(mca.10K.original) <- mca.10K.original$X
-mca.10K.original <- mca.10K.original[, -1]
-
-
-mca.10K.autoencoder <- read.csv("C:\\Sivome\\SingleCellGenomics\\MCA\\MCA\\mca_counts_norm_lc_output_pd_colnames.csv")
-mca.10K.autoencoder <- mca.10K.autoencoder[, -1]
-rownames(mca.10K.autoencoder) <- rownames(mca.10K.original)
-
-mca.10K.original <- data.matrix(mca.10K.original)
-mca.10K.autoencoder <- data.matrix(mca.10K.autoencoder)
-```
-
-
-```r
-# duplicate mca.10K seurat objects and replace the scale.data with the new original and autoencoder analyses
-mca.10K.original.seurat <- mca.10K
-mca.10K.autoencoder.seurat <- mca.10K
-mca.10K.original.seurat@assays$RNA@scale.data <- mca.10K.original
-mca.10K.autoencoder.seurat@assays$RNA@scale.data <- mca.10K.autoencoder
-```
-
-
+Back to Rstudio for seurat analyses. Here, I download the files, and ran the PCA analyses, found nearest neighbours, then found the clusters and finally ran the TSNE and UMAP for visualization purposes. This is a default framework with Seurat. I made a hack to the original script to read the scale data, as the clusters are assigned using the scale.data. Ideally, the entire counts table should be used for denoising and the Seurat object should be created by re-running the "FindVariableFeatures" which might result in different set of genes for the original and the denoised data. The denoised data might have better set of variable genes with corrected counts, along with imputation.  
 ```r
 mca.10K.original.seurat <- RunPCA(mca.10K.original.seurat, npcs = 100, ndims.print = 1:5, nfeatures.print = 5)
 ```
@@ -1949,9 +1919,12 @@ mca.10K.autoencoder.seurat <- RunTSNE(mca.10K.autoencoder.seurat, dims = 1:75)
 mca.10K.autoencoder.seurat <- RunUMAP(mca.10K.autoencoder.seurat, dims = 1:75, min.dist = 0.75)
 ```
 
-Plotting the UMAP for both original and autoencoder denoised data. PLEASE NOTE THE SHORTCOMINGS OF THE MODEL IN [1] PICKING ONLY VARIABLE GENES, [2] TRAINING ON FEW EPOCHS, [3] USING A SIMPLE POISSON LOSS FUNCTION. Having mentioned all of this, the umap plot of the autoencoder seem to retain the well separated clusters for each of the bone-marrow and bladder tissues.  
+Plotting the UMAP for both original and autoencoder denoised data.  
 
 ```r
 DimPlot(mca.10K.original.seurat, group.by = 'orig.ident') + DarkTheme()
 DimPlot(mca.10K.autoencoder.seurat, group.by = 'orig.ident') + DarkTheme()
 ```
+![png](UMAP_combined.png)  
+
+PLEASE NOTE THE SHORTCOMINGS OF THE MODEL IN [1] PICKING ONLY VARIABLE GENES, [2] TRAINING ON FEW EPOCHS, [3] USING A SIMPLE POISSON LOSS FUNCTION. Having mentioned all of this, the umap plot of the autoencoder seem to retain the well separated clusters for each of the bone-marrow and bladder tissues.  
