@@ -1,0 +1,1944 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.5.0 -->
+<title>Denoising Single Cell Data With Autoencoders (Neural Networks) | Sivome</title>
+<meta name="generator" content="Jekyll v3.7.4" />
+<meta property="og:title" content="Denoising Single Cell Data With Autoencoders (Neural Networks)" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="In my previous blog, I used single cell Mouse Cell Atlas [MCA] data to identify clusters and find differentially expressed markers between the clusters. Single cell datasets, in general are sparse, as the number of genes identified is less, compared to bulk RNA-seq experiment. Another reason for sparsity is the number of cells involved, and in most cases, these cells belong to different cell-types leading to expression of different genes in each cell. There are Python modules / R packages that can denoise the single cell counts data and perform imputation (i.e., identify real zeros to possible artifacts caused by single cell sequencing technologies). Some of the programs that does the denoising + imputation on single cell data are DCA, SAVER, MAGIC, scIMPUTE." />
+<meta property="og:description" content="In my previous blog, I used single cell Mouse Cell Atlas [MCA] data to identify clusters and find differentially expressed markers between the clusters. Single cell datasets, in general are sparse, as the number of genes identified is less, compared to bulk RNA-seq experiment. Another reason for sparsity is the number of cells involved, and in most cases, these cells belong to different cell-types leading to expression of different genes in each cell. There are Python modules / R packages that can denoise the single cell counts data and perform imputation (i.e., identify real zeros to possible artifacts caused by single cell sequencing technologies). Some of the programs that does the denoising + imputation on single cell data are DCA, SAVER, MAGIC, scIMPUTE." />
+<link rel="canonical" href="http://localhost:4000/genomics/2019/11/17/Denoising-Single-Cell-Data-With-Autoencoders.html" />
+<meta property="og:url" content="http://localhost:4000/genomics/2019/11/17/Denoising-Single-Cell-Data-With-Autoencoders.html" />
+<meta property="og:site_name" content="Sivome" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2019-11-17T00:00:00-05:00" />
+<script type="application/ld+json">
+{"headline":"Denoising Single Cell Data With Autoencoders (Neural Networks)","dateModified":"2019-11-17T00:00:00-05:00","datePublished":"2019-11-17T00:00:00-05:00","url":"http://localhost:4000/genomics/2019/11/17/Denoising-Single-Cell-Data-With-Autoencoders.html","mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/genomics/2019/11/17/Denoising-Single-Cell-Data-With-Autoencoders.html"},"description":"In my previous blog, I used single cell Mouse Cell Atlas [MCA] data to identify clusters and find differentially expressed markers between the clusters. Single cell datasets, in general are sparse, as the number of genes identified is less, compared to bulk RNA-seq experiment. Another reason for sparsity is the number of cells involved, and in most cases, these cells belong to different cell-types leading to expression of different genes in each cell. There are Python modules / R packages that can denoise the single cell counts data and perform imputation (i.e., identify real zeros to possible artifacts caused by single cell sequencing technologies). Some of the programs that does the denoising + imputation on single cell data are DCA, SAVER, MAGIC, scIMPUTE.","@type":"BlogPosting","@context":"http://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://localhost:4000/feed.xml" title="Sivome" /></head>
+<body><header class="site-header" role="banner">
+
+  <div class="wrapper"><a class="site-title" rel="author" href="/">Sivome</a><nav class="site-nav">
+        <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+        <div class="trigger"><a class="page-link" href="/about/">About</a><a class="page-link" href="/cv/">CV</a></div>
+      </nav></div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">Denoising Single Cell Data With Autoencoders (Neural Networks)</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2019-11-17T00:00:00-05:00" itemprop="datePublished">Nov 17, 2019
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    <p>In my previous blog, I used single cell Mouse Cell Atlas [MCA] data to identify clusters and find differentially expressed markers between the clusters. Single cell datasets, in general are sparse, as the number of genes identified is less, compared to bulk RNA-seq experiment. Another reason for sparsity is the number of cells involved, and in most cases, these cells belong to different cell-types leading to expression of different genes in each cell. There are Python modules / R packages that can denoise the single cell counts data and perform imputation (i.e., identify real zeros to possible artifacts caused by single cell sequencing technologies). Some of the programs that does the denoising + imputation on single cell data are DCA, SAVER, MAGIC, scIMPUTE.</p>
+
+<p>Most of these programs use autoencoders (a variant of neural networks) to learn the structure of the data and fill in the missing values. Autoencoder (as the name suggests) has same number of input and output neurons. In single cell case, if the input is counts data of “m” genes and “n” cells, then the output will have the same dimensions, but has a denoised data with reduced sparsity!</p>
+
+<p>Depending on the number of hidden layers, and activation nodes, there could be different variants of the autoencoders. Here, I wrote a script of an autoencoder implementation that uses additional hidden layers compared to above programs. Another reason I made my own implementation is to understand the basic concepts of how these autoencoders work on single cell data.</p>
+
+<p>The input data I used here is the same I used from my previous blog for Seurat marker analyses i.e., counts data of the publicly available mouse cell atlas. The end goal of this task is to compare the clusters and markers identified with the original counts data, and the autoencoder’s denoised data.</p>
+
+<p>For this analyses, I  used google colab portal. I uploaded the file that has raw counts of the 2000 variable genes [<em>chrome browser seems to work well for uploading files</em>]. Ideally, all the gene counts should be used, but since the variable features are critical in assigning the clusters and <em>since this is for blog purposes</em>, I picked only the variable genes. Another reason to use a smaller subset is significant reduction of the computation time.</p>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># Load local files to google colab</span>
+<span class="kn">from</span> <span class="nn">google.colab</span> <span class="kn">import</span> <span class="n">files</span>
+<span class="n">uploaded</span> <span class="o">=</span> <span class="n">files</span><span class="o">.</span><span class="n">upload</span><span class="p">()</span>
+</code></pre></div></div>
+
+<p>Next, import the data as a pandas data frame.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="n">pd</span>
+<span class="n">mca_counts</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s">"mca.10K.vg.csv"</span><span class="p">,</span> <span class="n">index_col</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+</code></pre></div></div>
+<p>Displaying the top hits of the counts file.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">mca_counts</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</code></pre></div></div>
+
+<div>
+<style scoped="">
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>Bladder_1.CGGCAGAAAGTTATTCCA</th>
+      <th>Bladder_1.CTCGCAAATAAAATCAAC</th>
+      <th>Bladder_1.CCATCTAGCGAGTTTAGG</th>
+      <th>Bladder_1.GAGGAGCGCTTGATACAG</th>
+      <th>Bladder_1.CCAGACACAATAGAATTA</th>
+      <th>Bladder_1.CCGACGGGACATATGGCG</th>
+      <th>Bladder_1.TAGCATTCAAAGATTCCA</th>
+      <th>Bladder_1.CTCCATCCATCTTTTAGG</th>
+      <th>Bladder_1.CAAAGTAGGACTAAGTAC</th>
+      <th>Bladder_1.TAGCATTGCGGAAACCTA</th>
+      <th>Bladder_1.ACACCCACGTTGCACAAG</th>
+      <th>Bladder_1.CGCACCATCTCTTAGTCG</th>
+      <th>Bladder_1.ACAATAGTCCCGAACGCC</th>
+      <th>Bladder_1.CGAGTATAGCATTCAAAG</th>
+      <th>Bladder_1.TCGTAATCGGGTGCAGGA</th>
+      <th>Bladder_1.ACAATACCGCTATATGTA</th>
+      <th>Bladder_1.CGCACCTGATCATTCATA</th>
+      <th>Bladder_1.TTCATAGCGAATGTAATG</th>
+      <th>Bladder_1.CGCACCTACTTCTCTACC</th>
+      <th>Bladder_1.CAACAAGAGATCAACCTA</th>
+      <th>Bladder_1.AGGACTCGCACCGAGATC</th>
+      <th>Bladder_1.TAGCATCGTATTGCGAAT</th>
+      <th>Bladder_1.CCGACGATGCTTCGCTTG</th>
+      <th>Bladder_1.TATGTAAAAACGTCTACC</th>
+      <th>Bladder_1.CGTATTGATCTTCCTAGA</th>
+      <th>Bladder_1.AACCTACAACAAAAAGTT</th>
+      <th>Bladder_1.TCACTTGTCGGTTTCATA</th>
+      <th>Bladder_1.TTCATATCAAAGTATTGT</th>
+      <th>Bladder_1.ACGAGCGAGATCTATTGT</th>
+      <th>Bladder_1.AACCTACCATCTGAGGAG</th>
+      <th>Bladder_1.AACGCCAAAGTTCCTTTC</th>
+      <th>Bladder_1.ACTTATAGTCGTTTTAGG</th>
+      <th>Bladder_1.AAGTACATGGCGGCAGGA</th>
+      <th>Bladder_1.CATGATAGTCGTCTTCTG</th>
+      <th>Bladder_1.AGCGAGAGCGAGAGATGG</th>
+      <th>Bladder_1.ACGTTGGTTGCCCATGAT</th>
+      <th>Bladder_1.TGATCACACAAGTCAAAG</th>
+      <th>Bladder_1.CCTAGATTCCGCGTATAC</th>
+      <th>Bladder_1.TTAACTTCGTAAGCAGGA</th>
+      <th>Bladder_1.CCAGACATTCCACTGTGT</th>
+      <th>...</th>
+      <th>BoneMarrow_5.CCTAGACATGATGCTGTG</th>
+      <th>BoneMarrow_5.CGCACCATCTCTTGAAGC</th>
+      <th>BoneMarrow_5.TGCAATATCTCTACTTAT</th>
+      <th>BoneMarrow_5.ACTTATAAAGTTACAATA</th>
+      <th>BoneMarrow_5.CACAAGTGCGGATGCGGA</th>
+      <th>BoneMarrow_5.CGTATTATTCCATCTACC</th>
+      <th>BoneMarrow_5.TGAAGCCCAGACCTCGCA</th>
+      <th>BoneMarrow_5.CCTTTCACTTATCTGTGT</th>
+      <th>BoneMarrow_5.CGCTTGCACAAGAGGACT</th>
+      <th>BoneMarrow_5.TCACTTAGTTTAGCTGTG</th>
+      <th>BoneMarrow_5.ACCTGACGTGGCGTATAC</th>
+      <th>BoneMarrow_5.TCAAAGCGGCAGGGGCGA</th>
+      <th>BoneMarrow_5.ACACCCCTCCATTCTACC</th>
+      <th>BoneMarrow_5.GATCTTGGGCGAATGGCG</th>
+      <th>BoneMarrow_5.ACTTATGACACTGGCTGC</th>
+      <th>BoneMarrow_5.TTTAGGGGCTGCGGCTGC</th>
+      <th>BoneMarrow_5.TGATCATCACTTCCAGAC</th>
+      <th>BoneMarrow_5.TGCGGAATTCCAGATCTT</th>
+      <th>BoneMarrow_5.CAACAAATCTCTCTGAAA</th>
+      <th>BoneMarrow_5.ATCAACTTAACTCCAGAC</th>
+      <th>BoneMarrow_5.CTCGCATAGAGAGAACGC</th>
+      <th>BoneMarrow_5.ACCTGAAACCTAGCGAAT</th>
+      <th>BoneMarrow_5.TGATCACCAGACCGAGTA</th>
+      <th>BoneMarrow_5.ACGAGCTACTTCACTTAT</th>
+      <th>BoneMarrow_5.GATCTTAGGGTCGGACAT</th>
+      <th>BoneMarrow_5.GAGGAGGGACATATGCTT</th>
+      <th>BoneMarrow_5.TGATCATGATCAAGGACT</th>
+      <th>BoneMarrow_5.AAGCGGAACCTAGCTGTG</th>
+      <th>BoneMarrow_5.GAGGAGGGACATTCAAAG</th>
+      <th>BoneMarrow_5.TGCAATGATCTTGTCCCG</th>
+      <th>BoneMarrow_5.ATGGCGAATAAATGCAAT</th>
+      <th>BoneMarrow_5.CCTTTCTTTAGGCTGTGT</th>
+      <th>BoneMarrow_5.AGGGTCAACCTATGATCA</th>
+      <th>BoneMarrow_5.CTGAAAGCAGGATAGAGA</th>
+      <th>BoneMarrow_5.CGCTTGCGAGTAGTCGGT</th>
+      <th>BoneMarrow_5.CAACAAGTTGCCTATTGT</th>
+      <th>BoneMarrow_5.ACCTGACACAAGTTAACT</th>
+      <th>BoneMarrow_5.CGTGGCATTTGCGTAATG</th>
+      <th>BoneMarrow_5.GCAGGAGTTGCCGGACAT</th>
+      <th>BoneMarrow_5.CTCCATTGTCACCGAGTA</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>1110008P14Rik</th>
+      <td>6</td>
+      <td>2</td>
+      <td>6</td>
+      <td>5</td>
+      <td>7</td>
+      <td>8</td>
+      <td>7</td>
+      <td>6</td>
+      <td>5</td>
+      <td>8</td>
+      <td>7</td>
+      <td>9</td>
+      <td>7</td>
+      <td>10</td>
+      <td>6</td>
+      <td>3</td>
+      <td>6</td>
+      <td>5</td>
+      <td>5</td>
+      <td>8</td>
+      <td>3</td>
+      <td>5</td>
+      <td>5</td>
+      <td>1</td>
+      <td>2</td>
+      <td>2</td>
+      <td>2</td>
+      <td>3</td>
+      <td>6</td>
+      <td>5</td>
+      <td>2</td>
+      <td>3</td>
+      <td>7</td>
+      <td>1</td>
+      <td>5</td>
+      <td>6</td>
+      <td>5</td>
+      <td>2</td>
+      <td>3</td>
+      <td>2</td>
+      <td>...</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>1700016P03Rik</th>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>...</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>1700027J19Rik</th>
+      <td>4</td>
+      <td>2</td>
+      <td>2</td>
+      <td>6</td>
+      <td>4</td>
+      <td>2</td>
+      <td>3</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>1</td>
+      <td>1</td>
+      <td>3</td>
+      <td>1</td>
+      <td>3</td>
+      <td>2</td>
+      <td>1</td>
+      <td>2</td>
+      <td>4</td>
+      <td>3</td>
+      <td>4</td>
+      <td>3</td>
+      <td>2</td>
+      <td>5</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>1</td>
+      <td>2</td>
+      <td>3</td>
+      <td>1</td>
+      <td>0</td>
+      <td>7</td>
+      <td>1</td>
+      <td>3</td>
+      <td>3</td>
+      <td>1</td>
+      <td>1</td>
+      <td>1</td>
+      <td>1</td>
+      <td>...</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>1700056N10Rik</th>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>...</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>1700119H24Rik</th>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>...</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+    </tr>
+  </tbody>
+</table>
+<p>5 rows × 10000 columns</p>
+</div>
+
+<p>Displaying the shape of the counts.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">mca_counts</span><span class="o">.</span><span class="n">shape</span>
+</code></pre></div></div>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>(2000, 10000)
+</code></pre></div></div>
+
+<p>The dimension of the input data is 2000 variable genes by 10000 cells. This implies that the number of samples is 2000 (in computer vision applications, this can be compared to the number of images used for training). The shape of the input dimension for images in computer vision applications is x by y (or x by y by 3 in case of RGB). In a sample MNIST data, i.e., grey scale low-res image, the size of image is 28 by 28 i.e., 784. Here, the size of the data set (also called the input dimension in neural network nomenclature) is equal to the number of cells considered [here, it is 10K]. Another thing to note is that I used first 10K cells of the 405K cells present in the mouse cell atlas. [<em>If someone ends up having a good compute, this analyses can be scaled to include all the cells, ideally 95% for training, 4% for validation and 1% for testing</em>]. If the number of samples is few thousands (say 10K or so, then ratio of 60 : 20 : 20 for training : validation : test makes sense).</p>
+
+<p>The input vector of each input neuron is the counts of a particular gene across all cells. In general, counts data are modelled with a poisson distribution (mean and variance are equal) or in most cases, using negative binomial distribution (mean and variance are modelled with 2 parameters). In DCA, and SAVER-X, 2 variants of negative binomial (NB) distribution are implemented, depending on the type of input data used.</p>
+
+<p>The end goal of this blog is to show the <em>basic details</em> of different aspects of denoising single cell data using neural networks such as autoencoders. For accurate classifications and analyses, it is highly recommended to use the above programs such as SAVER-X, DCA etc. Below, I showed few things including [1] generating the input data for the above tools (like SAVERX, DCA), [2] understanding the notation of the neural networks (i.e., training data set size, input dimension of the input layer neurons), [3] neural network model i.e., layers of the autoencoder i.e., input layer + [ encoder layers ] + [ compression layer ] + [ decoder layer ] + [ output layer ], [4] the parameters used to run the neural network to calculate the loss and other metrics, [5] evaluating the model on the input data to generate the denoised + impute version of the original single cell data. Finally, both the original and the basic denoised version of the dataset is fed back into the Seurat for clustering analyses. Another short-coming of the below model is to use a new test set. Since the model was trained on using a validation set, I generated the final output using all the samples.</p>
+
+<p>One of the major differences between the previous implementations and the current one is the number of hidden layers used in encoder and decoder. Unlike one layer of encoder and decoder, I implemented 2 layers with 256 and 64 neurons each. The encoded layers have 256 and 64neurons, while the decoded layers has 256 and 64 neurons with a final output layer having 2000 neurons representing the number of samples. There is a compression layer in between encoder and decoder layers. Except for the activation for the final output layer, all the activations used are ReLU. The output layer has an activation of <em>sigmoid</em> function. Regularization might be helpful if the entire data set is used (i.e., counts of all genes and NOT just varying genes).</p>
+
+<p>In poisson loss function, the loss would equal to the mean([y_pred - y_true * log(y_pred + epsilon)]), where epsilon is a small number to avoid calculating log(0). Also, for Seurat analyses, it would help to use a threshold and set everything below threshold to zero. However, this threshold should be carefully chosen depending on the dataset (for example, looking at the histogram of the predicted output).</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">from</span> <span class="nn">keras.layers</span> <span class="kn">import</span> <span class="n">Input</span><span class="p">,</span> <span class="n">Dense</span><span class="p">,</span> <span class="n">BatchNormalization</span><span class="p">,</span> <span class="n">Dropout</span><span class="p">,</span> <span class="n">Activation</span>
+<span class="kn">from</span> <span class="nn">keras.models</span> <span class="kn">import</span> <span class="n">Model</span>
+<span class="c">#from keras.regularizers import l1, L1L2, l2</span>
+
+<span class="c"># Input layer</span>
+<span class="n">input_cell</span> <span class="o">=</span> <span class="n">Input</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="mi">10000</span><span class="p">,</span> <span class="p">))</span>
+
+<span class="c"># Encoded layer 1</span>
+<span class="n">encoded</span> <span class="o">=</span> <span class="n">Dense</span><span class="p">(</span><span class="mi">256</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="s">'relu'</span><span class="p">)(</span><span class="n">input_cell</span><span class="p">)</span> <span class="c">#, activity_regularizer=L1L2(l1=10e-3, l2=10e-5)</span>
+<span class="n">encoded</span> <span class="o">=</span> <span class="n">Dropout</span><span class="p">(</span><span class="n">rate</span><span class="o">=</span><span class="mf">0.2</span><span class="p">)(</span><span class="n">encoded</span><span class="p">)</span>
+
+<span class="c"># Encoded layer 2</span>
+<span class="n">encoded_2</span> <span class="o">=</span> <span class="n">Dense</span><span class="p">(</span><span class="mi">64</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="s">'relu'</span><span class="p">)(</span><span class="n">encoded</span><span class="p">)</span>
+<span class="n">encoded_2</span> <span class="o">=</span> <span class="n">Dropout</span><span class="p">(</span><span class="n">rate</span><span class="o">=</span><span class="mf">0.2</span><span class="p">)(</span><span class="n">encoded_2</span><span class="p">)</span>
+
+<span class="c"># Compression layer 2</span>
+<span class="n">compression_layer</span> <span class="o">=</span> <span class="n">Dense</span><span class="p">(</span><span class="mi">16</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="s">'relu'</span><span class="p">)(</span><span class="n">encoded_2</span><span class="p">)</span>
+<span class="n">compression_layer</span> <span class="o">=</span> <span class="n">Dropout</span><span class="p">(</span><span class="n">rate</span><span class="o">=</span><span class="mf">0.2</span><span class="p">)(</span><span class="n">compression_layer</span><span class="p">)</span>
+
+<span class="c"># Decoded layer 2</span>
+<span class="n">decoded_2</span> <span class="o">=</span> <span class="n">Dense</span><span class="p">(</span><span class="mi">64</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="s">'relu'</span><span class="p">)(</span><span class="n">compression_layer</span><span class="p">)</span>
+<span class="n">decoded_2</span> <span class="o">=</span> <span class="n">Dropout</span><span class="p">(</span><span class="n">rate</span><span class="o">=</span><span class="mf">0.2</span><span class="p">)(</span><span class="n">decoded_2</span><span class="p">)</span>
+
+<span class="c"># Decoded layer 1</span>
+<span class="n">decoded</span> <span class="o">=</span> <span class="n">Dense</span><span class="p">(</span><span class="mi">256</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="s">'relu'</span><span class="p">)(</span><span class="n">decoded_2</span><span class="p">)</span>
+<span class="n">decoded</span> <span class="o">=</span> <span class="n">Dropout</span><span class="p">(</span><span class="n">rate</span><span class="o">=</span><span class="mf">0.2</span><span class="p">)(</span><span class="n">decoded</span><span class="p">)</span>
+
+<span class="c"># Output layer</span>
+<span class="n">output_cell</span> <span class="o">=</span> <span class="n">Dense</span><span class="p">(</span><span class="mi">10000</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="s">'sigmoid'</span><span class="p">)(</span><span class="n">decoded</span><span class="p">)</span>
+
+<span class="c"># Defining the entire model</span>
+<span class="n">autoencoder</span> <span class="o">=</span> <span class="n">Model</span><span class="p">(</span><span class="n">input_cell</span><span class="p">,</span> <span class="n">output_cell</span><span class="p">)</span>
+
+<span class="c"># compile the model before fit and predict</span>
+<span class="n">autoencoder</span><span class="o">.</span><span class="nb">compile</span><span class="p">(</span><span class="n">optimizer</span><span class="o">=</span><span class="s">'rmsprop'</span><span class="p">,</span> <span class="n">loss</span><span class="o">=</span><span class="s">'poisson'</span><span class="p">)</span>
+
+<span class="c"># Summary of the model in tabular format to show the  number of trainable and non-trainable parameters</span>
+<span class="n">autoencoder</span><span class="o">.</span><span class="n">summary</span><span class="p">()</span>
+</code></pre></div></div>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Model: "model_16"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+input_20 (InputLayer)        (None, 10000)             0         
+_________________________________________________________________
+dense_99 (Dense)             (None, 256)               2560256   
+_________________________________________________________________
+dropout_40 (Dropout)         (None, 256)               0         
+_________________________________________________________________
+dense_100 (Dense)            (None, 64)                16448     
+_________________________________________________________________
+dropout_41 (Dropout)         (None, 64)                0         
+_________________________________________________________________
+dense_101 (Dense)            (None, 16)                1040      
+_________________________________________________________________
+dropout_42 (Dropout)         (None, 16)                0         
+_________________________________________________________________
+dense_102 (Dense)            (None, 64)                1088      
+_________________________________________________________________
+dropout_43 (Dropout)         (None, 64)                0         
+_________________________________________________________________
+dense_103 (Dense)            (None, 256)               16640     
+_________________________________________________________________
+dropout_44 (Dropout)         (None, 256)               0         
+_________________________________________________________________
+dense_104 (Dense)            (None, 10000)             2570000   
+=================================================================
+Total params: 5,165,472
+Trainable params: 5,165,472
+Non-trainable params: 0
+_________________________________________________________________
+</code></pre></div></div>
+
+<p>The number of epochs used is ONLY 20. Ideally this should be large enough to yield a very low validation loss. To save on the compute time, I used few epochs. The other parameter of interest is the validation_split. A validation split of 0.3 below indicates that 30% of the training data is used as a validation set. Here, since the number of samples is 2000, the model will be trained using 70% of the samples (1400) and the remaining 30% is used for validation purposes (i.e., 600 samples).</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># Log normalizing the raw counts and scaling to 10K cells is typically used with all the single cell programs.</span>
+<span class="n">mca_counts_lc</span> <span class="o">=</span> <span class="n">mca_counts</span><span class="o">.</span><span class="nb">max</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">mca_counts_norm_lc</span> <span class="o">=</span> <span class="n">mca_counts</span> <span class="o">/</span> <span class="n">mca_counts_lc</span><span class="p">[</span><span class="bp">None</span><span class="p">,</span> <span class="p">:]</span>
+
+<span class="c"># Fitting the normalized data to the autoencoder model built</span>
+<span class="n">autoencoder</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">mca_counts_norm_lc</span><span class="p">,</span> <span class="n">mca_counts_norm_lc</span><span class="p">,</span> <span class="n">epochs</span> <span class="o">=</span> <span class="mi">20</span><span class="p">,</span> <span class="n">batch_size</span> <span class="o">=</span> <span class="mi">20</span><span class="p">,</span> <span class="n">validation_split</span><span class="o">=</span><span class="mf">0.3</span><span class="p">)</span><span class="c"># class_weight=mca_lc_weights, sample_weight=mca_counts_gs)</span>
+
+<span class="c"># Predict the output on the same training data [In real world applications, there should be validation data and a separate test data -- for simplicity, I used the same input data here]</span>
+<span class="n">mca_counts_norm_lc_output</span> <span class="o">=</span> <span class="n">autoencoder</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">mca_counts_norm_lc</span><span class="p">)</span>
+
+</code></pre></div></div>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Train on 1400 samples, validate on 600 samples
+Epoch 1/20
+1400/1400 [==============================] - 3s 2ms/step - loss: 0.0187 - val_loss: 0.0294
+Epoch 2/20
+1400/1400 [==============================] - 3s 2ms/step - loss: 0.0188 - val_loss: 0.0290
+Epoch 3/20
+1400/1400 [==============================] - 3s 2ms/step - loss: 0.0187 - val_loss: 0.0294
+Epoch 4/20
+1400/1400 [==============================] - 3s 2ms/step - loss: 0.0189 - val_loss: 0.0298
+Epoch 5/20
+1400/1400 [==============================] - 3s 2ms/step - loss: 0.0185 - val_loss: 0.0289
+Epoch 6/20
+1400/1400 [==============================] - 3s 2ms/step - loss: 0.0186 - val_loss: 0.0298
+Epoch 7/20
+1400/1400 [==============================] - 3s 2ms/step - loss: 0.0187 - val_loss: 0.0301
+Epoch 8/20
+1400/1400 [==============================] - 3s 2ms/step - loss: 0.0187 - val_loss: 0.0302
+Epoch 9/20
+1400/1400 [==============================] - 3s 2ms/step - loss: 0.0189 - val_loss: 0.0298
+Epoch 10/20
+1400/1400 [==============================] - 3s 2ms/step - loss: 0.0188 - val_loss: 0.0297
+Epoch 11/20
+1400/1400 [==============================] - 3s 2ms/step - loss: 0.0185 - val_loss: 0.0299
+Epoch 12/20
+1400/1400 [==============================] - 3s 2ms/step - loss: 0.0188 - val_loss: 0.0296
+Epoch 13/20
+1400/1400 [==============================] - 3s 2ms/step - loss: 0.0185 - val_loss: 0.0300
+Epoch 14/20
+1400/1400 [==============================] - 3s 2ms/step - loss: 0.0184 - val_loss: 0.0291
+Epoch 15/20
+1400/1400 [==============================] - 3s 2ms/step - loss: 0.0188 - val_loss: 0.0291
+Epoch 16/20
+1400/1400 [==============================] - 3s 2ms/step - loss: 0.0186 - val_loss: 0.0295
+Epoch 17/20
+1400/1400 [==============================] - 3s 2ms/step - loss: 0.0185 - val_loss: 0.0294
+Epoch 18/20
+1400/1400 [==============================] - 3s 2ms/step - loss: 0.0186 - val_loss: 0.0293
+Epoch 19/20
+1400/1400 [==============================] - 4s 3ms/step - loss: 0.0185 - val_loss: 0.0293
+Epoch 20/20
+1400/1400 [==============================] - 4s 3ms/step - loss: 0.0185 - val_loss: 0.0297
+</code></pre></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">mca_counts_norm_lc_output</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">4</span><span class="p">,</span> <span class="mi">0</span><span class="p">:</span><span class="mi">4</span><span class="p">]</span>
+</code></pre></div></div>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>array([[0.01773182, 0.02895972, 0.01728064, 0.01625928],
+       [0.00141433, 0.00209311, 0.00145644, 0.0011279 ],
+       [0.02724421, 0.04175797, 0.02742231, 0.02623108],
+       [0.0013988 , 0.00204527, 0.00144061, 0.00110739]], dtype=float32)
+</code></pre></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">mca_counts_norm_lc</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</code></pre></div></div>
+
+<div>
+<style scoped="">
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>Bladder_1.CGGCAGAAAGTTATTCCA</th>
+      <th>Bladder_1.CTCGCAAATAAAATCAAC</th>
+      <th>Bladder_1.CCATCTAGCGAGTTTAGG</th>
+      <th>Bladder_1.GAGGAGCGCTTGATACAG</th>
+      <th>Bladder_1.CCAGACACAATAGAATTA</th>
+      <th>Bladder_1.CCGACGGGACATATGGCG</th>
+      <th>Bladder_1.TAGCATTCAAAGATTCCA</th>
+      <th>Bladder_1.CTCCATCCATCTTTTAGG</th>
+      <th>Bladder_1.CAAAGTAGGACTAAGTAC</th>
+      <th>Bladder_1.TAGCATTGCGGAAACCTA</th>
+      <th>Bladder_1.ACACCCACGTTGCACAAG</th>
+      <th>Bladder_1.CGCACCATCTCTTAGTCG</th>
+      <th>Bladder_1.ACAATAGTCCCGAACGCC</th>
+      <th>Bladder_1.CGAGTATAGCATTCAAAG</th>
+      <th>Bladder_1.TCGTAATCGGGTGCAGGA</th>
+      <th>Bladder_1.ACAATACCGCTATATGTA</th>
+      <th>Bladder_1.CGCACCTGATCATTCATA</th>
+      <th>Bladder_1.TTCATAGCGAATGTAATG</th>
+      <th>Bladder_1.CGCACCTACTTCTCTACC</th>
+      <th>Bladder_1.CAACAAGAGATCAACCTA</th>
+      <th>Bladder_1.AGGACTCGCACCGAGATC</th>
+      <th>Bladder_1.TAGCATCGTATTGCGAAT</th>
+      <th>Bladder_1.CCGACGATGCTTCGCTTG</th>
+      <th>Bladder_1.TATGTAAAAACGTCTACC</th>
+      <th>Bladder_1.CGTATTGATCTTCCTAGA</th>
+      <th>Bladder_1.AACCTACAACAAAAAGTT</th>
+      <th>Bladder_1.TCACTTGTCGGTTTCATA</th>
+      <th>Bladder_1.TTCATATCAAAGTATTGT</th>
+      <th>Bladder_1.ACGAGCGAGATCTATTGT</th>
+      <th>Bladder_1.AACCTACCATCTGAGGAG</th>
+      <th>Bladder_1.AACGCCAAAGTTCCTTTC</th>
+      <th>Bladder_1.ACTTATAGTCGTTTTAGG</th>
+      <th>Bladder_1.AAGTACATGGCGGCAGGA</th>
+      <th>Bladder_1.CATGATAGTCGTCTTCTG</th>
+      <th>Bladder_1.AGCGAGAGCGAGAGATGG</th>
+      <th>Bladder_1.ACGTTGGTTGCCCATGAT</th>
+      <th>Bladder_1.TGATCACACAAGTCAAAG</th>
+      <th>Bladder_1.CCTAGATTCCGCGTATAC</th>
+      <th>Bladder_1.TTAACTTCGTAAGCAGGA</th>
+      <th>Bladder_1.CCAGACATTCCACTGTGT</th>
+      <th>...</th>
+      <th>BoneMarrow_5.CCTAGACATGATGCTGTG</th>
+      <th>BoneMarrow_5.CGCACCATCTCTTGAAGC</th>
+      <th>BoneMarrow_5.TGCAATATCTCTACTTAT</th>
+      <th>BoneMarrow_5.ACTTATAAAGTTACAATA</th>
+      <th>BoneMarrow_5.CACAAGTGCGGATGCGGA</th>
+      <th>BoneMarrow_5.CGTATTATTCCATCTACC</th>
+      <th>BoneMarrow_5.TGAAGCCCAGACCTCGCA</th>
+      <th>BoneMarrow_5.CCTTTCACTTATCTGTGT</th>
+      <th>BoneMarrow_5.CGCTTGCACAAGAGGACT</th>
+      <th>BoneMarrow_5.TCACTTAGTTTAGCTGTG</th>
+      <th>BoneMarrow_5.ACCTGACGTGGCGTATAC</th>
+      <th>BoneMarrow_5.TCAAAGCGGCAGGGGCGA</th>
+      <th>BoneMarrow_5.ACACCCCTCCATTCTACC</th>
+      <th>BoneMarrow_5.GATCTTGGGCGAATGGCG</th>
+      <th>BoneMarrow_5.ACTTATGACACTGGCTGC</th>
+      <th>BoneMarrow_5.TTTAGGGGCTGCGGCTGC</th>
+      <th>BoneMarrow_5.TGATCATCACTTCCAGAC</th>
+      <th>BoneMarrow_5.TGCGGAATTCCAGATCTT</th>
+      <th>BoneMarrow_5.CAACAAATCTCTCTGAAA</th>
+      <th>BoneMarrow_5.ATCAACTTAACTCCAGAC</th>
+      <th>BoneMarrow_5.CTCGCATAGAGAGAACGC</th>
+      <th>BoneMarrow_5.ACCTGAAACCTAGCGAAT</th>
+      <th>BoneMarrow_5.TGATCACCAGACCGAGTA</th>
+      <th>BoneMarrow_5.ACGAGCTACTTCACTTAT</th>
+      <th>BoneMarrow_5.GATCTTAGGGTCGGACAT</th>
+      <th>BoneMarrow_5.GAGGAGGGACATATGCTT</th>
+      <th>BoneMarrow_5.TGATCATGATCAAGGACT</th>
+      <th>BoneMarrow_5.AAGCGGAACCTAGCTGTG</th>
+      <th>BoneMarrow_5.GAGGAGGGACATTCAAAG</th>
+      <th>BoneMarrow_5.TGCAATGATCTTGTCCCG</th>
+      <th>BoneMarrow_5.ATGGCGAATAAATGCAAT</th>
+      <th>BoneMarrow_5.CCTTTCTTTAGGCTGTGT</th>
+      <th>BoneMarrow_5.AGGGTCAACCTATGATCA</th>
+      <th>BoneMarrow_5.CTGAAAGCAGGATAGAGA</th>
+      <th>BoneMarrow_5.CGCTTGCGAGTAGTCGGT</th>
+      <th>BoneMarrow_5.CAACAAGTTGCCTATTGT</th>
+      <th>BoneMarrow_5.ACCTGACACAAGTTAACT</th>
+      <th>BoneMarrow_5.CGTGGCATTTGCGTAATG</th>
+      <th>BoneMarrow_5.GCAGGAGTTGCCGGACAT</th>
+      <th>BoneMarrow_5.CTCCATTGTCACCGAGTA</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>1110008P14Rik</th>
+      <td>0.018987</td>
+      <td>0.009259</td>
+      <td>0.024194</td>
+      <td>0.016722</td>
+      <td>0.026515</td>
+      <td>0.028777</td>
+      <td>0.026217</td>
+      <td>0.023346</td>
+      <td>0.019157</td>
+      <td>0.030303</td>
+      <td>0.026415</td>
+      <td>0.03321</td>
+      <td>0.028340</td>
+      <td>0.048077</td>
+      <td>0.020690</td>
+      <td>0.011450</td>
+      <td>0.024096</td>
+      <td>0.024390</td>
+      <td>0.017794</td>
+      <td>0.042553</td>
+      <td>0.012295</td>
+      <td>0.023148</td>
+      <td>0.023256</td>
+      <td>0.004630</td>
+      <td>0.007752</td>
+      <td>0.008511</td>
+      <td>0.008230</td>
+      <td>0.014286</td>
+      <td>0.025424</td>
+      <td>0.023364</td>
+      <td>0.009091</td>
+      <td>0.013274</td>
+      <td>0.036842</td>
+      <td>0.004717</td>
+      <td>0.022422</td>
+      <td>0.024590</td>
+      <td>0.020833</td>
+      <td>0.007722</td>
+      <td>0.012712</td>
+      <td>0.009302</td>
+      <td>...</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.25</td>
+      <td>0.05</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <th>1700016P03Rik</th>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.00000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>...</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.00</td>
+      <td>0.00</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <th>1700027J19Rik</th>
+      <td>0.012658</td>
+      <td>0.009259</td>
+      <td>0.008065</td>
+      <td>0.020067</td>
+      <td>0.015152</td>
+      <td>0.007194</td>
+      <td>0.011236</td>
+      <td>0.000000</td>
+      <td>0.003831</td>
+      <td>0.000000</td>
+      <td>0.003774</td>
+      <td>0.00369</td>
+      <td>0.012146</td>
+      <td>0.004808</td>
+      <td>0.010345</td>
+      <td>0.007634</td>
+      <td>0.004016</td>
+      <td>0.009756</td>
+      <td>0.014235</td>
+      <td>0.015957</td>
+      <td>0.016393</td>
+      <td>0.013889</td>
+      <td>0.009302</td>
+      <td>0.023148</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.004115</td>
+      <td>0.004762</td>
+      <td>0.008475</td>
+      <td>0.014019</td>
+      <td>0.004545</td>
+      <td>0.000000</td>
+      <td>0.036842</td>
+      <td>0.004717</td>
+      <td>0.013453</td>
+      <td>0.012295</td>
+      <td>0.004167</td>
+      <td>0.003861</td>
+      <td>0.004237</td>
+      <td>0.004651</td>
+      <td>...</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.00</td>
+      <td>0.00</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <th>1700056N10Rik</th>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.00000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>...</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.00</td>
+      <td>0.00</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <th>1700119H24Rik</th>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.00000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>...</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.00</td>
+      <td>0.00</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+  </tbody>
+</table>
+<p>5 rows × 10000 columns</p>
+</div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">mca_counts_norm_lc_output</span><span class="o">.</span><span class="nb">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+</code></pre></div></div>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>array([185.41336  ,   5.728099 ,  47.230495 , ...,   5.7145967,
+         6.331905 ,   5.6825914], dtype=float32)
+</code></pre></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">mca_counts</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</code></pre></div></div>
+
+<div>
+<style scoped="">
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>Bladder_1.CGGCAGAAAGTTATTCCA</th>
+      <th>Bladder_1.CTCGCAAATAAAATCAAC</th>
+      <th>Bladder_1.CCATCTAGCGAGTTTAGG</th>
+      <th>Bladder_1.GAGGAGCGCTTGATACAG</th>
+      <th>Bladder_1.CCAGACACAATAGAATTA</th>
+      <th>Bladder_1.CCGACGGGACATATGGCG</th>
+      <th>Bladder_1.TAGCATTCAAAGATTCCA</th>
+      <th>Bladder_1.CTCCATCCATCTTTTAGG</th>
+      <th>Bladder_1.CAAAGTAGGACTAAGTAC</th>
+      <th>Bladder_1.TAGCATTGCGGAAACCTA</th>
+      <th>Bladder_1.ACACCCACGTTGCACAAG</th>
+      <th>Bladder_1.CGCACCATCTCTTAGTCG</th>
+      <th>Bladder_1.ACAATAGTCCCGAACGCC</th>
+      <th>Bladder_1.CGAGTATAGCATTCAAAG</th>
+      <th>Bladder_1.TCGTAATCGGGTGCAGGA</th>
+      <th>Bladder_1.ACAATACCGCTATATGTA</th>
+      <th>Bladder_1.CGCACCTGATCATTCATA</th>
+      <th>Bladder_1.TTCATAGCGAATGTAATG</th>
+      <th>Bladder_1.CGCACCTACTTCTCTACC</th>
+      <th>Bladder_1.CAACAAGAGATCAACCTA</th>
+      <th>Bladder_1.AGGACTCGCACCGAGATC</th>
+      <th>Bladder_1.TAGCATCGTATTGCGAAT</th>
+      <th>Bladder_1.CCGACGATGCTTCGCTTG</th>
+      <th>Bladder_1.TATGTAAAAACGTCTACC</th>
+      <th>Bladder_1.CGTATTGATCTTCCTAGA</th>
+      <th>Bladder_1.AACCTACAACAAAAAGTT</th>
+      <th>Bladder_1.TCACTTGTCGGTTTCATA</th>
+      <th>Bladder_1.TTCATATCAAAGTATTGT</th>
+      <th>Bladder_1.ACGAGCGAGATCTATTGT</th>
+      <th>Bladder_1.AACCTACCATCTGAGGAG</th>
+      <th>Bladder_1.AACGCCAAAGTTCCTTTC</th>
+      <th>Bladder_1.ACTTATAGTCGTTTTAGG</th>
+      <th>Bladder_1.AAGTACATGGCGGCAGGA</th>
+      <th>Bladder_1.CATGATAGTCGTCTTCTG</th>
+      <th>Bladder_1.AGCGAGAGCGAGAGATGG</th>
+      <th>Bladder_1.ACGTTGGTTGCCCATGAT</th>
+      <th>Bladder_1.TGATCACACAAGTCAAAG</th>
+      <th>Bladder_1.CCTAGATTCCGCGTATAC</th>
+      <th>Bladder_1.TTAACTTCGTAAGCAGGA</th>
+      <th>Bladder_1.CCAGACATTCCACTGTGT</th>
+      <th>...</th>
+      <th>BoneMarrow_5.CCTAGACATGATGCTGTG</th>
+      <th>BoneMarrow_5.CGCACCATCTCTTGAAGC</th>
+      <th>BoneMarrow_5.TGCAATATCTCTACTTAT</th>
+      <th>BoneMarrow_5.ACTTATAAAGTTACAATA</th>
+      <th>BoneMarrow_5.CACAAGTGCGGATGCGGA</th>
+      <th>BoneMarrow_5.CGTATTATTCCATCTACC</th>
+      <th>BoneMarrow_5.TGAAGCCCAGACCTCGCA</th>
+      <th>BoneMarrow_5.CCTTTCACTTATCTGTGT</th>
+      <th>BoneMarrow_5.CGCTTGCACAAGAGGACT</th>
+      <th>BoneMarrow_5.TCACTTAGTTTAGCTGTG</th>
+      <th>BoneMarrow_5.ACCTGACGTGGCGTATAC</th>
+      <th>BoneMarrow_5.TCAAAGCGGCAGGGGCGA</th>
+      <th>BoneMarrow_5.ACACCCCTCCATTCTACC</th>
+      <th>BoneMarrow_5.GATCTTGGGCGAATGGCG</th>
+      <th>BoneMarrow_5.ACTTATGACACTGGCTGC</th>
+      <th>BoneMarrow_5.TTTAGGGGCTGCGGCTGC</th>
+      <th>BoneMarrow_5.TGATCATCACTTCCAGAC</th>
+      <th>BoneMarrow_5.TGCGGAATTCCAGATCTT</th>
+      <th>BoneMarrow_5.CAACAAATCTCTCTGAAA</th>
+      <th>BoneMarrow_5.ATCAACTTAACTCCAGAC</th>
+      <th>BoneMarrow_5.CTCGCATAGAGAGAACGC</th>
+      <th>BoneMarrow_5.ACCTGAAACCTAGCGAAT</th>
+      <th>BoneMarrow_5.TGATCACCAGACCGAGTA</th>
+      <th>BoneMarrow_5.ACGAGCTACTTCACTTAT</th>
+      <th>BoneMarrow_5.GATCTTAGGGTCGGACAT</th>
+      <th>BoneMarrow_5.GAGGAGGGACATATGCTT</th>
+      <th>BoneMarrow_5.TGATCATGATCAAGGACT</th>
+      <th>BoneMarrow_5.AAGCGGAACCTAGCTGTG</th>
+      <th>BoneMarrow_5.GAGGAGGGACATTCAAAG</th>
+      <th>BoneMarrow_5.TGCAATGATCTTGTCCCG</th>
+      <th>BoneMarrow_5.ATGGCGAATAAATGCAAT</th>
+      <th>BoneMarrow_5.CCTTTCTTTAGGCTGTGT</th>
+      <th>BoneMarrow_5.AGGGTCAACCTATGATCA</th>
+      <th>BoneMarrow_5.CTGAAAGCAGGATAGAGA</th>
+      <th>BoneMarrow_5.CGCTTGCGAGTAGTCGGT</th>
+      <th>BoneMarrow_5.CAACAAGTTGCCTATTGT</th>
+      <th>BoneMarrow_5.ACCTGACACAAGTTAACT</th>
+      <th>BoneMarrow_5.CGTGGCATTTGCGTAATG</th>
+      <th>BoneMarrow_5.GCAGGAGTTGCCGGACAT</th>
+      <th>BoneMarrow_5.CTCCATTGTCACCGAGTA</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>1110008P14Rik</th>
+      <td>6</td>
+      <td>2</td>
+      <td>6</td>
+      <td>5</td>
+      <td>7</td>
+      <td>8</td>
+      <td>7</td>
+      <td>6</td>
+      <td>5</td>
+      <td>8</td>
+      <td>7</td>
+      <td>9</td>
+      <td>7</td>
+      <td>10</td>
+      <td>6</td>
+      <td>3</td>
+      <td>6</td>
+      <td>5</td>
+      <td>5</td>
+      <td>8</td>
+      <td>3</td>
+      <td>5</td>
+      <td>5</td>
+      <td>1</td>
+      <td>2</td>
+      <td>2</td>
+      <td>2</td>
+      <td>3</td>
+      <td>6</td>
+      <td>5</td>
+      <td>2</td>
+      <td>3</td>
+      <td>7</td>
+      <td>1</td>
+      <td>5</td>
+      <td>6</td>
+      <td>5</td>
+      <td>2</td>
+      <td>3</td>
+      <td>2</td>
+      <td>...</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>1700016P03Rik</th>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>...</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>1700027J19Rik</th>
+      <td>4</td>
+      <td>2</td>
+      <td>2</td>
+      <td>6</td>
+      <td>4</td>
+      <td>2</td>
+      <td>3</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>1</td>
+      <td>1</td>
+      <td>3</td>
+      <td>1</td>
+      <td>3</td>
+      <td>2</td>
+      <td>1</td>
+      <td>2</td>
+      <td>4</td>
+      <td>3</td>
+      <td>4</td>
+      <td>3</td>
+      <td>2</td>
+      <td>5</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>1</td>
+      <td>2</td>
+      <td>3</td>
+      <td>1</td>
+      <td>0</td>
+      <td>7</td>
+      <td>1</td>
+      <td>3</td>
+      <td>3</td>
+      <td>1</td>
+      <td>1</td>
+      <td>1</td>
+      <td>1</td>
+      <td>...</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>1700056N10Rik</th>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>...</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>1700119H24Rik</th>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>...</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+    </tr>
+  </tbody>
+</table>
+<p>5 rows × 10000 columns</p>
+</div>
+
+<p>Download the scaled input counts and the predicted output counts file for Seurat analyses in R. You can download the files in colab google research using the below function.</p>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">from</span> <span class="nn">google.colab</span> <span class="kn">import</span> <span class="n">files</span>
+<span class="n">mca_counts_norm_lc</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="s">'mca_counts_norm_lc.csv'</span><span class="p">)</span>
+<span class="n">files</span><span class="o">.</span><span class="n">download</span><span class="p">(</span><span class="s">'mca_counts_norm_lc.csv'</span><span class="p">)</span>
+</code></pre></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">mca_counts_norm_lc_output_pd</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">mca_counts_norm_lc_output</span><span class="p">[</span><span class="mi">0</span><span class="p">:,</span><span class="mi">0</span><span class="p">:])</span>  <span class="c"># # # values 1st column as index 1st row as the column names</span>
+<span class="n">mca_counts_norm_lc_output_pd</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="n">mca_counts_norm_lc</span><span class="o">.</span><span class="n">columns</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
+
+<span class="kn">from</span> <span class="nn">google.colab</span> <span class="kn">import</span> <span class="n">files</span>
+<span class="n">mca_counts_norm_lc_output_pd</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="s">'mca_counts_norm_lc_output_pd_colnames.csv'</span><span class="p">)</span>
+<span class="n">files</span><span class="o">.</span><span class="n">download</span><span class="p">(</span><span class="s">'mca_counts_norm_lc_output_pd_colnames.csv'</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p>Back to Rstudio for seurat analyses. Here, I download the files, and ran the PCA analyses, found nearest neighbours, then found the clusters and finally ran the TSNE and UMAP for visualization purposes. This is a default framework with Seurat. I made a hack to the original script to read the scale data, as the clusters are assigned using the scale.data. Ideally, the entire counts table should be used for denoising and the Seurat object should be created by re-running the “FindVariableFeatures” which might result in different set of genes for the original and the denoised data. The denoised data might have better set of variable genes with corrected counts, along with imputation.</p>
+<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">mca.10K.original.seurat</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">RunPCA</span><span class="p">(</span><span class="n">mca.10K.original.seurat</span><span class="p">,</span><span class="w"> </span><span class="n">npcs</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">100</span><span class="p">,</span><span class="w"> </span><span class="n">ndims.print</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span><span class="o">:</span><span class="m">5</span><span class="p">,</span><span class="w"> </span><span class="n">nfeatures.print</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">5</span><span class="p">)</span><span class="w">
+</span></code></pre></div></div>
+<p>These are the top few principal components using the original data.</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+
+## PC_ 1
+## Positive:  Ighv2-2, Ighv1-22, Ighv10-3, Ighv3-6, Ighv1-81
+## Negative:  Retnlg, S100a6, mt-Cytb, Rps27, Rplp1
+## PC_ 2
+## Positive:  Retnlg, Elane, Mpo, Fcnb, Igkc
+## Negative:  Mgp, Dcn, Gstm1, Gsn, S100a6
+## PC_ 3
+## Positive:  Retnlg, Mgp, Dcn, Gsn, Col1a2
+## Negative:  Gstm1, Elane, Rplp0, Rplp1, mt-Cytb
+## PC_ 4
+## Positive:  Retnlg, S100a6, Gstm1, Gsta4, Ly6d
+## Negative:  Elane, Mpo, Mgp, Dcn, Gsn
+## PC_ 5
+## Positive:  Crip1, Rplp0, Rplp1, Rps27, Rps29
+## Negative:  Elane, Gstm1, S100a6, Mpo, Prtn3
+</code></pre></div></div>
+
+<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">mca.10K.original.seurat</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">FindNeighbors</span><span class="p">(</span><span class="n">mca.10K.original.seurat</span><span class="p">,</span><span class="w"> </span><span class="n">reduction</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"pca"</span><span class="p">,</span><span class="w"> </span><span class="n">dims</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span><span class="o">:</span><span class="m">75</span><span class="p">,</span><span class="w"> </span><span class="n">nn.eps</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0.5</span><span class="p">)</span><span class="w">
+</span></code></pre></div></div>
+
+<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">mca.10K.original.seurat</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">FindClusters</span><span class="p">(</span><span class="n">mca.10K.original.seurat</span><span class="p">,</span><span class="w"> </span><span class="n">resolution</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">3</span><span class="p">,</span><span class="w"> </span><span class="n">n.start</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">10</span><span class="p">)</span><span class="w">
+</span></code></pre></div></div>
+<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">#t-SNE, a populare classification method</span><span class="w">
+</span><span class="n">mca.10K.original.seurat</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">RunTSNE</span><span class="p">(</span><span class="n">mca.10K.original.seurat</span><span class="p">,</span><span class="w"> </span><span class="n">dims</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span><span class="o">:</span><span class="m">75</span><span class="p">)</span><span class="w">
+
+</span><span class="c1">#UMAP is relatively new and with some datasets, it is shown to perform better than t-SNE</span><span class="w">
+</span><span class="n">mca.10K.original.seurat</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">RunUMAP</span><span class="p">(</span><span class="n">mca.10K.original.seurat</span><span class="p">,</span><span class="w"> </span><span class="n">dims</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span><span class="o">:</span><span class="m">75</span><span class="p">,</span><span class="w"> </span><span class="n">min.dist</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0.75</span><span class="p">)</span><span class="w">
+</span></code></pre></div></div>
+
+<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">mca.10K.autoencoder.seurat</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">RunPCA</span><span class="p">(</span><span class="n">mca.10K.autoencoder.seurat</span><span class="p">,</span><span class="w"> </span><span class="n">npcs</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">100</span><span class="p">,</span><span class="w"> </span><span class="n">ndims.print</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span><span class="o">:</span><span class="m">5</span><span class="p">,</span><span class="w"> </span><span class="n">nfeatures.print</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">5</span><span class="p">)</span><span class="w">
+</span></code></pre></div></div>
+<p>These are the top few principal components using the autoencoder i.e., denoised data.</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>## PC_ 1
+## Positive:  Gm12583, Llph-ps1, Gm5356, Arg1, Gm4925
+## Negative:  Mgp, Gsn, Sparc, Col1a2, Col3a1
+## PC_ 2
+## Positive:  Mgp, Gsn, Col1a2, Sparc, Col3a1
+## Negative:  Plac8, Rplp0, mt-Cytb, Rplp1, Mpo
+## PC_ 3
+## Positive:  Gsta4, Sprr1a, Krt15, Wfdc2, Ly6d
+## Negative:  Dcn, Col1a2, Col3a1, Mgp, Elane
+## PC_ 4
+## Positive:  Gsta4, Sprr1a, Krt15, Mgp, Wfdc2
+## Negative:  Acta2, Myl9, Igfbp7, Tpm2, Hspb1
+## PC_ 5
+## Positive:  Elane, Plac8, Rplp0, Mpo, mt-Cytb
+## Negative:  Hbb-bt, Hba-a1, Car2, Car1, Blvrb
+</code></pre></div></div>
+
+<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">mca.10K.autoencoder.seurat</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">FindNeighbors</span><span class="p">(</span><span class="n">mca.10K.autoencoder.seurat</span><span class="p">,</span><span class="w"> </span><span class="n">reduction</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"pca"</span><span class="p">,</span><span class="w"> </span><span class="n">dims</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span><span class="o">:</span><span class="m">75</span><span class="p">,</span><span class="w"> </span><span class="n">nn.eps</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0.5</span><span class="p">)</span><span class="w">
+</span></code></pre></div></div>
+
+<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">mca.10K.autoencoder.seurat</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">FindClusters</span><span class="p">(</span><span class="n">mca.10K.autoencoder.seurat</span><span class="p">,</span><span class="w"> </span><span class="n">resolution</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">3</span><span class="p">,</span><span class="w"> </span><span class="n">n.start</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">10</span><span class="p">)</span><span class="w">
+</span></code></pre></div></div>
+
+<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">#t-SNE, a populare classification method</span><span class="w">
+</span><span class="n">mca.10K.autoencoder.seurat</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">RunTSNE</span><span class="p">(</span><span class="n">mca.10K.autoencoder.seurat</span><span class="p">,</span><span class="w"> </span><span class="n">dims</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span><span class="o">:</span><span class="m">75</span><span class="p">)</span><span class="w">
+
+</span><span class="c1">#UMAP is relatively new and with some datasets, it is shown to perform better than t-SNE</span><span class="w">
+</span><span class="n">mca.10K.autoencoder.seurat</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">RunUMAP</span><span class="p">(</span><span class="n">mca.10K.autoencoder.seurat</span><span class="p">,</span><span class="w"> </span><span class="n">dims</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span><span class="o">:</span><span class="m">75</span><span class="p">,</span><span class="w"> </span><span class="n">min.dist</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0.75</span><span class="p">)</span><span class="w">
+</span></code></pre></div></div>
+
+<p>Plotting the UMAP for both original and autoencoder denoised data.</p>
+
+<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">DimPlot</span><span class="p">(</span><span class="n">mca.10K.original.seurat</span><span class="p">,</span><span class="w"> </span><span class="n">group.by</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">'orig.ident'</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">DarkTheme</span><span class="p">()</span><span class="w">
+</span><span class="n">DimPlot</span><span class="p">(</span><span class="n">mca.10K.autoencoder.seurat</span><span class="p">,</span><span class="w"> </span><span class="n">group.by</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">'orig.ident'</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">DarkTheme</span><span class="p">()</span><span class="w">
+</span></code></pre></div></div>
+<p><img src="UMAP_combined.png" alt="png" /></p>
+
+<p>PLEASE NOTE THE SHORTCOMINGS OF THE MODEL IN [1] PICKING ONLY VARIABLE GENES, [2] TRAINING ON FEW EPOCHS, [3] USING A SIMPLE POISSON LOSS FUNCTION. Having mentioned all of this, the umap plot of the autoencoder seem to retain the well separated clusters for each of the bone-marrow and bladder tissues.</p>
+
+  </div><a class="u-url" href="/genomics/2019/11/17/Denoising-Single-Cell-Data-With-Autoencoders.html" hidden></a>
+</article>
+
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">Sivome</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">Sivome</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"><li><a href="https://github.com/Viswam78"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#github"></use></svg> <span class="username">Viswam78</span></a></li></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>All -OMICS is eventually Sivomics!!</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>
