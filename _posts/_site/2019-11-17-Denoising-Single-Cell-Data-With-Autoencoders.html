@@ -1,42 +1,29 @@
----
-title: "Denoising Single Cell Data With Autoencoders (Neural Networks)"
-date: '2019-11-17'
-layout: post
-categories: Genomics
----
+<p>In my previous blog, I used single cell Mouse Cell Atlas [MCA] data to identify clusters and find differentially expressed markers between the clusters. Single cell datasets, in general are sparse, as the number of genes identified is less, compared to bulk RNA-seq experiment. Another reason for sparsity is the number of cells involved, and in most cases, these cells belong to different cell-types leading to expression of different genes in each cell. There are Python modules / R packages that can denoise the single cell counts data and perform imputation (i.e., identify real zeros to possible artifacts caused by single cell sequencing technologies). Some of the programs that does the denoising + imputation on single cell data are DCA, SAVER, MAGIC, scIMPUTE.</p>
 
-In my previous blog, I used single cell Mouse Cell Atlas [MCA] data to identify clusters and find differentially expressed markers between the clusters. Single cell datasets, in general are sparse, as the number of genes identified is less, compared to bulk RNA-seq experiment. Another reason for sparsity is the number of cells involved, and in most cases, these cells belong to different cell-types leading to expression of different genes in each cell. There are Python modules / R packages that can denoise the single cell counts data and perform imputation (i.e., identify real zeros to possible artifacts caused by single cell sequencing technologies). Some of the programs that does the denoising + imputation on single cell data are DCA, SAVER, MAGIC, scIMPUTE.
+<p>Most of these programs use autoencoders (a variant of neural networks) to learn the structure of the data and fill in the missing values. Autoencoder (as the name suggests) has same number of input and output neurons. In single cell case, if the input is counts data of “m” genes and “n” cells, then the output will have the same dimensions, but has a denoised data with reduced sparsity!</p>
 
-Most of these programs use autoencoders (a variant of neural networks) to learn the structure of the data and fill in the missing values. Autoencoder (as the name suggests) has same number of input and output neurons. In single cell case, if the input is counts data of "m" genes and "n" cells, then the output will have the same dimensions, but has a denoised data with reduced sparsity!
+<p>Depending on the number of hidden layers, and activation nodes, there could be different variants of the autoencoders. Here, I wrote a script of an autoencoder implementation that uses additional hidden layers compared to above programs. Another reason I made my own implementation is to understand the basic concepts of how these autoencoders work on single cell data.</p>
 
-Depending on the number of hidden layers, and activation nodes, there could be different variants of the autoencoders. Here, I wrote a script of an autoencoder implementation that uses additional hidden layers compared to above programs. Another reason I made my own implementation is to understand the basic concepts of how these autoencoders work on single cell data.
+<p>The input data I used here is the same I used from my previous blog for Seurat marker analyses i.e., counts data of the publicly available mouse cell atlas. The end goal of this task is to compare the clusters and markers identified with the original counts data, and the autoencoder’s denoised data.</p>
 
-The input data I used here is the same I used from my previous blog for Seurat marker analyses i.e., counts data of the publicly available mouse cell atlas. The end goal of this task is to compare the clusters and markers identified with the original counts data, and the autoencoder's denoised data.
+<p>For this analyses, I  used google colab portal. I uploaded the file that has raw counts of the 2000 variable genes [<em>chrome browser seems to work well for uploading files</em>]. Ideally, all the gene counts should be used, but since the variable features are critical in assigning the clusters and <em>since this is for blog purposes</em>, I picked only the variable genes. Another reason to use a smaller subset is significant reduction of the computation time.</p>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># Load local files to google colab</span>
+<span class="kn">from</span> <span class="nn">google.colab</span> <span class="kn">import</span> <span class="n">files</span>
+<span class="n">uploaded</span> <span class="o">=</span> <span class="n">files</span><span class="o">.</span><span class="n">upload</span><span class="p">()</span>
+</code></pre></div></div>
 
-For this analyses, I  used google colab portal. I uploaded the file that has raw counts of the 2000 variable genes [*chrome browser seems to work well for uploading files*]. Ideally, all the gene counts should be used, but since the variable features are critical in assigning the clusters and _since this is for blog purposes_, I picked only the variable genes. Another reason to use a smaller subset is significant reduction of the computation time.    
-```python
-# Load local files to google colab
-from google.colab import files
-uploaded = files.upload()
-```
+<p>Next, import the data as a pandas data frame.</p>
 
-Next, import the data as a pandas data frame.  
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="n">pd</span>
+<span class="n">mca_counts</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s">"mca.10K.vg.csv"</span><span class="p">,</span> <span class="n">index_col</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+</code></pre></div></div>
+<p>Displaying the top hits of the counts file.</p>
 
-```python
-import pandas as pd
-mca_counts = pd.read_csv("mca.10K.vg.csv", index_col=0)
-```
-Displaying the top hits of the counts file.  
-
-```python
-mca_counts.head()
-```
-
-
-
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">mca_counts</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</code></pre></div></div>
 
 <div>
-<style scoped>
+<style scoped="">
     .dataframe tbody tr th:only-of-type {
         vertical-align: middle;
     }
@@ -562,184 +549,168 @@ mca_counts.head()
 <p>5 rows × 10000 columns</p>
 </div>
 
+<p>Displaying the shape of the counts.</p>
 
-Displaying the shape of the counts.  
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">mca_counts</span><span class="o">.</span><span class="n">shape</span>
+</code></pre></div></div>
 
-```python
-mca_counts.shape
-```
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>(2000, 10000)
+</code></pre></div></div>
 
+<p>The dimension of the input data is 2000 variable genes by 10000 cells. This implies that the number of samples is 2000 (in computer vision applications, this can be compared to the number of images used for training). The shape of the input dimension for images in computer vision applications is x by y (or x by y by 3 in case of RGB). In a sample MNIST data, i.e., grey scale low-res image, the size of image is 28 by 28 i.e., 784. Here, the size of the data set (also called the input dimension in neural network nomenclature) is equal to the number of cells considered [here, it is 10K]. Another thing to note is that I used first 10K cells of the 405K cells present in the mouse cell atlas. [<em>If someone ends up having a good compute, this analyses can be scaled to include all the cells, ideally 95% for training, 4% for validation and 1% for testing</em>]. If the number of samples is few thousands (say 10K or so, then ratio of 60 : 20 : 20 for training : validation : test makes sense).</p>
 
+<p>The input vector of each input neuron is the counts of a particular gene across all cells. In general, counts data are modelled with a poisson distribution (mean and variance are equal) or in most cases, using negative binomial distribution (mean and variance are modelled with 2 parameters). In DCA, and SAVER-X, 2 variants of negative binomial (NB) distribution are implemented, depending on the type of input data used.</p>
 
+<p>The end goal of this blog is to show the <em>basic details</em> of different aspects of denoising single cell data using neural networks such as autoencoders. For accurate classifications and analyses, it is highly recommended to use the above programs such as SAVER-X, DCA etc. Below, I showed few things including [1] generating the input data for the above tools (like SAVERX, DCA), [2] understanding the notation of the neural networks (i.e., training data set size, input dimension of the input layer neurons), [3] neural network model i.e., layers of the autoencoder i.e., input layer + [ encoder layers ] + [ compression layer ] + [ decoder layer ] + [ output layer ], [4] the parameters used to run the neural network to calculate the loss and other metrics, [5] evaluating the model on the input data to generate the denoised + impute version of the original single cell data. Finally, both the original and the basic denoised version of the dataset is fed back into the Seurat for clustering analyses. Another short-coming of the below model is to use a new test set. Since the model was trained on using a validation set, I generated the final output using all the samples.</p>
 
-    (2000, 10000)
+<p>One of the major differences between the previous implementations and the current one is the number of hidden layers used in encoder and decoder. Unlike one layer of encoder and decoder, I implemented 2 layers with 256 and 64 neurons each. The encoded layers have 256 and 64neurons, while the decoded layers has 256 and 64 neurons with a final output layer having 2000 neurons representing the number of samples. There is a compression layer in between encoder and decoder layers. Except for the activation for the final output layer, all the activations used are ReLU. The output layer has an activation of <em>sigmoid</em> function. Regularization might be helpful if the entire data set is used (i.e., counts of all genes and NOT just varying genes).</p>
 
+<p>In poisson loss function, the loss would equal to the mean([y_pred - y_true * log(y_pred + epsilon)]), where epsilon is a small number to avoid calculating log(0). Also, for Seurat analyses, it would help to use a threshold and set everything below threshold to zero. However, this threshold should be carefully chosen depending on the dataset (for example, looking at the histogram of the predicted output).</p>
 
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">from</span> <span class="nn">keras.layers</span> <span class="kn">import</span> <span class="n">Input</span><span class="p">,</span> <span class="n">Dense</span><span class="p">,</span> <span class="n">BatchNormalization</span><span class="p">,</span> <span class="n">Dropout</span><span class="p">,</span> <span class="n">Activation</span>
+<span class="kn">from</span> <span class="nn">keras.models</span> <span class="kn">import</span> <span class="n">Model</span>
+<span class="c">#from keras.regularizers import l1, L1L2, l2</span>
 
-The dimension of the input data is 2000 variable genes by 10000 cells. This implies that the number of samples is 2000 (in computer vision applications, this can be compared to the number of images used for training). The shape of the input dimension for images in computer vision applications is x by y (or x by y by 3 in case of RGB). In a sample MNIST data, i.e., grey scale low-res image, the size of image is 28 by 28 i.e., 784. Here, the size of the data set (also called the input dimension in neural network nomenclature) is equal to the number of cells considered [here, it is 10K]. Another thing to note is that I used first 10K cells of the 405K cells present in the mouse cell atlas. [*If someone ends up having a good compute, this analyses can be scaled to include all the cells, ideally 95% for training, 4% for validation and 1% for testing*]. If the number of samples is few thousands (say 10K or so, then ratio of 60 : 20 : 20 for training : validation : test makes sense).  
+<span class="c"># Input layer</span>
+<span class="n">input_cell</span> <span class="o">=</span> <span class="n">Input</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="mi">10000</span><span class="p">,</span> <span class="p">))</span>
 
- The input vector of each input neuron is the counts of a particular gene across all cells. In general, counts data are modelled with a poisson distribution (mean and variance are equal) or in most cases, using negative binomial distribution (mean and variance are modelled with 2 parameters). In DCA, and SAVER-X, 2 variants of negative binomial (NB) distribution are implemented, depending on the type of input data used.
+<span class="c"># Encoded layer 1</span>
+<span class="n">encoded</span> <span class="o">=</span> <span class="n">Dense</span><span class="p">(</span><span class="mi">256</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="s">'relu'</span><span class="p">)(</span><span class="n">input_cell</span><span class="p">)</span> <span class="c">#, activity_regularizer=L1L2(l1=10e-3, l2=10e-5)</span>
+<span class="n">encoded</span> <span class="o">=</span> <span class="n">Dropout</span><span class="p">(</span><span class="n">rate</span><span class="o">=</span><span class="mf">0.2</span><span class="p">)(</span><span class="n">encoded</span><span class="p">)</span>
 
-The end goal of this blog is to show the _basic details_ of different aspects of denoising single cell data using neural networks such as autoencoders. For accurate classifications and analyses, it is highly recommended to use the above programs such as SAVER-X, DCA etc. Below, I showed few things including [1] generating the input data for the above tools (like SAVERX, DCA), [2] understanding the notation of the neural networks (i.e., training data set size, input dimension of the input layer neurons), [3] neural network model i.e., layers of the autoencoder i.e., input layer + [ encoder layers ] + [ compression layer ] + [ decoder layer ] + [ output layer ], [4] the parameters used to run the neural network to calculate the loss and other metrics, [5] evaluating the model on the input data to generate the denoised + impute version of the original single cell data. Finally, both the original and the basic denoised version of the dataset is fed back into the Seurat for clustering analyses. Another short-coming of the below model is to use a new test set. Since the model was trained on using a validation set, I generated the final output using all the samples.  
+<span class="c"># Encoded layer 2</span>
+<span class="n">encoded_2</span> <span class="o">=</span> <span class="n">Dense</span><span class="p">(</span><span class="mi">64</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="s">'relu'</span><span class="p">)(</span><span class="n">encoded</span><span class="p">)</span>
+<span class="n">encoded_2</span> <span class="o">=</span> <span class="n">Dropout</span><span class="p">(</span><span class="n">rate</span><span class="o">=</span><span class="mf">0.2</span><span class="p">)(</span><span class="n">encoded_2</span><span class="p">)</span>
 
-One of the major differences between the previous implementations and the current one is the number of hidden layers used in encoder and decoder. Unlike one layer of encoder and decoder, I implemented 2 layers with 256 and 64 neurons each. The encoded layers have 256 and 64neurons, while the decoded layers has 256 and 64 neurons with a final output layer having 2000 neurons representing the number of samples. There is a compression layer in between encoder and decoder layers. Except for the activation for the final output layer, all the activations used are ReLU. The output layer has an activation of *sigmoid* function. Regularization might be helpful if the entire data set is used (i.e., counts of all genes and NOT just varying genes).  
+<span class="c"># Compression layer 2</span>
+<span class="n">compression_layer</span> <span class="o">=</span> <span class="n">Dense</span><span class="p">(</span><span class="mi">16</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="s">'relu'</span><span class="p">)(</span><span class="n">encoded_2</span><span class="p">)</span>
+<span class="n">compression_layer</span> <span class="o">=</span> <span class="n">Dropout</span><span class="p">(</span><span class="n">rate</span><span class="o">=</span><span class="mf">0.2</span><span class="p">)(</span><span class="n">compression_layer</span><span class="p">)</span>
 
-In poisson loss function, the loss would equal to the mean([y_pred - y_true * log(y_pred + epsilon)]), where epsilon is a small number to avoid calculating log(0). Also, for Seurat analyses, it would help to use a threshold and set everything below threshold to zero. However, this threshold should be carefully chosen depending on the dataset (for example, looking at the histogram of the predicted output).  
+<span class="c"># Decoded layer 2</span>
+<span class="n">decoded_2</span> <span class="o">=</span> <span class="n">Dense</span><span class="p">(</span><span class="mi">64</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="s">'relu'</span><span class="p">)(</span><span class="n">compression_layer</span><span class="p">)</span>
+<span class="n">decoded_2</span> <span class="o">=</span> <span class="n">Dropout</span><span class="p">(</span><span class="n">rate</span><span class="o">=</span><span class="mf">0.2</span><span class="p">)(</span><span class="n">decoded_2</span><span class="p">)</span>
 
+<span class="c"># Decoded layer 1</span>
+<span class="n">decoded</span> <span class="o">=</span> <span class="n">Dense</span><span class="p">(</span><span class="mi">256</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="s">'relu'</span><span class="p">)(</span><span class="n">decoded_2</span><span class="p">)</span>
+<span class="n">decoded</span> <span class="o">=</span> <span class="n">Dropout</span><span class="p">(</span><span class="n">rate</span><span class="o">=</span><span class="mf">0.2</span><span class="p">)(</span><span class="n">decoded</span><span class="p">)</span>
 
+<span class="c"># Output layer</span>
+<span class="n">output_cell</span> <span class="o">=</span> <span class="n">Dense</span><span class="p">(</span><span class="mi">10000</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="s">'sigmoid'</span><span class="p">)(</span><span class="n">decoded</span><span class="p">)</span>
 
-```python
-from keras.layers import Input, Dense, BatchNormalization, Dropout, Activation
-from keras.models import Model
-#from keras.regularizers import l1, L1L2, l2
+<span class="c"># Defining the entire model</span>
+<span class="n">autoencoder</span> <span class="o">=</span> <span class="n">Model</span><span class="p">(</span><span class="n">input_cell</span><span class="p">,</span> <span class="n">output_cell</span><span class="p">)</span>
 
-# Input layer
-input_cell = Input(shape=(10000, ))
+<span class="c"># compile the model before fit and predict</span>
+<span class="n">autoencoder</span><span class="o">.</span><span class="nb">compile</span><span class="p">(</span><span class="n">optimizer</span><span class="o">=</span><span class="s">'rmsprop'</span><span class="p">,</span> <span class="n">loss</span><span class="o">=</span><span class="s">'poisson'</span><span class="p">)</span>
 
-# Encoded layer 1
-encoded = Dense(256, activation='relu')(input_cell) #, activity_regularizer=L1L2(l1=10e-3, l2=10e-5)
-encoded = Dropout(rate=0.2)(encoded)
+<span class="c"># Summary of the model in tabular format to show the  number of trainable and non-trainable parameters</span>
+<span class="n">autoencoder</span><span class="o">.</span><span class="n">summary</span><span class="p">()</span>
+</code></pre></div></div>
 
-# Encoded layer 2
-encoded_2 = Dense(64, activation='relu')(encoded)
-encoded_2 = Dropout(rate=0.2)(encoded_2)
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Model: "model_16"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+input_20 (InputLayer)        (None, 10000)             0         
+_________________________________________________________________
+dense_99 (Dense)             (None, 256)               2560256   
+_________________________________________________________________
+dropout_40 (Dropout)         (None, 256)               0         
+_________________________________________________________________
+dense_100 (Dense)            (None, 64)                16448     
+_________________________________________________________________
+dropout_41 (Dropout)         (None, 64)                0         
+_________________________________________________________________
+dense_101 (Dense)            (None, 16)                1040      
+_________________________________________________________________
+dropout_42 (Dropout)         (None, 16)                0         
+_________________________________________________________________
+dense_102 (Dense)            (None, 64)                1088      
+_________________________________________________________________
+dropout_43 (Dropout)         (None, 64)                0         
+_________________________________________________________________
+dense_103 (Dense)            (None, 256)               16640     
+_________________________________________________________________
+dropout_44 (Dropout)         (None, 256)               0         
+_________________________________________________________________
+dense_104 (Dense)            (None, 10000)             2570000   
+=================================================================
+Total params: 5,165,472
+Trainable params: 5,165,472
+Non-trainable params: 0
+_________________________________________________________________
+</code></pre></div></div>
 
-# Compression layer 2
-compression_layer = Dense(16, activation='relu')(encoded_2)
-compression_layer = Dropout(rate=0.2)(compression_layer)
+<p>The number of epochs used is ONLY 20. Ideally this should be large enough to yield a very low validation loss. To save on the compute time, I used few epochs. The other parameter of interest is the validation_split. A validation split of 0.3 below indicates that 30% of the training data is used as a validation set. Here, since the number of samples is 2000, the model will be trained using 70% of the samples (1400) and the remaining 30% is used for validation purposes (i.e., 600 samples).</p>
 
-# Decoded layer 2
-decoded_2 = Dense(64, activation='relu')(compression_layer)
-decoded_2 = Dropout(rate=0.2)(decoded_2)
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># Log normalizing the raw counts and scaling to 10K cells is typically used with all the single cell programs.</span>
+<span class="n">mca_counts_lc</span> <span class="o">=</span> <span class="n">mca_counts</span><span class="o">.</span><span class="nb">max</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">mca_counts_norm_lc</span> <span class="o">=</span> <span class="n">mca_counts</span> <span class="o">/</span> <span class="n">mca_counts_lc</span><span class="p">[</span><span class="bp">None</span><span class="p">,</span> <span class="p">:]</span>
 
-# Decoded layer 1
-decoded = Dense(256, activation='relu')(decoded_2)
-decoded = Dropout(rate=0.2)(decoded)
+<span class="c"># Fitting the normalized data to the autoencoder model built</span>
+<span class="n">autoencoder</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">mca_counts_norm_lc</span><span class="p">,</span> <span class="n">mca_counts_norm_lc</span><span class="p">,</span> <span class="n">epochs</span> <span class="o">=</span> <span class="mi">20</span><span class="p">,</span> <span class="n">batch_size</span> <span class="o">=</span> <span class="mi">20</span><span class="p">,</span> <span class="n">validation_split</span><span class="o">=</span><span class="mf">0.3</span><span class="p">)</span><span class="c"># class_weight=mca_lc_weights, sample_weight=mca_counts_gs)</span>
 
-# Output layer
-output_cell = Dense(10000, activation='sigmoid')(decoded)
+<span class="c"># Predict the output on the same training data [In real world applications, there should be validation data and a separate test data -- for simplicity, I used the same input data here]</span>
+<span class="n">mca_counts_norm_lc_output</span> <span class="o">=</span> <span class="n">autoencoder</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">mca_counts_norm_lc</span><span class="p">)</span>
 
-# Defining the entire model
-autoencoder = Model(input_cell, output_cell)
+</code></pre></div></div>
 
-# compile the model before fit and predict
-autoencoder.compile(optimizer='rmsprop', loss='poisson')
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Train on 1400 samples, validate on 600 samples
+Epoch 1/20
+1400/1400 [==============================] - 3s 2ms/step - loss: 0.0187 - val_loss: 0.0294
+Epoch 2/20
+1400/1400 [==============================] - 3s 2ms/step - loss: 0.0188 - val_loss: 0.0290
+Epoch 3/20
+1400/1400 [==============================] - 3s 2ms/step - loss: 0.0187 - val_loss: 0.0294
+Epoch 4/20
+1400/1400 [==============================] - 3s 2ms/step - loss: 0.0189 - val_loss: 0.0298
+Epoch 5/20
+1400/1400 [==============================] - 3s 2ms/step - loss: 0.0185 - val_loss: 0.0289
+Epoch 6/20
+1400/1400 [==============================] - 3s 2ms/step - loss: 0.0186 - val_loss: 0.0298
+Epoch 7/20
+1400/1400 [==============================] - 3s 2ms/step - loss: 0.0187 - val_loss: 0.0301
+Epoch 8/20
+1400/1400 [==============================] - 3s 2ms/step - loss: 0.0187 - val_loss: 0.0302
+Epoch 9/20
+1400/1400 [==============================] - 3s 2ms/step - loss: 0.0189 - val_loss: 0.0298
+Epoch 10/20
+1400/1400 [==============================] - 3s 2ms/step - loss: 0.0188 - val_loss: 0.0297
+Epoch 11/20
+1400/1400 [==============================] - 3s 2ms/step - loss: 0.0185 - val_loss: 0.0299
+Epoch 12/20
+1400/1400 [==============================] - 3s 2ms/step - loss: 0.0188 - val_loss: 0.0296
+Epoch 13/20
+1400/1400 [==============================] - 3s 2ms/step - loss: 0.0185 - val_loss: 0.0300
+Epoch 14/20
+1400/1400 [==============================] - 3s 2ms/step - loss: 0.0184 - val_loss: 0.0291
+Epoch 15/20
+1400/1400 [==============================] - 3s 2ms/step - loss: 0.0188 - val_loss: 0.0291
+Epoch 16/20
+1400/1400 [==============================] - 3s 2ms/step - loss: 0.0186 - val_loss: 0.0295
+Epoch 17/20
+1400/1400 [==============================] - 3s 2ms/step - loss: 0.0185 - val_loss: 0.0294
+Epoch 18/20
+1400/1400 [==============================] - 3s 2ms/step - loss: 0.0186 - val_loss: 0.0293
+Epoch 19/20
+1400/1400 [==============================] - 4s 3ms/step - loss: 0.0185 - val_loss: 0.0293
+Epoch 20/20
+1400/1400 [==============================] - 4s 3ms/step - loss: 0.0185 - val_loss: 0.0297
+</code></pre></div></div>
 
-# Summary of the model in tabular format to show the  number of trainable and non-trainable parameters
-autoencoder.summary()
-```
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">mca_counts_norm_lc_output</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">4</span><span class="p">,</span> <span class="mi">0</span><span class="p">:</span><span class="mi">4</span><span class="p">]</span>
+</code></pre></div></div>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>array([[0.01773182, 0.02895972, 0.01728064, 0.01625928],
+       [0.00141433, 0.00209311, 0.00145644, 0.0011279 ],
+       [0.02724421, 0.04175797, 0.02742231, 0.02623108],
+       [0.0013988 , 0.00204527, 0.00144061, 0.00110739]], dtype=float32)
+</code></pre></div></div>
 
-    Model: "model_16"
-    _________________________________________________________________
-    Layer (type)                 Output Shape              Param #   
-    =================================================================
-    input_20 (InputLayer)        (None, 10000)             0         
-    _________________________________________________________________
-    dense_99 (Dense)             (None, 256)               2560256   
-    _________________________________________________________________
-    dropout_40 (Dropout)         (None, 256)               0         
-    _________________________________________________________________
-    dense_100 (Dense)            (None, 64)                16448     
-    _________________________________________________________________
-    dropout_41 (Dropout)         (None, 64)                0         
-    _________________________________________________________________
-    dense_101 (Dense)            (None, 16)                1040      
-    _________________________________________________________________
-    dropout_42 (Dropout)         (None, 16)                0         
-    _________________________________________________________________
-    dense_102 (Dense)            (None, 64)                1088      
-    _________________________________________________________________
-    dropout_43 (Dropout)         (None, 64)                0         
-    _________________________________________________________________
-    dense_103 (Dense)            (None, 256)               16640     
-    _________________________________________________________________
-    dropout_44 (Dropout)         (None, 256)               0         
-    _________________________________________________________________
-    dense_104 (Dense)            (None, 10000)             2570000   
-    =================================================================
-    Total params: 5,165,472
-    Trainable params: 5,165,472
-    Non-trainable params: 0
-    _________________________________________________________________
-
-
-The number of epochs used is ONLY 20. Ideally this should be large enough to yield a very low validation loss. To save on the compute time, I used few epochs. The other parameter of interest is the validation_split. A validation split of 0.3 below indicates that 30% of the training data is used as a validation set. Here, since the number of samples is 2000, the model will be trained using 70% of the samples (1400) and the remaining 30% is used for validation purposes (i.e., 600 samples).  
-
-```python
-# Log normalizing the raw counts and scaling to 10K cells is typically used with all the single cell programs.
-mca_counts_lc = mca_counts.max(axis=0)
-mca_counts_norm_lc = mca_counts / mca_counts_lc[None, :]
-
-# Fitting the normalized data to the autoencoder model built
-autoencoder.fit(mca_counts_norm_lc, mca_counts_norm_lc, epochs = 20, batch_size = 20, validation_split=0.3)# class_weight=mca_lc_weights, sample_weight=mca_counts_gs)
-
-# Predict the output on the same training data [In real world applications, there should be validation data and a separate test data -- for simplicity, I used the same input data here]
-mca_counts_norm_lc_output = autoencoder.predict(mca_counts_norm_lc)
-
-```
-
-    Train on 1400 samples, validate on 600 samples
-    Epoch 1/20
-    1400/1400 [==============================] - 3s 2ms/step - loss: 0.0187 - val_loss: 0.0294
-    Epoch 2/20
-    1400/1400 [==============================] - 3s 2ms/step - loss: 0.0188 - val_loss: 0.0290
-    Epoch 3/20
-    1400/1400 [==============================] - 3s 2ms/step - loss: 0.0187 - val_loss: 0.0294
-    Epoch 4/20
-    1400/1400 [==============================] - 3s 2ms/step - loss: 0.0189 - val_loss: 0.0298
-    Epoch 5/20
-    1400/1400 [==============================] - 3s 2ms/step - loss: 0.0185 - val_loss: 0.0289
-    Epoch 6/20
-    1400/1400 [==============================] - 3s 2ms/step - loss: 0.0186 - val_loss: 0.0298
-    Epoch 7/20
-    1400/1400 [==============================] - 3s 2ms/step - loss: 0.0187 - val_loss: 0.0301
-    Epoch 8/20
-    1400/1400 [==============================] - 3s 2ms/step - loss: 0.0187 - val_loss: 0.0302
-    Epoch 9/20
-    1400/1400 [==============================] - 3s 2ms/step - loss: 0.0189 - val_loss: 0.0298
-    Epoch 10/20
-    1400/1400 [==============================] - 3s 2ms/step - loss: 0.0188 - val_loss: 0.0297
-    Epoch 11/20
-    1400/1400 [==============================] - 3s 2ms/step - loss: 0.0185 - val_loss: 0.0299
-    Epoch 12/20
-    1400/1400 [==============================] - 3s 2ms/step - loss: 0.0188 - val_loss: 0.0296
-    Epoch 13/20
-    1400/1400 [==============================] - 3s 2ms/step - loss: 0.0185 - val_loss: 0.0300
-    Epoch 14/20
-    1400/1400 [==============================] - 3s 2ms/step - loss: 0.0184 - val_loss: 0.0291
-    Epoch 15/20
-    1400/1400 [==============================] - 3s 2ms/step - loss: 0.0188 - val_loss: 0.0291
-    Epoch 16/20
-    1400/1400 [==============================] - 3s 2ms/step - loss: 0.0186 - val_loss: 0.0295
-    Epoch 17/20
-    1400/1400 [==============================] - 3s 2ms/step - loss: 0.0185 - val_loss: 0.0294
-    Epoch 18/20
-    1400/1400 [==============================] - 3s 2ms/step - loss: 0.0186 - val_loss: 0.0293
-    Epoch 19/20
-    1400/1400 [==============================] - 4s 3ms/step - loss: 0.0185 - val_loss: 0.0293
-    Epoch 20/20
-    1400/1400 [==============================] - 4s 3ms/step - loss: 0.0185 - val_loss: 0.0297
-
-
-
-```python
-mca_counts_norm_lc_output[0:4, 0:4]
-```
-    array([[0.01773182, 0.02895972, 0.01728064, 0.01625928],
-           [0.00141433, 0.00209311, 0.00145644, 0.0011279 ],
-           [0.02724421, 0.04175797, 0.02742231, 0.02623108],
-           [0.0013988 , 0.00204527, 0.00144061, 0.00110739]], dtype=float32)
-
-
-```python
-mca_counts_norm_lc.head()
-```
-
-
-
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">mca_counts_norm_lc</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</code></pre></div></div>
 
 <div>
-<style scoped>
+<style scoped="">
     .dataframe tbody tr th:only-of-type {
         vertical-align: middle;
     }
@@ -1265,31 +1236,18 @@ mca_counts_norm_lc.head()
 <p>5 rows × 10000 columns</p>
 </div>
 
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">mca_counts_norm_lc_output</span><span class="o">.</span><span class="nb">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+</code></pre></div></div>
 
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>array([185.41336  ,   5.728099 ,  47.230495 , ...,   5.7145967,
+         6.331905 ,   5.6825914], dtype=float32)
+</code></pre></div></div>
 
-
-```python
-mca_counts_norm_lc_output.sum(axis=1)
-```
-
-
-
-
-    array([185.41336  ,   5.728099 ,  47.230495 , ...,   5.7145967,
-             6.331905 ,   5.6825914], dtype=float32)
-
-
-
-
-```python
-mca_counts.head()
-```
-
-
-
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">mca_counts</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</code></pre></div></div>
 
 <div>
-<style scoped>
+<style scoped="">
     .dataframe tbody tr th:only-of-type {
         vertical-align: middle;
     }
@@ -1815,31 +1773,25 @@ mca_counts.head()
 <p>5 rows × 10000 columns</p>
 </div>
 
+<p>Download the scaled input counts and the predicted output counts file for Seurat analyses in R. You can download the files in colab google research using the below function.</p>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">from</span> <span class="nn">google.colab</span> <span class="kn">import</span> <span class="n">files</span>
+<span class="n">mca_counts_norm_lc</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="s">'mca_counts_norm_lc.csv'</span><span class="p">)</span>
+<span class="n">files</span><span class="o">.</span><span class="n">download</span><span class="p">(</span><span class="s">'mca_counts_norm_lc.csv'</span><span class="p">)</span>
+</code></pre></div></div>
 
-Download the scaled input counts and the predicted output counts file for Seurat analyses in R. You can download the files in colab google research using the below function.  
-```python
-from google.colab import files
-mca_counts_norm_lc.to_csv('mca_counts_norm_lc.csv')
-files.download('mca_counts_norm_lc.csv')
-```
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">mca_counts_norm_lc_output_pd</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">mca_counts_norm_lc_output</span><span class="p">[</span><span class="mi">0</span><span class="p">:,</span><span class="mi">0</span><span class="p">:])</span>  <span class="c"># # # values 1st column as index 1st row as the column names</span>
+<span class="n">mca_counts_norm_lc_output_pd</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="n">mca_counts_norm_lc</span><span class="o">.</span><span class="n">columns</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
 
+<span class="kn">from</span> <span class="nn">google.colab</span> <span class="kn">import</span> <span class="n">files</span>
+<span class="n">mca_counts_norm_lc_output_pd</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="s">'mca_counts_norm_lc_output_pd_colnames.csv'</span><span class="p">)</span>
+<span class="n">files</span><span class="o">.</span><span class="n">download</span><span class="p">(</span><span class="s">'mca_counts_norm_lc_output_pd_colnames.csv'</span><span class="p">)</span>
+</code></pre></div></div>
 
-```python
-mca_counts_norm_lc_output_pd = pd.DataFrame(data=mca_counts_norm_lc_output[0:,0:])  # # # values 1st column as index 1st row as the column names
-mca_counts_norm_lc_output_pd.columns = mca_counts_norm_lc.columns[1:]
-
-from google.colab import files
-mca_counts_norm_lc_output_pd.to_csv('mca_counts_norm_lc_output_pd_colnames.csv')
-files.download('mca_counts_norm_lc_output_pd_colnames.csv')
-```
-
-Back to Rstudio for seurat analyses. Here, I download the files, and ran the PCA analyses, found nearest neighbours, then found the clusters and finally ran the TSNE and UMAP for visualization purposes. This is a default framework with Seurat. I made a hack to the original script to read the scale data, as the clusters are assigned using the scale.data. Ideally, the entire counts table should be used for denoising and the Seurat object should be created by re-running the "FindVariableFeatures" which might result in different set of genes for the original and the denoised data. The denoised data might have better set of variable genes with corrected counts, along with imputation.  
-```r
-mca.10K.original.seurat <- RunPCA(mca.10K.original.seurat, npcs = 100, ndims.print = 1:5, nfeatures.print = 5)
-```
-These are the top few principal components using the original data.  
-```
-
+<p>Back to Rstudio for seurat analyses. Here, I download the files, and ran the PCA analyses, found nearest neighbours, then found the clusters and finally ran the TSNE and UMAP for visualization purposes. This is a default framework with Seurat. I made a hack to the original script to read the scale data, as the clusters are assigned using the scale.data. Ideally, the entire counts table should be used for denoising and the Seurat object should be created by re-running the “FindVariableFeatures” which might result in different set of genes for the original and the denoised data. The denoised data might have better set of variable genes with corrected counts, along with imputation.</p>
+<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">mca.10K.original.seurat</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">RunPCA</span><span class="p">(</span><span class="n">mca.10K.original.seurat</span><span class="p">,</span><span class="w"> </span><span class="n">npcs</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">100</span><span class="p">,</span><span class="w"> </span><span class="n">ndims.print</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span><span class="o">:</span><span class="m">5</span><span class="p">,</span><span class="w"> </span><span class="n">nfeatures.print</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">5</span><span class="p">)</span><span class="w">
+</span></code></pre></div></div>
+<p>These are the top few principal components using the original data.</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
 
 ## PC_ 1
 ## Positive:  Ighv2-2, Ighv1-22, Ighv10-3, Ighv3-6, Ighv1-81
@@ -1856,29 +1808,24 @@ These are the top few principal components using the original data.
 ## PC_ 5
 ## Positive:  Crip1, Rplp0, Rplp1, Rps27, Rps29
 ## Negative:  Elane, Gstm1, S100a6, Mpo, Prtn3
-```
+</code></pre></div></div>
 
-```r
-mca.10K.original.seurat <- FindNeighbors(mca.10K.original.seurat, reduction = "pca", dims = 1:75, nn.eps = 0.5)
-```
+<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">mca.10K.original.seurat</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">FindNeighbors</span><span class="p">(</span><span class="n">mca.10K.original.seurat</span><span class="p">,</span><span class="w"> </span><span class="n">reduction</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"pca"</span><span class="p">,</span><span class="w"> </span><span class="n">dims</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span><span class="o">:</span><span class="m">75</span><span class="p">,</span><span class="w"> </span><span class="n">nn.eps</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0.5</span><span class="p">)</span><span class="w">
+</span></code></pre></div></div>
 
-```r
-mca.10K.original.seurat <- FindClusters(mca.10K.original.seurat, resolution = 3, n.start = 10)
-```
-```r
-#t-SNE, a populare classification method
-mca.10K.original.seurat <- RunTSNE(mca.10K.original.seurat, dims = 1:75)
+<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">mca.10K.original.seurat</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">FindClusters</span><span class="p">(</span><span class="n">mca.10K.original.seurat</span><span class="p">,</span><span class="w"> </span><span class="n">resolution</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">3</span><span class="p">,</span><span class="w"> </span><span class="n">n.start</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">10</span><span class="p">)</span><span class="w">
+</span></code></pre></div></div>
+<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">#t-SNE, a populare classification method</span><span class="w">
+</span><span class="n">mca.10K.original.seurat</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">RunTSNE</span><span class="p">(</span><span class="n">mca.10K.original.seurat</span><span class="p">,</span><span class="w"> </span><span class="n">dims</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span><span class="o">:</span><span class="m">75</span><span class="p">)</span><span class="w">
 
-#UMAP is relatively new and with some datasets, it is shown to perform better than t-SNE
-mca.10K.original.seurat <- RunUMAP(mca.10K.original.seurat, dims = 1:75, min.dist = 0.75)
-```
+</span><span class="c1">#UMAP is relatively new and with some datasets, it is shown to perform better than t-SNE</span><span class="w">
+</span><span class="n">mca.10K.original.seurat</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">RunUMAP</span><span class="p">(</span><span class="n">mca.10K.original.seurat</span><span class="p">,</span><span class="w"> </span><span class="n">dims</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span><span class="o">:</span><span class="m">75</span><span class="p">,</span><span class="w"> </span><span class="n">min.dist</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0.75</span><span class="p">)</span><span class="w">
+</span></code></pre></div></div>
 
-```r
-mca.10K.autoencoder.seurat <- RunPCA(mca.10K.autoencoder.seurat, npcs = 100, ndims.print = 1:5, nfeatures.print = 5)
-```
-These are the top few principal components using the autoencoder i.e., denoised data.  
-```
-## PC_ 1
+<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">mca.10K.autoencoder.seurat</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">RunPCA</span><span class="p">(</span><span class="n">mca.10K.autoencoder.seurat</span><span class="p">,</span><span class="w"> </span><span class="n">npcs</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">100</span><span class="p">,</span><span class="w"> </span><span class="n">ndims.print</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span><span class="o">:</span><span class="m">5</span><span class="p">,</span><span class="w"> </span><span class="n">nfeatures.print</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">5</span><span class="p">)</span><span class="w">
+</span></code></pre></div></div>
+<p>These are the top few principal components using the autoencoder i.e., denoised data.</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>## PC_ 1
 ## Positive:  Gm12583, Llph-ps1, Gm5356, Arg1, Gm4925
 ## Negative:  Mgp, Gsn, Sparc, Col1a2, Col3a1
 ## PC_ 2
@@ -1893,31 +1840,26 @@ These are the top few principal components using the autoencoder i.e., denoised 
 ## PC_ 5
 ## Positive:  Elane, Plac8, Rplp0, Mpo, mt-Cytb
 ## Negative:  Hbb-bt, Hba-a1, Car2, Car1, Blvrb
-```
+</code></pre></div></div>
 
-```r
-mca.10K.autoencoder.seurat <- FindNeighbors(mca.10K.autoencoder.seurat, reduction = "pca", dims = 1:75, nn.eps = 0.5)
-```
+<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">mca.10K.autoencoder.seurat</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">FindNeighbors</span><span class="p">(</span><span class="n">mca.10K.autoencoder.seurat</span><span class="p">,</span><span class="w"> </span><span class="n">reduction</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"pca"</span><span class="p">,</span><span class="w"> </span><span class="n">dims</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span><span class="o">:</span><span class="m">75</span><span class="p">,</span><span class="w"> </span><span class="n">nn.eps</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0.5</span><span class="p">)</span><span class="w">
+</span></code></pre></div></div>
 
-```r
-mca.10K.autoencoder.seurat <- FindClusters(mca.10K.autoencoder.seurat, resolution = 3, n.start = 10)
-```
+<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">mca.10K.autoencoder.seurat</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">FindClusters</span><span class="p">(</span><span class="n">mca.10K.autoencoder.seurat</span><span class="p">,</span><span class="w"> </span><span class="n">resolution</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">3</span><span class="p">,</span><span class="w"> </span><span class="n">n.start</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">10</span><span class="p">)</span><span class="w">
+</span></code></pre></div></div>
 
+<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">#t-SNE, a populare classification method</span><span class="w">
+</span><span class="n">mca.10K.autoencoder.seurat</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">RunTSNE</span><span class="p">(</span><span class="n">mca.10K.autoencoder.seurat</span><span class="p">,</span><span class="w"> </span><span class="n">dims</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span><span class="o">:</span><span class="m">75</span><span class="p">)</span><span class="w">
 
-```r
-#t-SNE, a populare classification method
-mca.10K.autoencoder.seurat <- RunTSNE(mca.10K.autoencoder.seurat, dims = 1:75)
+</span><span class="c1">#UMAP is relatively new and with some datasets, it is shown to perform better than t-SNE</span><span class="w">
+</span><span class="n">mca.10K.autoencoder.seurat</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">RunUMAP</span><span class="p">(</span><span class="n">mca.10K.autoencoder.seurat</span><span class="p">,</span><span class="w"> </span><span class="n">dims</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span><span class="o">:</span><span class="m">75</span><span class="p">,</span><span class="w"> </span><span class="n">min.dist</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0.75</span><span class="p">)</span><span class="w">
+</span></code></pre></div></div>
 
-#UMAP is relatively new and with some datasets, it is shown to perform better than t-SNE
-mca.10K.autoencoder.seurat <- RunUMAP(mca.10K.autoencoder.seurat, dims = 1:75, min.dist = 0.75)
-```
+<p>Plotting the UMAP for both original and autoencoder denoised data.</p>
 
-Plotting the UMAP for both original and autoencoder denoised data.  
+<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">DimPlot</span><span class="p">(</span><span class="n">mca.10K.original.seurat</span><span class="p">,</span><span class="w"> </span><span class="n">group.by</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">'orig.ident'</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">DarkTheme</span><span class="p">()</span><span class="w">
+</span><span class="n">DimPlot</span><span class="p">(</span><span class="n">mca.10K.autoencoder.seurat</span><span class="p">,</span><span class="w"> </span><span class="n">group.by</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">'orig.ident'</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">DarkTheme</span><span class="p">()</span><span class="w">
+</span></code></pre></div></div>
+<p><img src="UMAP_combined.png" alt="png" /></p>
 
-```r
-DimPlot(mca.10K.original.seurat, group.by = 'orig.ident') + DarkTheme()
-DimPlot(mca.10K.autoencoder.seurat, group.by = 'orig.ident') + DarkTheme()
-```
-![png](UMAP_combined.png)  
-
-PLEASE NOTE THE SHORTCOMINGS OF THE MODEL IN [1] PICKING ONLY VARIABLE GENES, [2] TRAINING ON FEW EPOCHS, [3] USING A SIMPLE POISSON LOSS FUNCTION. Having mentioned all of this, the umap plot of the autoencoder seem to retain the well separated clusters for each of the bone-marrow and bladder tissues.  
+<p>PLEASE NOTE THE SHORTCOMINGS OF THE MODEL IN [1] PICKING ONLY VARIABLE GENES, [2] TRAINING ON FEW EPOCHS, [3] USING A SIMPLE POISSON LOSS FUNCTION. Having mentioned all of this, the umap plot of the autoencoder seem to retain the well separated clusters for each of the bone-marrow and bladder tissues.</p>

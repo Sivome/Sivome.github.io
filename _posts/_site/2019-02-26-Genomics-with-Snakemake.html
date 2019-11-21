@@ -1,0 +1,145 @@
+<p>Generating Next-generation sequencing (NGS) data economically is becoming a simpler problem than analyzing the data systematically. There is an increase in the number of tools available to process such data as well (i.e., tools for  converting raw data to proper format, tools for  aligning the reads to the genome, tools for  post-processing the aligned reads to call variants). This results in many challenges to pick the best performing tools, and to put all of these tools in a way that systematically run to generate the desired output, for example, variant calling. <a href="https://www.ncbi.nlm.nih.gov/pubmed/29154853">A recent paper describes in detail about the guidelines in clinical genomics</a></p>
+
+<p>Here, I focus on one of the tools built to bring the above mentioned programs together as a pipeline.</p>
+
+<p>Snakemake is a bioinformatics tool to build pipelines, mostly NGS and related datasets. More info can be found [here] (https://snakemake.readthedocs.io/en/stable/).</p>
+
+<p>Here, I used snakemake to  1. build Bowtie2 index, 2. mapped fastq (raw data i.e., reads) to fasta to generate NGS alignments, 3. and then process output with tools like samtools and bamtools</p>
+
+<p>To run the below pipeline, you need the NGS raw data (i.e., reads in fastq format)  and the fasta file of species of interest.</p>
+
+<p>In the current blog, I used the SRR from one of the projects I worked. More info on this work <a href="https://www.ncbi.nlm.nih.gov/pubmed/29152409">here</a>.</p>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># These SRRs are from the project description from NCBI portal</span>
+<span class="c"># https://www.ncbi.nlm.nih.gov/sra/SRX1981073[accn]</span>
+<span class="c"># Use sra-tools fasterq-dump to dump the SRRs used in the project</span>
+</code></pre></div></div>
+
+<p>To download a fasta file if you know the NCBI accession ID, you can do something like this:</p>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># The fasta used in this analyses is from (name it to k12_profile.fasta)</span>
+<span class="c"># https://www.ncbi.nlm.nih.gov/genome?term=NC_000913.3&amp;cmd=DetailsSearch</span>
+</code></pre></div></div>
+
+<p>A very first rule i.e., <strong>rule all</strong> is defined with the input that reflects the output of the entire snakemake workflow. In the current post, I start with reads, build index of fasta file, map reads to this built index, then use a threshold to pick high-quality alignments, sort them and finally conver this to BED format. So, the final output is BED format, which should go into the <em>input</em> of the <em><strong>rule all</strong></em>.</p>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># Rule 1: Build rule of all rules?</span>
+<span class="n">ecoli_samples</span> <span class="o">=</span> <span class="p">[</span><span class="s">'SRR5468393'</span><span class="p">]</span>
+
+<span class="n">rule</span> <span class="nb">all</span><span class="p">:</span>
+  <span class="nb">input</span><span class="p">:</span> <span class="n">expand</span><span class="p">(</span><span class="s">"{sample}.bed"</span><span class="p">,</span> <span class="n">sample</span><span class="o">=</span><span class="n">ecoli_samples</span><span class="p">)</span>
+</code></pre></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># Rule 2: build the index file from fasta file</span>
+<span class="n">rule</span> <span class="n">bowtie_index_build</span><span class="p">:</span>
+    <span class="nb">input</span><span class="p">:</span>
+        <span class="s">"k12_profile.fasta"</span>
+    <span class="n">shell</span><span class="p">:</span>
+        <span class="s">"bowtie2-build {input} k12Index/k12_profile"</span>
+</code></pre></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># Rule 3: Map fastq to fasta index</span>
+<span class="n">rule</span> <span class="n">bowtie_map</span><span class="p">:</span>
+    <span class="nb">input</span><span class="p">:</span>
+        <span class="n">expand</span><span class="p">(</span><span class="s">"{sample}.fastq"</span><span class="p">,</span> <span class="n">sample</span><span class="o">=</span><span class="n">ecoli_samples</span><span class="p">)</span>
+    <span class="n">output</span><span class="p">:</span>
+        <span class="n">expand</span><span class="p">(</span><span class="s">"{sample}.sam"</span><span class="p">,</span> <span class="n">sample</span><span class="o">=</span><span class="n">ecoli_samples</span><span class="p">)</span>
+    <span class="n">shell</span><span class="p">:</span>
+        <span class="s">"bowtie2 -x k12Index/k12_profile -p 4 --very-sensitive --no-unal -U {input} -S {output} -k 1"</span>
+</code></pre></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># Rule 4: Use samtools with q=30 for good alignments i.e., bam with a good cut-off</span>
+<span class="n">rule</span> <span class="n">samtools_view</span><span class="p">:</span>
+    <span class="nb">input</span><span class="p">:</span>
+        <span class="n">expand</span><span class="p">(</span><span class="s">"{sample}.sam"</span><span class="p">,</span> <span class="n">sample</span><span class="o">=</span><span class="n">ecoli_samples</span><span class="p">)</span>
+    <span class="n">output</span><span class="p">:</span>
+        <span class="n">expand</span><span class="p">(</span><span class="s">"{sample}.bam"</span><span class="p">,</span> <span class="n">sample</span><span class="o">=</span><span class="n">ecoli_samples</span><span class="p">)</span>
+    <span class="n">shell</span><span class="p">:</span>
+        <span class="s">"samtools view -q 30 -bS {input} &gt; {output}"</span>
+</code></pre></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># Rule 5: Sort the bam</span>
+<span class="n">rule</span> <span class="n">samtools_sort</span><span class="p">:</span>
+    <span class="nb">input</span><span class="p">:</span>
+        <span class="n">expand</span><span class="p">(</span><span class="s">"{sample}.bam"</span><span class="p">,</span> <span class="n">sample</span><span class="o">=</span><span class="n">ecoli_samples</span><span class="p">)</span>
+    <span class="n">output</span><span class="p">:</span>
+        <span class="n">expand</span><span class="p">(</span><span class="s">"{sample}.Sorted"</span><span class="p">,</span> <span class="n">sample</span><span class="o">=</span><span class="n">ecoli_samples</span><span class="p">)</span>
+    <span class="n">shell</span><span class="p">:</span>
+        <span class="s">"samtools sort {input} &gt; {output}"</span>
+</code></pre></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># Rule 6: convert bam to bed format (example)</span>
+<span class="n">rule</span> <span class="n">bedtools_BAMtoBED</span><span class="p">:</span>
+    <span class="nb">input</span><span class="p">:</span>
+        <span class="n">expand</span><span class="p">(</span><span class="s">"{sample}.Sorted"</span><span class="p">,</span> <span class="n">sample</span><span class="o">=</span><span class="n">ecoli_samples</span><span class="p">)</span>
+    <span class="n">output</span><span class="p">:</span>
+        <span class="n">expand</span><span class="p">(</span><span class="s">"{sample}.bed"</span><span class="p">,</span> <span class="n">sample</span><span class="o">=</span><span class="n">ecoli_samples</span><span class="p">)</span>
+    <span class="n">shell</span><span class="p">:</span>
+        <span class="s">"bedtools bamtobed -i {input} &gt; {output}"</span>
+</code></pre></div></div>
+
+<p>Once you put the above commands in a single script (Snakefile), then all you have to do is run “snakemake Snakefile”. The same sample script can be found <a href="https://github.com/viswam78/LASSOprobes/blob/master/Scripts/Snakefile">here as well</a></p>
+
+<p>If everything goes fine, this is how the output should look like:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">Building</span> <span class="n">DAG</span> <span class="n">of</span> <span class="n">jobs</span><span class="o">...</span>
+<span class="n">Using</span> <span class="n">shell</span><span class="p">:</span> <span class="o">/</span><span class="nb">bin</span><span class="o">/</span><span class="n">bash</span>
+<span class="n">Provided</span> <span class="n">cores</span><span class="p">:</span> <span class="mi">1</span>
+<span class="n">Rules</span> <span class="n">claiming</span> <span class="n">more</span> <span class="n">threads</span> <span class="n">will</span> <span class="n">be</span> <span class="n">scaled</span> <span class="n">down</span><span class="o">.</span>
+<span class="n">Job</span> <span class="n">counts</span><span class="p">:</span>
+	<span class="n">count</span>	<span class="n">jobs</span>
+	<span class="mi">1</span>	<span class="nb">all</span>
+	<span class="mi">1</span>	<span class="n">bedtools_BAMtoBED</span>
+	<span class="mi">1</span>	<span class="n">bowtie_map</span>
+	<span class="mi">1</span>	<span class="n">samtools_sort</span>
+	<span class="mi">1</span>	<span class="n">samtools_view</span>
+	<span class="mi">5</span>
+
+</code></pre></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+<span class="p">[</span><span class="n">Mon</span> <span class="n">Feb</span> <span class="mi">25</span> <span class="mi">21</span><span class="p">:</span><span class="mo">05</span><span class="p">:</span><span class="mi">14</span> <span class="mi">2019</span><span class="p">]</span>
+<span class="n">rule</span> <span class="n">bowtie_map</span><span class="p">:</span>
+    <span class="nb">input</span><span class="p">:</span> <span class="n">SRR5468393</span><span class="o">.</span><span class="n">fastq</span>
+    <span class="n">output</span><span class="p">:</span> <span class="n">SRR5468393</span><span class="o">.</span><span class="n">sam</span>
+    <span class="n">jobid</span><span class="p">:</span> <span class="mi">4</span>
+
+<span class="p">[</span><span class="n">Mon</span> <span class="n">Feb</span> <span class="mi">25</span> <span class="mi">21</span><span class="p">:</span><span class="mo">05</span><span class="p">:</span><span class="mi">28</span> <span class="mi">2019</span><span class="p">]</span>
+<span class="n">Finished</span> <span class="n">job</span> <span class="mf">4.</span>
+<span class="mi">1</span> <span class="n">of</span> <span class="mi">5</span> <span class="n">steps</span> <span class="p">(</span><span class="mi">20</span><span class="o">%</span><span class="p">)</span> <span class="n">done</span>
+
+<span class="p">[</span><span class="n">Mon</span> <span class="n">Feb</span> <span class="mi">25</span> <span class="mi">21</span><span class="p">:</span><span class="mo">05</span><span class="p">:</span><span class="mi">28</span> <span class="mi">2019</span><span class="p">]</span>
+<span class="n">rule</span> <span class="n">samtools_view</span><span class="p">:</span>
+    <span class="nb">input</span><span class="p">:</span> <span class="n">SRR5468393</span><span class="o">.</span><span class="n">sam</span>
+    <span class="n">output</span><span class="p">:</span> <span class="n">SRR5468393</span><span class="o">.</span><span class="n">bam</span>
+    <span class="n">jobid</span><span class="p">:</span> <span class="mi">3</span>
+
+<span class="p">[</span><span class="n">Mon</span> <span class="n">Feb</span> <span class="mi">25</span> <span class="mi">21</span><span class="p">:</span><span class="mo">05</span><span class="p">:</span><span class="mi">32</span> <span class="mi">2019</span><span class="p">]</span>
+<span class="n">Finished</span> <span class="n">job</span> <span class="mf">3.</span>
+<span class="mi">2</span> <span class="n">of</span> <span class="mi">5</span> <span class="n">steps</span> <span class="p">(</span><span class="mi">40</span><span class="o">%</span><span class="p">)</span> <span class="n">done</span>
+
+<span class="p">[</span><span class="n">Mon</span> <span class="n">Feb</span> <span class="mi">25</span> <span class="mi">21</span><span class="p">:</span><span class="mo">05</span><span class="p">:</span><span class="mi">32</span> <span class="mi">2019</span><span class="p">]</span>
+<span class="n">rule</span> <span class="n">samtools_sort</span><span class="p">:</span>
+    <span class="nb">input</span><span class="p">:</span> <span class="n">SRR5468393</span><span class="o">.</span><span class="n">bam</span>
+    <span class="n">output</span><span class="p">:</span> <span class="n">SRR5468393</span><span class="o">.</span><span class="n">Sorted</span>
+    <span class="n">jobid</span><span class="p">:</span> <span class="mi">2</span>
+
+<span class="p">[</span><span class="n">Mon</span> <span class="n">Feb</span> <span class="mi">25</span> <span class="mi">21</span><span class="p">:</span><span class="mo">05</span><span class="p">:</span><span class="mi">35</span> <span class="mi">2019</span><span class="p">]</span>
+<span class="n">Finished</span> <span class="n">job</span> <span class="mf">2.</span>
+<span class="mi">3</span> <span class="n">of</span> <span class="mi">5</span> <span class="n">steps</span> <span class="p">(</span><span class="mi">60</span><span class="o">%</span><span class="p">)</span> <span class="n">done</span>
+
+<span class="p">[</span><span class="n">Mon</span> <span class="n">Feb</span> <span class="mi">25</span> <span class="mi">21</span><span class="p">:</span><span class="mo">05</span><span class="p">:</span><span class="mi">35</span> <span class="mi">2019</span><span class="p">]</span>
+<span class="n">rule</span> <span class="n">bedtools_BAMtoBED</span><span class="p">:</span>
+    <span class="nb">input</span><span class="p">:</span> <span class="n">SRR5468393</span><span class="o">.</span><span class="n">Sorted</span>
+    <span class="n">output</span><span class="p">:</span> <span class="n">SRR5468393</span><span class="o">.</span><span class="n">bed</span>
+    <span class="n">jobid</span><span class="p">:</span> <span class="mi">1</span>
+
+<span class="p">[</span><span class="n">Mon</span> <span class="n">Feb</span> <span class="mi">25</span> <span class="mi">21</span><span class="p">:</span><span class="mo">05</span><span class="p">:</span><span class="mi">38</span> <span class="mi">2019</span><span class="p">]</span>
+<span class="n">Finished</span> <span class="n">job</span> <span class="mf">1.</span>
+<span class="mi">4</span> <span class="n">of</span> <span class="mi">5</span> <span class="n">steps</span> <span class="p">(</span><span class="mi">80</span><span class="o">%</span><span class="p">)</span> <span class="n">done</span>
+
+<span class="p">[</span><span class="n">Mon</span> <span class="n">Feb</span> <span class="mi">25</span> <span class="mi">21</span><span class="p">:</span><span class="mo">05</span><span class="p">:</span><span class="mi">38</span> <span class="mi">2019</span><span class="p">]</span>
+<span class="n">localrule</span> <span class="nb">all</span><span class="p">:</span>
+    <span class="nb">input</span><span class="p">:</span> <span class="n">SRR5468393</span><span class="o">.</span><span class="n">bed</span>
+    <span class="n">jobid</span><span class="p">:</span> <span class="mi">0</span>
+
+</code></pre></div></div>
+
+<p>You can see that the job finished successfully and the output files formed are sam format, bam format, sorted bam and finally a sample bed file that converts BAM format to BED format.</p>
