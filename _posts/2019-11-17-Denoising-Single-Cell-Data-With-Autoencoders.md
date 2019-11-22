@@ -1995,4 +1995,21 @@ Rps28   5.993118e-171  6.152006 0.900 0.315 1.198624e-167
 
 From the above list, it is clear that most of the markers are conserved. The change is seen only in the p-values, although the p-values in the list are already very very significant. The sign of avg_diff shows the marker for that particular cluster. For example, in the autoencoder marker list above, Elane and Retnlg seem to have negative values. This indicates that these are expressed more in BoneMarrow (ident.1 = "Bladder", ident.2 = "BoneMarrow").  
 
+pct.1 and pct.2 above shows the percentage of the expressed cells that have these markers. If we want to look at the markers that are expressed ONLY in one cluster and NOT in the other, we can take subset of the above list with filters. For example, you could end up with the below list using a threshold that the marker should be expresssed in at least half of the cells in the cluster of interest, and very less in the other cluster i.e., since pct.2 represents Bone-marrow, the markers for the bone-marrow are:  
+
+```
+> significant_markers_original
+       p_val  avg_diff pct.1 pct.2 p_val_adj
+Igkc       0 -3.140242 0.001 0.568         0
+Mpo        0 -3.662044 0.004 0.624         0
+Elane      0 -7.014000 0.000 0.660         0
+Retnlg     0 -7.658398 0.000 0.891         0
+> significant_markers_autoencoder
+       p_val  avg_diff pct.1 pct.2 p_val_adj
+Igkc       0 -3.140242 0.001 0.568         0
+Mpo        0 -3.662044 0.004 0.624         0
+Elane      0 -7.014000 0.000 0.660         0
+Retnlg     0 -7.658398 0.000 0.891         0
+```
+
 From this blog, it certainly seems with proper denoising algorithm, the quality of the downprocessing of the single cell data can be significantly improved!
