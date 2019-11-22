@@ -1921,3 +1921,79 @@ DimPlot(mca.10K.autoencoder.seurat, group.by = 'orig.ident') + DarkTheme()
 ![png](UMAP_combined.png)  
 
 PLEASE NOTE THE SHORTCOMINGS OF THE MODEL IN [1] PICKING ONLY VARIABLE GENES, [2] TRAINING ON FEW EPOCHS, [3] USING A SIMPLE POISSON LOSS FUNCTION. Having mentioned all of this, the umap plot of the autoencoder seem to retain the well separated clusters for each of the bone-marrow and bladder tissues.  
+
+ The autoencoder plot seems to be less noisy than the original cluster. To compare the markers before and after denoising, I used FindMarkers in Seurat. One thing to note is to use the scale.data slot in the FindMarkers functionality -- this will use the scaled data, instead of the raw counts.  
+
+```r
+# Markers that are present in at least 50% of the cells and the difference in percent present between cluster A and B is at least 40% i.e., pick genes that are present in at least 90% in cluster OF INTEREST.
+
+Markers_Bladder_BoneMarrow_original <- FindMarkers(mca.10K.original.seurat, group.by = "orig.ident", ident.1 = "Bladder", ident.2 = "BoneMarrow", slot = "scale.data", min.pct = 0.5, min.diff.pct = 0.4)
+
+Markers_Bladder_BoneMarrow_autoencoder <- FindMarkers(mca.10K.autoencoder.seurat, group.by = "orig.ident", ident.1 = "Bladder", ident.2 = "BoneMarrow", slot = "scale.data", min.pct = 0.5, min.diff.pct = 0.4)
+
+# Since the slots used is "scale.data", instead of the avg_logFC, we see the avg_diff between cluster A and cluster B -- printing all the markers that are different by at least 5.
+
+significant_markers_original <- Markers_Bladder_BoneMarrow_original[abs(Markers_Bladder_BoneMarrow_original$avg_diff) > 5, ]
+significant_markers_original
+```
+
+```
+> significant_markers_original
+                p_val  avg_diff pct.1 pct.2     p_val_adj
+Gstm1    0.000000e+00 36.391111 0.986 0.247  0.000000e+00
+S100a6   0.000000e+00 30.511212 0.995 0.569  0.000000e+00
+Mgp      0.000000e+00 21.272351 0.928 0.000  0.000000e+00
+Gsn      0.000000e+00 15.699678 0.912 0.151  0.000000e+00
+Dcn      0.000000e+00 14.823099 0.763 0.000  0.000000e+00
+Sparc    0.000000e+00  9.895522 0.791 0.000  0.000000e+00
+mt-Rnr2  0.000000e+00  7.453003 0.946 0.413  0.000000e+00
+Rps28    0.000000e+00  6.152006 0.900 0.315  0.000000e+00
+Igfbp7   0.000000e+00  6.100633 0.862 0.003  0.000000e+00
+Elane    0.000000e+00 -7.014000 0.000 0.660  0.000000e+00
+Retnlg   0.000000e+00 -7.658398 0.000 0.891  0.000000e+00
+Gsta4   1.256697e-279 11.295975 0.689 0.001 2.513395e-276
+Sprr1a  8.060662e-263  9.168947 0.682 0.000 1.612132e-259
+Wfdc2   1.301704e-245  7.291295 0.674 0.000 2.603407e-242
+Col1a2  1.120619e-239  9.069732 0.680 0.001 2.241237e-236
+Rps21   2.371095e-192  5.855183 0.948 0.456 4.742191e-189
+Col3a1  3.971006e-171  8.106904 0.645 0.000 7.942012e-168
+Col1a1   2.164222e-96  5.644514 0.597 0.001  4.328445e-93
+Ly6d     2.291057e-84  9.023349 0.613 0.080  4.582114e-81
+Krt15    6.235086e-57  5.832326 0.554 0.000  1.247017e-53
+```
+
+```r
+significant_markers_autoencoder <- Markers_Bladder_BoneMarrow_autoencoder[abs(Markers_Bladder_BoneMarrow_autoencoder$avg_diff) > 5, ]
+significant_markers_autoencoder
+```
+
+```
+> significant_markers_autoencoder
+                p_val  avg_diff pct.1 pct.2     p_val_adj
+Gstm1    0.000000e+00 36.391111 0.986 0.247  0.000000e+00
+S100a6   0.000000e+00 30.511212 0.995 0.569  0.000000e+00
+Mgp      0.000000e+00 21.272351 0.928 0.000  0.000000e+00
+Gsn      0.000000e+00 15.699678 0.912 0.151  0.000000e+00
+Gsta4    0.000000e+00 11.295975 0.689 0.001  0.000000e+00
+Sparc    0.000000e+00  9.895522 0.791 0.000  0.000000e+00
+Sprr1a   0.000000e+00  9.168947 0.682 0.000  0.000000e+00
+Ly6d     0.000000e+00  9.023349 0.613 0.080  0.000000e+00
+Col3a1   0.000000e+00  8.106904 0.645 0.000  0.000000e+00
+Wfdc2    0.000000e+00  7.291295 0.674 0.000  0.000000e+00
+Igfbp7   0.000000e+00  6.100633 0.862 0.003  0.000000e+00
+Rps21    0.000000e+00  5.855183 0.948 0.456  0.000000e+00
+Krt15    0.000000e+00  5.832326 0.554 0.000  0.000000e+00
+Col1a1   0.000000e+00  5.644514 0.597 0.001  0.000000e+00
+Elane    0.000000e+00 -7.014000 0.000 0.660  0.000000e+00
+Retnlg   0.000000e+00 -7.658398 0.000 0.891  0.000000e+00
+mt-Rnr2 1.117678e-302  7.453003 0.946 0.413 2.235357e-299
+Col1a2  2.714773e-239  9.069732 0.680 0.001 5.429546e-236
+Dcn     4.951592e-214 14.823099 0.763 0.000 9.903185e-211
+Rps28   5.993118e-171  6.152006 0.900 0.315 1.198624e-167
+```
+
+
+From the above list, it is clear that most of the markers are conserved. The sign of avg_diff shows the marker for that particular cluster. For example, in the autoencoder marker list above, Elane and Retnlg seem to have negative values. This indicates that there are expressed more in BoneMarrow (we compared using ident.1 = "Bladder", ident.2 = "BoneMarrow").  
+
+
+From the markers list, it is clear that most of the markers are conserved in the new autoencoder model, and there are few genes that show up in autoencoder and not in original and vice versa. Finally, it certainly seems with proper denoising algorithm, the quality of the downprocessing of the single cell data can be significantly improved!
