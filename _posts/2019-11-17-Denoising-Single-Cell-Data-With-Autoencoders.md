@@ -1993,7 +1993,6 @@ Rps28   5.993118e-171  6.152006 0.900 0.315 1.198624e-167
 ```
 
 
-From the above list, it is clear that most of the markers are conserved. The sign of avg_diff shows the marker for that particular cluster. For example, in the autoencoder marker list above, Elane and Retnlg seem to have negative values. This indicates that there are expressed more in BoneMarrow (we compared using ident.1 = "Bladder", ident.2 = "BoneMarrow").  
+From the above list, it is clear that most of the markers are conserved. The change is seen only in the p-values, although the p-values in the list are already very very significant. The sign of avg_diff shows the marker for that particular cluster. For example, in the autoencoder marker list above, Elane and Retnlg seem to have negative values. This indicates that these are expressed more in BoneMarrow (ident.1 = "Bladder", ident.2 = "BoneMarrow").  
 
-
-From the markers list, it is clear that most of the markers are conserved in the new autoencoder model, and there are few genes that show up in autoencoder and not in original and vice versa. Finally, it certainly seems with proper denoising algorithm, the quality of the downprocessing of the single cell data can be significantly improved!
+From this blog, it certainly seems with proper denoising algorithm, the quality of the downprocessing of the single cell data can be significantly improved!
