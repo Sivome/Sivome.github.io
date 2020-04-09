@@ -1,13 +1,13 @@
 ---
 title: "HOW-TO setup Google Colab to run Monocle3 (single cell RNA-seq)"
-date: '2020-04-06'
+date: '2020-04-08'
 layout: post
 categories: Genomics
 ---
 
   https://colab.research.google.com/    
   
-  
+  Requires: units_0.6-6.tar.gz file.
 
 ```python
 # Load local files to google colab
@@ -59,3 +59,4 @@ devtools::install_github('cole-trapnell-lab/monocle3')
 library(monocle3)
 load("your_file.RData")
 ```
+
