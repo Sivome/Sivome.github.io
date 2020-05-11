@@ -1,5 +1,5 @@
 ---
-title: "Infectious Diseased Related Drugs - Exploratory analyses"
+title: "Infectious Disease Related Drugs - Exploratory analyses"
 date: '2020-05-11'
 layout: post
 output:
