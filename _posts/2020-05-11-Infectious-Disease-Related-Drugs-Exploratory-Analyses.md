@@ -1,5 +1,5 @@
 ---
-title: "Drugs in different phases of clinical trials - Exploratory analyses"
+title: "Infectious Diseased Related Drugs - Exploratory analyses"
 date: '2020-05-11'
 layout: post
 output:
@@ -17,7 +17,6 @@ CLUE.IO: The Drug Repurposing Hub is a curated and annotated collection of FDA-a
 # required packages
 rm(list = ls())
 library(tidyverse)
-library(cowplot)
 ```
 
 
@@ -81,7 +80,7 @@ head(df_disease_area_launched_order)
 ## 5 "gastroenterology"       124
 ## 6 "endocrinology"          122
 ```
-Total number of gene targets in the entire list is 2183. 
+Total number of gene targets in the entire list is 2183.
 
 
 ```r
@@ -102,14 +101,14 @@ unique_genes_inf_dis
 
 ```
 ##   [1] "GABBR1"  "GABBR2"  "MMP12"   "HIF1A"   "PNP"     "TUBA1A"  "TUBB"   
-##   [8] "TUBB4B"  "ADRA1A"  "ADRA2A"  "HNMT"    "CYP3A4"  "ATP1A1"  "CYP2B6" 
-##  [15] "HTR3A"   "HTR3B"   "MLNR"    "IDE"     "SCN10A"  "DAO"     "HRSP12" 
+##   [8] "TUBB4B"  "ADRA1A"  "ADRA2A"  "HNMT"    "CYP3A4"  "ATP1A1"  "CYP2B6"
+##  [15] "HTR3A"   "HTR3B"   "MLNR"    "IDE"     "SCN10A"  "DAO"     "HRSP12"
 ##  [22] "PRDX5"   "RAB9A"   "HSPA1A"  "HSPB1"   "CMA1"    "CTSA"    "CTSF"   
 ##  [29] "CTSK"    "CTSL"    "CTSS"    "SQLE"    "TP53"    "PON1"    "FASN"   
 ##  [36] "MRGPRX1" "DHFR"    "KCNN4"   "NR1I2"   "NR1I3"   "TRPM2"   "TRPM4"  
 ##  [43] "TRPM8"   "CYP3A43" "CYP3A5"  "CYP3A7"  "PGR"     "GRIN1"   "PNLIP"  
-##  [50] "KCNN1"   "KCNN3"   "ALOX5"   "PTGS1"   "ACHE"    "POU2F2"  "UGT1A1" 
-##  [57] "DRD2"    "DRD3"    "DPEP1"   "NPY1R"   "NPY2R"   "TRPV5"   "CYP1A2" 
+##  [50] "KCNN1"   "KCNN3"   "ALOX5"   "PTGS1"   "ACHE"    "POU2F2"  "UGT1A1"
+##  [57] "DRD2"    "DRD3"    "DPEP1"   "NPY1R"   "NPY2R"   "TRPV5"   "CYP1A2"
 ##  [64] "CYP2C19" "CYP2C9"  "CYP2D6"  "CYP51A1" "CYP19A1" "CYP2J2"  "PPARA"  
 ##  [71] "PTGER2"  "TOP2A"   "ABCB1"   "ALB"     "KCNH2"   "SLC47A1" "DNMT1"  
 ##  [78] "METAP2"  "KRT12"   "GLUD1"   "SDHD"    "TYR"     "TLR7"    "TLR9"   
@@ -255,6 +254,3 @@ csr_inf_drugs[c(1,3,4,6)]
 ## 5028                                                                                                                              malaria
 ## 5130                                                                                                                          hepatitis C
 ```
-
-
-
