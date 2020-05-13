@@ -10,6 +10,8 @@ output:
 categories: Genomics
 ---
 
+The data used in this blog is taken from 2 resources: [1] drug repurposing hub tab of the CLUE.IO (https://clue.io/repurposing#download-data) and [2] cell surface proteins (CSPs) from the SurfaceomeDB.  
+
 CLUE.IO: The Drug Repurposing Hub is a curated and annotated collection of FDA-approved drugs, clinical trial drugs, and pre-clinical tool compounds with a companion information resource. Current dataset is downloaded on May 11, 2020.
 
 
@@ -123,7 +125,7 @@ unique_genes_inf_dis
 ## [141] "RYR2"    "SIRT5"   "ALPPL2"  "CHRNA3"  "OXCT1"   "TRPA1"   "TYMS"   
 ## [148] "ADA"     "TERT"
 ```
-Surfaceome-db has database focussed only on the cell surface receptors. I used the uniprot mapping tool to map the UniProt IDs in the Surfaceome DB to gene names. In total, there are 1247 unique cell surface receptors that are identified by mass-spec and other proteomics based assays.
+I used the uniprot mapping tool to map the UniProt IDs in the Surfaceome DB to gene names. In total, there are 1247 unique cell surface receptors that are identified by mass-spec and other proteomics based assays.
 
 ```r
 # cell surface receptors
@@ -141,7 +143,7 @@ head(csr)
 ## 5 A2AJN7  Slc4a11
 ## 6 A2AJQ3  Dpy19l4
 ```
-Out of 1247 cell surface receptors, 20 recetpors were classified as the drug targets for the infectious disease.
+Out of 1247 cell surface receptors, 20 receptors were classified as the drug targets for the infectious disease.
 
 ```r
 inf_dis_csrs <- unique_genes_inf_dis[unique_genes_inf_dis %in% csr_genenames]
