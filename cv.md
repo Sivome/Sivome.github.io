@@ -16,11 +16,11 @@ Tel: (724) 590 2170
 
 ## PROFILE
 
-I am a computational scientist with modeling and simulation experience in engineering and life sciences domain. Post-PHD, I have 12+ years’ experience in analyzing high-throughput –molecular data including, mass-spectrometry based proteomics/metabolomics data as well as next-generation sequencing based genomics/transcriptomics.
+I am a computational scientist with modeling and simulation experience in engineering and life sciences domains. Post-PHD, I have 15+ years’ experience in building bioinformatics pipelines for both next-generation sequencing (NGS) and mass-spectrometry technologies. In my last role, I built pipelines for single-cell transcriptomics work using cellranger and other R packages (Seurat, Monocle etc).
 
-Recently, my focus is on using deep learning methods to analyze the high-dimensional -omics data to infer associations in the data. I usually program in Python/R/MATLAB and typically use tools built for -omics domain for reproducible research.
+Recently, my focus is on using deep learning neural network and other machine learning models to analyze high-dimensional -omics datasets to infer associations in the data. I usually program in Python/R/MATLAB and typically use tools built for -omics domain for reproducible research. I'm well versed with R packages and python modules (for data science and machine learning).
 
-Till date, my research work has resulted in ~20 peer-reviewed publications and numerous conference proceedings and poster presentations (google scholar citations: ~580, h-index=11).
+Till date, my research work has resulted in ~20 peer-reviewed publications and numerous conference proceedings and poster presentations (google scholar citations: ~675, h-index=13).
 
 
 
@@ -45,9 +45,10 @@ Python (numpy, pandas, scikit-learn, matplotlib, keras), R (tidyverse), MATLAB, 
 Git, Snakemake, Docker, UNIX, MacOS, LaTeX  
 ### Engineering   
 Monte-carlo models [MS Thesis focus], Molecular dynamics simulations for atomic modeling [PHD Disseration focus]
-### Genomics/Transcriptomics
-GATK, BWA, Bowtie, Samtools, BEDtools  
-### Proteomics/Metabolomics
+### NGS - Genomics/Transcriptomics (Single cell and bulk)
+Bulk RNA-seq tools used: HISAT2, featureCounts, GATK, BWA, Bowtie, Samtools, BEDtools  
+Single cell RNA-seq tools used: CellRanger, Seurat, Monocle3, fastMNN, SAVER
+### Mass-spec Proteomics/Metabolomics
 Byonic, PEAKS, Proteome Discoverer, OMSSA, MODa   
 ### Pathway Tools/ Systems Biology
 BioCyc, MetaCyc, SAINT
@@ -56,6 +57,8 @@ GROMACS, NAMD, VMD
 
 ## SAMPLE PROJECTS  
 
+### Neural networks and Single cell transcriptomics
+[https://sivome.github.io](https://github.com/Sivome/Sivome.github.io/blob/master/_posts/2019-11-17-Denoising-Single-Cell-Data-With-Autoencoders.md)
 ### Jupyter
 [https://sivome.github.io](https://sivome.github.io/proteomics/2019/03/11/Reporting_Proteomics_Results.html)  
 ### R Markdown
@@ -70,9 +73,23 @@ GROMACS, NAMD, VMD
 
 ## PROFESSIONAL EXPERIENCE  
 
+### Jun '19 - Present    
+_Senior Bioinformatics Scientist_      
+**Argentys**
+
+Contractor at Food and Drug Administration (Jun' 19 - Aug' 20)
+CBER HIVE Team
+
+## Informatics Projects
+• Helped in building RNA-seq pipeline for automated bulk processing of large-scale genomics datasets. (fastp, HISAT2, featureCounts, DESEQ2) 
+• Built single-cell RNA-seq pipeline for analyzing 10X single cell datasets. (CellRanger, SAVER, Seurat/Monocle, fastMNN and other R packages)
+
+## Sample Research Projects
+• Identifying Molecular Features of Neural Stem Cells in Varied Differentiation Stages
+• Single cell RNA-seq analyses to investigate sub-populations of bone-marrow and adipose derived multipotential stromal cells (MSCs) from 3 donors
 
 
-### Oct '18 - Present
+### Oct '18 - May ' 19
 _Consultant_  
 **Universities, Hospitals and Startups**  
 
