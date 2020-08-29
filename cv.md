@@ -40,7 +40,7 @@ MS, Electrical and Computer Engineering, ODU, Norfolk, VA
 ### Machine learning   
 Regression, Regularization, Hierarchical Clustering, Discriminant analyses  
 ### Programming   
-Python (numpy, pandas, scikit-learn, matplotlib, keras), R (tidyverse), MATLAB, Perl, C, C++, Fortran   
+Python (including data science and other machine learning modules such as numpy, pandas, scikit-learn, matplotlib, keras), R (tidyverse and other data science packages), MATLAB, Perl, C, C++, Fortran   
 ### Other skills   
 Git, Snakemake, Docker, UNIX, MacOS, LaTeX  
 ### Engineering   
@@ -82,8 +82,8 @@ CBER HIVE Team
 
 **Informatics Projects at FDA**
 
-• Helped in building RNA-seq pipeline for automated bulk processing of large-scale genomics datasets. (fastp, HISAT2, featureCounts, DESEQ2)  
-• Built single-cell RNA-seq pipeline for analyzing 10X single cell datasets. (CellRanger, SAVER, Seurat/Monocle, fastMNN and other R packages)  
+• Helped in building RNA-seq pipeline for automated bulk processing of large-scale genomics datasets (fastp, HISAT2, featureCounts, DESEQ2)  
+• Built single-cell RNA-seq pipeline for analyzing 10X single cell datasets (CellRanger, SAVER, Seurat/Monocle, fastMNN and other R packages)  
 
 **Sample Research Projects**
 
@@ -95,9 +95,8 @@ CBER HIVE Team
 _Consultant_  
 **Universities, Hospitals and Startups**  
 
-In my current role, I am working for a proteomics software company.
-
-In previous roles as Independent Consultant (part of 2016, 2017 and 2018) for MGH, WRI and biofuel startup  
+Independent Consultant (part of 2016, 2017 and 2018) for MGH, WRI, biofuel startup and ProteinMetrics
+• Testing ProteinMetrics suite of tools.
 • Improved primer design for a proof-of-principle assay to capture long genomic regions.  
 • Built NGS pipeline and developed new computational methods for downstream analyses.  
 • Helped different groups with their data science and bioinformatic needs.  
