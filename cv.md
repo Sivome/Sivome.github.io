@@ -81,11 +81,15 @@ Contractor at Food and Drug Administration (Jun' 19 - Aug' 20)
 CBER HIVE Team
 
 **Informatics Projects at FDA**
+
 • Helped in building RNA-seq pipeline for automated bulk processing of large-scale genomics datasets. (fastp, HISAT2, featureCounts, DESEQ2) 
+
 • Built single-cell RNA-seq pipeline for analyzing 10X single cell datasets. (CellRanger, SAVER, Seurat/Monocle, fastMNN and other R packages)
 
 **Sample Research Projects**
+
 • Identifying Molecular Features of Neural Stem Cells in Varied Differentiation Stages
+
 • Single cell RNA-seq analyses to investigate sub-populations of bone-marrow and adipose derived multipotential stromal cells (MSCs) from 3 donors
 
 
