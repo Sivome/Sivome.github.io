@@ -75,7 +75,7 @@ GROMACS, NAMD, VMD
 
 ### Jun '19 - Present    
 _Senior Bioinformatics Scientist_      
-**Argentys**
+**Argentys (FDA contractor)**
 
 Contractor at Food and Drug Administration (Jun' 19 - Aug' 20)
 CBER HIVE Team
@@ -91,8 +91,15 @@ CBER HIVE Team
 • Single cell RNA-seq analyses to investigate sub-populations of bone-marrow and adipose derived multipotential stromal cells (MSCs) from 3 donors  
 
 
-### Oct '18 - May ' 19
-_Consultant_  
+### Mar '18 - Nov '18    
+_Bioinformatics Systems Developer_      
+**Booz Allen Hamilton**
+
+• Helped in automating preprocessing of gene expression data (microarray and RNA-seq) for placental datasets using raw data stored in NCBI’s GEO repository (PAT - Placental Atlas Tool).  
+• Improved analytics of differential expression, gene ontology and pathway analyses of the above preprocessed placental datasets (>20 RNA-seq and >300 microarray datasets).
+
+### Apr '16 - Present
+_Independent Contractor_  
 **Universities, Hospitals and Startups**  
 
 Independent Consultant (part of 2016, 2017 and 2018) for MGH, WRI, biofuel startup and ProteinMetrics
@@ -106,22 +113,17 @@ Independent Consultant (part of 2016, 2017 and 2018) for MGH, WRI, biofuel start
 • Integrated proteogenomics data to identify markers in laser capture microdissected breast tumor samples (Preliminary work published in AACR).    
 
 
-### Mar '18 - Nov '18    
-_Bioinformatics Systems Developer_      
-**Booz Allen Hamilton**
 
-• Helped in automating preprocessing of gene expression data (microarray and RNA-seq) for placental datasets using raw data stored in NCBI’s GEO repository (PAT - Placental Atlas Tool).  
-• Improved analytics of differential expression, gene ontology and pathway analyses of the above preprocessed placental datasets (>20 RNA-seq and >300 microarray datasets).
+### Dec '12 - Apr '16  
+**THE UNIVERSITY OF TEXAS SYSTEM (UT AUSTIN, UTSW MEDICAL CENTER DALLAS)**  
 
-### Aug '15 - Apr '16  
-_Computational Biologist_  
+_Computational Biologist_ Aug '15 - Apr '16  
 **UT Southwestern Medical Center -- PROTEOMICS CORE FACILITY**  
 
 • Protein identification and quantitation using bioinformatics tools.  
 • Bioinformatics proteomics consultant work with UT Southwestern investigators.  
 
-### Dec '12 - Aug '15
-_Research Engineering/Scientist Associate V_  
+_Research Engineering/Scientist Associate V_ Dec '12 - Aug '15    
 **The University of Texas at Austin -- CENTER FOR COMPUTATIONAL BIOLOGY AND BIOINFORMATICS**  
 
  • Built machine learning models using LASSO regression to predict bacterial growth conditions from _in-silico_ metabolic fluxes generated from metabolic network based flux balance analyses (FBA) methods.  
@@ -134,8 +136,15 @@ _Research Engineering/Scientist Associate V_
  • Helped multiple labs with proteomics bioinformatics consulting and short-term contracts.  
  • Taught computational mass-spectrometry in Big Data Summer School organized by CCBB (Center for Computational Biology and Bioinformatics every summer – 4 day course)  
 
+### Jan '12 - Dec '12    
+_Scientific Programmer_      
+**Samuel Roberts Noble Foundation**
+
+• Helped integrated GenoLogics LIMS system with mass-spec equipment
+• Built pathway databases using MetaCyc and PathwayTools
+
 ### Jun '07 - Jan '12  
-_Visiting Research Fellow_  
+_Postdoctoral Fellow_  
 **National Center for Biotechnology Information (NCBI)**  
 
  • Part of NCBI OMSSA (Open Mass Spectrometry Search Algorithm) project:  
