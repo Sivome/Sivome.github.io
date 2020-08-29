@@ -45,9 +45,9 @@ Python (including data science and other machine learning modules such as numpy,
 Git, Snakemake, Docker, UNIX, MacOS, LaTeX  
 ### Engineering   
 Monte-carlo models [MS Thesis focus], Molecular dynamics simulations for atomic modeling [PHD Disseration focus]
-### NGS - Genomics/Transcriptomics (Single cell and bulk)
-Bulk RNA-seq tools used: HISAT2, featureCounts, GATK, BWA, Bowtie, Samtools, BEDtools  
-Single cell RNA-seq tools used: CellRanger, Seurat, Monocle3, fastMNN, SAVER
+### NGS (Single cell and bulk RNA-seq)
+Bulk RNA-seq: HISAT2, featureCounts, GATK, BWA, Bowtie, Samtools, BEDtools  
+Single cell RNA-seq: CellRanger, Seurat, Monocle3, fastMNN, SAVER
 ### Mass-spec Proteomics/Metabolomics
 Byonic, PEAKS, Proteome Discoverer, OMSSA, MODa   
 ### Pathway Tools/ Systems Biology
@@ -85,7 +85,7 @@ CBER HIVE Team
 • Helped in building RNA-seq pipeline for automated bulk processing of large-scale genomics datasets (fastp, HISAT2, featureCounts, DESEQ2)  
 • Built single-cell RNA-seq pipeline for analyzing 10X single cell datasets (CellRanger, SAVER, Seurat/Monocle, fastMNN and other R packages)  
 
-**Sample Research Projects**
+**Sample Research Projects at FDA**
 
 • Identifying Molecular Features of Neural Stem Cells in Varied Differentiation Stages  
 • Single cell RNA-seq analyses to investigate sub-populations of bone-marrow and adipose derived multipotential stromal cells (MSCs) from 3 donors  
