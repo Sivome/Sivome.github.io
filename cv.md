@@ -3,7 +3,7 @@ layout: cv
 title: CV
 permalink: /cv/
 ---
-#### [PDF](BioFX_Sridhara.pdf)
+#### [PDF](Sridhara_BioFX.pdf)
 # Viswanadham Sridhara
 
 ## CONTACT
