@@ -23,6 +23,8 @@ time, mark, audio, video {
 	font: inherit;
 	vertical-align: baseline;
 }
+
+
 /* HTML5 display-role reset for older browsers */
 article, aside, details, figcaption, figure, 
 footer, header, hgroup, menu, nav, section {
@@ -53,10 +55,10 @@ table {
 
 body {
 	font: normal normal 400;
-	font-size: 12pt;
+	font-size: 11pt;
 	line-height: 1.35em;
 	/*also written as...  font: normal normal 400 100%/1.5em;*/
-	font-family: Verdana,sans-serif;
+	font-family: "Times New Roman", Times, serif;
 	/*margin-top: 1em;
 	margin-left: 1em;*/
 }
@@ -65,8 +67,8 @@ p {
 	position: relative;
 	left: 28%;
 	margin-bottom: 0.2em;
-	margin-right: 0;
-	width: 70%;
+	margin-right: 0em;
+	width: 83%;
 }
 
 code {
@@ -114,7 +116,7 @@ li ul {
 
 h1,h2,h3,h4 {
 	font-weight: 400;
-	font-family: Cousine,Verdana,sans-serif;
+	font-family: "Times New Roman", Times, serif;
 	width: 65%;
 }
 
@@ -124,6 +126,7 @@ h1 {
 	line-height: 1em;
 	position: relative;
 	left: 28%;
+	margin-left: -50px;
 }
 
 h1+p { 
@@ -140,17 +143,24 @@ h2 {
 	top: 1.2em;
 	text-align: right;
 	width: 18%;
+	margin-left: -50px;
 }
 
 
 h3 {
 	font-size: 1em;
 	line-height: 2em; 
-	color: #ccc;
+	color: #a3a3a3;
 	position: relative;
 	top: 1.6em;
 	text-align: right;
 	width: 18%;
+	margin-left: -50px;
+}
+
+p {
+	margin-left: -75px;
+	margin-right: -125px;
 }
 
 a {
