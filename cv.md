@@ -16,9 +16,9 @@ Tel: (724) 590 2170
 
 ## PROFILE
 
-I am a computational scientist with modeling and simulation experience in engineering and life sciences domains. Post-PHD, I have 15+ years’ experience in building bioinformatics pipelines for both next-generation sequencing (NGS) and mass-spectrometry technologies. In my last role, I built pipelines for single-cell transcriptomics work using cellranger and other R packages (Seurat, Monocle etc).
+I am a computational scientist with modeling and simulation experience in engineering and life sciences domains. Post-PHD, I have 15+ years’ experience in building bioinformatics pipelines for both next-generation sequencing (NGS) and mass-spectrometry technologies. In my last role, I built pipelines for single-cell transcriptomics work using cellranger and other R packages (Seurat, Monocle etc).  
 
-Recently, my focus is on using deep learning neural network and other machine learning models to analyze high-dimensional -omics datasets to infer associations in the data. I usually program in Python/R/MATLAB and typically use tools built for -omics domain for reproducible research. I'm well versed with R packages and python modules (for data science and machine learning).
+Recently, my focus is on using deep learning neural network and other machine learning models to analyze high-dimensional -omics datasets to infer associations in the data. I usually program in Python/R/MATLAB and typically use tools built for -omics domain for reproducible research. I'm well versed with R packages and python modules (for data science and machine learning).  
 
 Till date, my research work has resulted in ~20 peer-reviewed publications and numerous conference proceedings and poster presentations (google scholar citations: ~675, h-index=13).
 
@@ -75,7 +75,7 @@ GROMACS, NAMD, VMD
 
 ### Jun '19 - Present    
 _Senior Bioinformatics Scientist_      
-**Argentys (FDA contractor)**
+**Argentys (FDA contractor)**  
 
 Contractor at Food and Drug Administration (Jun' 19 - Aug' 20)
 CBER HIVE Team
@@ -93,7 +93,7 @@ CBER HIVE Team
 
 ### Mar '18 - Nov '18    
 _Bioinformatics Systems Developer_      
-**Booz Allen Hamilton**
+**Booz Allen Hamilton**  
 
 • Helped in automating preprocessing of gene expression data (microarray and RNA-seq) for placental datasets using raw data stored in NCBI’s GEO repository (PAT - Placental Atlas Tool).  
 • Improved analytics of differential expression, gene ontology and pathway analyses of the above preprocessed placental datasets (>20 RNA-seq and >300 microarray datasets).
@@ -138,7 +138,7 @@ _Research Engineering/Scientist Associate V_ Dec '12 - Aug '15
 
 ### Jan '12 - Dec '12    
 _Scientific Programmer_      
-**Samuel Roberts Noble Foundation**
+**Samuel Roberts Noble Foundation**  
 
 • Helped integrated GenoLogics LIMS system with mass-spec equipment
 • Built pathway databases using MetaCyc and PathwayTools
@@ -174,7 +174,7 @@ _Intern_
 • Finite element analyses (2D) to improve fuel injection solenoid models using Ansoft software.  
 
 
-## SELECTED TALKS
+## SELECTED TALKS  
 
 1. Large-scale analysis of PTMs @ UT-Austin, Thermo Fisher Scientific, MD Anderson Cancer Center
 
@@ -184,7 +184,7 @@ _Intern_
 
 4. Open Mass Spectrometry Search Algorithm @ George Washington University  
 
-## PUBLICATIONS
+## PUBLICATIONS  
 
 1. Tosi, L., Sridhara, V., Yang, Y., et. al., “Engineered DNA Capture Probes for Massively Multiplexed Cloning of Kilobase-Sized Genome Regions”, Nature Biomedical Engineering, 2017;1. pii: 0092. doi: 10.1038/s41551-017-0092. Epub 2017 Jun 26.
 
@@ -226,7 +226,7 @@ _Intern_
 19. Joshi, R. P., Sridhara, V., Shah, P., Del Rosario, R.D. “Monte Carlo analysis of GaN-based Gunn oscillators for microwave power generation.” Journal of Applied Physics, Vol. 93, no. 8, Apr 15, 2003, pp. 4836-4842.
 
 
-## CONFERENCE PROCEEDINGS
+## CONFERENCE PROCEEDINGS  
 
 1. Sridhara, V., Joshi, R.P., Hu, Q., Nguyen, A., and Schoenbach, K.H. “Simulations of cell response to high intensity, ultrashort electrical pulses” (invited paper) Bio-Electromagnetic Society Conference, Cancun, Mexico, June 11-15, 2006.
 
@@ -234,7 +234,7 @@ _Intern_
 
 3. Garner, A.L., et. al., “Changes in the Dielectric Properties of Jurkat and HL-60 cells after Electrical Pulses.” Electromed 2005 Conference, Portland, OR, May 15-18, 2005.
 
-## POSTERS
+## POSTERS  
 
 AACR 2017, Proceedings of the AACR 2016, EMBL Conference 2014, Synthetic Biology: Engineering, Evolution and Design (SEED), ASMS 2010, ASMS 2009, ASMS 2008
 
